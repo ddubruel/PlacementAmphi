@@ -1,0 +1,21 @@
+# exclusion des   fichiers *.png produits sur le site github (RGPD)
+*.png
+
+# exclusion des fichier  3_test 4_test* etc..
+*_test*
+
+# exclusion des fichiers intermédiaires LaTeX
+*.ps
+*.aux
+*.log
+
+# les fichiers emacs si il y en a...
+\#*#
+tuto_modif_classe.py
+*.csv
+*.patch # les fichiers issus de git diff > *.patch
+# exclusion des répertoires suivants :
+Doc_Support/
+data/
+app/classes/Proposition/
+png_oout/
