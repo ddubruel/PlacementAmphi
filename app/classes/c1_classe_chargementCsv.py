@@ -4,28 +4,18 @@ from tkinter import messagebox, filedialog
 from dataclasses import  dataclass 
 from typing import Optional
 
-# from classes.classe_fusionDataMoodleApogee import fusionDataMoodleApogee
-# 
-# from utils.chargeCsv import lit_fichier_csv_et_separe_entete
-# from utils.traitementListe import majuscule
-# from utils.afficheConsigne import afficheConsigne
-# from classes.classe_choixAmphi import choixAmphi
-
 # ────────────────────────────────────────────────────────────────────────────────
 # Modèles de données
 # ────────────────────────────────────────────────────────────────────────────────
-
-@dataclass
-class FichierCSV  :  # pour lui dire qu'il existe un __init__ 
+@dataclass( init=False)  # parce qu'il y a un __init__
+class FichierCSV  :  
     formatFic : str     # Rem les arguments sans valeurs par défaut à écrire en premier ou !!
-                        # ou alors écrie init=False au début.
+                        # ou alors écrire init=False au début.
     chemin: Optional[str] = None    # Optionnal pour dire  type None ou str (par la suite).
     entete: Optional[list[str]] = None
     data: Optional[list[list[str]]] = None
     valide : Optional[bool] = False 
-    
        
-    
     def __init__(self, formatFic: str, parent: Optional[tk.Tk] = None):
         """Crée un objet FichierCSV et exécute automatiquement les étapes principales."""
         self.formatFic = formatFic
@@ -95,7 +85,7 @@ class FichierCSV  :  # pour lui dire qu'il existe un __init__
                 self.valide=False  
         self.valide=True
 # ────────────────────────────────────────────────────────────────────────────────
-# Fin Modèles de classe FichierCsv
+# Fin Modèle de classe FichierCsv
 # ────────────────────────────────────────────────────────────────────────────────
         
 ##########################
@@ -104,7 +94,7 @@ class FichierCSV  :  # pour lui dire qu'il existe un __init__
 #                        #
 ##########################
 
-@dataclass
+@dataclass ( init=False)  # parce qu'il y a un __init__
 class chargementCSV:
     mode: str                              # "Examen" ou "Partiel"
     apogee: FichierCSV                     # peut être vide en mode Partiel
@@ -119,25 +109,14 @@ class chargementCSV:
         else :
             self.apogee = None
             self.moodle = FichierCSV(formatFic="Moodle")
-            
-            
-                                                   
-    def modifier_attribut(self, nom_attribut: str, valeur) -> None:
-        """
-        Modifie dynamiquement un attribut de l'objet en utilisant son nom.
-        Exemple : self.modifier_attribut("mode", "Examen")
-        """
-        if not hasattr(self, nom_attribut):
-            raise AttributeError(f"L'attribut '{nom_attribut}' n'existe pas dans {self.__class__.__name__}")
-
-        setattr(self, nom_attribut, valeur)
-
-
     
+    def __repr__(self):
+        attrs = "\n  ".join(f"{k} = {v!r}" for k, v in self.__dict__.items())
+        Liste_att = self.liste_attributs()
+        return f"<{self.__class__.__name__}(\n  {attrs}\n Les noms des attributs sans les valeurs : \n{Liste_att})>"
+  
 # ────────────────────────────────────────────────────────────────────────────────
-# Fin Modèles de classe chargementCsv
-# ────────────────────────────────────────────────────────────────────────────────
+# Fin Modèle de classe chargementCsv
 
 
-            
-            
+  
