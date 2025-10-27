@@ -12,6 +12,7 @@ sys.path.insert(0, project_root)
 
 from classes.c1_classe_chargementCsv import chargementCSV
 
+from classes.c2_1_listeEtudiants import listeEtudiants
 from classes.c3_classe_arborescence import arborescence
 from classes.c4_classe_champsApogee import champsApogee
 
@@ -119,17 +120,28 @@ class Boustrophedon:
         self.etat.mode = self.var_mode.get() or "nil"
         # instanciation de la classe qui contient les données brutes (Moodle et Apogee si Examen)
         self.dataBrutes = chargementCSV(self.etat.mode, self.root)
+        
+        # dataMoodle : list =  self.dataBrutes.moodle.data  ...bref pour  voir dans la classe
+        
+        print(f"Le fichier Moodle contient : {self.dataBrutes.getNbmoodle()} étudiants.\n")
+        
+        self.tousLesEtudiants = listeEtudiants(self.dataBrutes) 
+        #print(self.tousLesEtudiants.listeDesEtudiants[0])
+        # ou  print( [etu.courriel for etu in self.tousLesEtudiants.listeDesEtudiants[0:10]
+        
+        ## les amphi sont lu depuis data apogée ou demandés si partiel avec data moodle seules.
+        #self.ListeAmphiAvecEtudiant = repartitionAmphi(self.dataBrutes)
+        
+        ### pour la création de l'arborescence des fichiers en sortie.
         cheminFicMoodle : str = self.dataBrutes.moodle.chemin
-        # dataMoodle : list =  self.dataBrutes.moodle.data  ...bref voir classe
-        
-        
-        self.arborescence=arborescence( cheminFicMoodle, ['Titi','Toto'] )
+        self.arborescence = arborescence( cheminFicMoodle, ['Titi','Toto'] )
         #print(self.AZE.get_chemin("Titi", "texOut"))
         
         if self.dataBrutes.apogee not in (None, []):
             self.dataCodeEnteteApogee = champsApogee(self.dataBrutes)        
             print('la valeur du code apogée DAT_DEB_PES  est ', self.dataCodeEnteteApogee.valeurCode('DAT_DEB_PES') )
         messagebox.showinfo("Chargement", f"Données chargées pour un {self.etat.mode}).")
+        
         self.update_buttons_state()
 
     def actionsBouton2(self):

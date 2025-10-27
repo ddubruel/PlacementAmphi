@@ -23,15 +23,21 @@ class FichierCSV  :
         self.entete = None
         self.data = None
         self.valide = False
-
+        self.nbEtudiant : int
+        
         # Étapes automatiques :
         rep="."
         titre=f"Choix du fichier pour un {self.formatFic}."
         self.choisir_fichier(parent, titre, rep )   # définit
         if self.chemin:
             self.charger_csv()
-            self.valider_contenu()    
+            self.valider_contenu()
+        if self.valide :
+            self.nbEtudiant = len(self.data)
         
+    def get_nbEtudiant(self):
+        return self.nbEtudiant
+    
     
     def choisir_fichier(self,tkParent ,  titre  ,rep)-> None :
         messagebox.showwarning(
@@ -84,6 +90,8 @@ class FichierCSV  :
                                    message=f"Erreur, vous n'avez pas choisi un fichier {nature} au format CSV (à vérifier !).")
                 self.valide=False  
         self.valide=True
+        
+    
 # ────────────────────────────────────────────────────────────────────────────────
 # Fin Modèle de classe FichierCsv
 # ────────────────────────────────────────────────────────────────────────────────
@@ -110,11 +118,16 @@ class chargementCSV:
             self.apogee = None
             self.moodle = FichierCSV(formatFic="Moodle")
     
+    def getNbmoodle(self):
+        return self.moodle.get_nbEtudiant()
+    
+#     def __repr__(self):
+#         attrs = "\n  ".join(f"{k} = {v!r}" for k, v in self.__dict__.items())
+#         Liste_att = self.liste_attributs()
+#         return f"<{self.__class__.__name__}(\n  {attrs}\n Les noms des attributs sans les valeurs : \n{Liste_att})>"
+#     
     def __repr__(self):
-        attrs = "\n  ".join(f"{k} = {v!r}" for k, v in self.__dict__.items())
-        Liste_att = self.liste_attributs()
-        return f"<{self.__class__.__name__}(\n  {attrs}\n Les noms des attributs sans les valeurs : \n{Liste_att})>"
-  
+        return f"{self.__class__.__name__}({self.__dict__})"
 # ────────────────────────────────────────────────────────────────────────────────
 # Fin Modèle de classe chargementCsv
 

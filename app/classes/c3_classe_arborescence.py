@@ -80,8 +80,10 @@ class arborescence:
         """Retourne la liste des noms d’amphis connus."""
         return [aa.nom_amphi for aa in self.liste_arboAmphi]
     
+#     def __repr__(self):
+#         attrs = "\n  ".join(f"{k} = {v!r}" for k, v in self.__dict__.items())
+#         Liste_att = self.liste_attributs()
+#         return f"<{self.__class__.__name__}(\n  {attrs}\n Les noms des attributs sans les valeurs : \n{Liste_att})>"
+#     
     def __repr__(self):
-        attrs = "\n  ".join(f"{k} = {v!r}" for k, v in self.__dict__.items())
-        Liste_att = self.liste_attributs()
-        return f"<{self.__class__.__name__}(\n  {attrs}\n Les noms des attributs sans les valeurs : \n{Liste_att})>"
-    
+        return f"{self.__class__.__name__}({self.__dict__})"
