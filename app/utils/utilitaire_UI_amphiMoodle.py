@@ -1,20 +1,18 @@
 import tkinter as tk
 from tkinter import messagebox
 
-def definitRemplissage(nb_etudiants: int, parent: tk.Misc | None = None):
+def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc | None = None):
     """
-    Ouvre une fenêtre UI pour choisir les amphithéâtres et leurs capacités.
-    - En haut : "Placement de N étudiants"
-    - Sous le titre : une ligne de TEST dédiée (OK / DEPASSE) -> 'test à part au début'
-    - Milieu : cases à cocher + spinbox (entiers) sur la même ligne
-    - Bas : total dynamique + boutons Valider/Annuler
+    Répartition des étudiants par amphithéâtre, avec un amphi 'Tiers-temps' (TT) unique.
 
-    Retourne: list[tuple[str, int]] pour les cases cochées.
-    
-    Fais avec chatgpt...
+    Spécifications:
+      - Coche Amphi: n'affecte PAS la valeur; active/désactive seulement la spinbox.
+      - Coche TT: n'affecte PAS la valeur NI le max affiché; TT est unique.
+      - Colonne 'Max' = capacité de base (inchangée, même si TT).
+      - Total/Reste: une ligne compte si Amphi cochée OU TT cochée.
+      - Sortie: [(nom_amphi, valeur, is_tiers_temps), ...]
     """
 
-    # Ordre et max EXACTS demandés
     amphis_spec = [
         ("Petit_Valrose", 165),
         ("Chimie", 84),
@@ -26,7 +24,7 @@ def definitRemplissage(nb_etudiants: int, parent: tk.Misc | None = None):
         ("Géologie", 25),
     ]
 
-    # --- fenêtre (Toplevel si parent, sinon Tk autonome) ---
+    # --- fenêtre ---
     owns_root = False
     if parent is not None:
         win = tk.Toplevel(parent)
@@ -34,7 +32,7 @@ def definitRemplissage(nb_etudiants: int, parent: tk.Misc | None = None):
         win.grab_set()
     else:
         win = tk.Tk()
-        owns_root = True  # pour détruire le root en fin d’exécution
+        owns_root = True
 
     win.title("Répartition – amphithéâtres")
     win.resizable(False, False)
@@ -47,18 +45,16 @@ def definitRemplissage(nb_etudiants: int, parent: tk.Misc | None = None):
     f_mid.pack(fill="x")
     f_bot.pack(fill="x")
 
-    # --- haut : Titre ---
+    # --- Titre ---
     tk.Label(
         f_top,
-        text=f"Placement de {nb_etudiants} étudiant(s)",
+        text=f"Placement de {nb_etudiants} étudiant(s) — TT ({nb_tiers_temps})",
         font=("Arial", 12, "bold")
     ).pack(anchor="w")
 
-    # --- TEST DÉDIÉ (à part au début) ---
-    # Affiche l’état du total par rapport à nb_etudiants (OK/DEPASSE)
+    # --- Test/Reste ---
     frm_test = tk.Frame(f_top)
     frm_test.pack(fill="x", pady=(6, 0), anchor="w")
-    
     tk.Label(frm_test, text="Test :", font=("Arial", 10, "bold")).pack(side="left")
 
     lbl_test = tk.Label(frm_test, text=f"Total = 0 / attendu = {nb_etudiants}")
@@ -70,94 +66,120 @@ def definitRemplissage(nb_etudiants: int, parent: tk.Misc | None = None):
     def maj_test(total: int):
         reste = nb_etudiants - total
         lbl_reste.config(text=f"Reste à placer : {max(reste, 0)}")
-
         if total == 0:
             lbl_test.config(text=f"Total = 0 / attendu = {nb_etudiants}", fg="black")
         elif total < nb_etudiants:
             lbl_test.config(text=f"OK : Total = {total} / {nb_etudiants}", fg="green")
         elif total == nb_etudiants:
-            lbl_test.config(text=f"Parfait  : Total = {total} / {nb_etudiants}", fg="blue")
+            lbl_test.config(text=f"Parfait : Total = {total} / {nb_etudiants}", fg="blue")
         else:
             lbl_test.config(text=f"DEPASSE : Total = {total} / {nb_etudiants}", fg="red")
 
+    # --- entêtes ---
+    tk.Label(f_mid, text="Amphi").grid(row=0, column=0, sticky="w", padx=(0, 8))
+    tk.Label(f_mid, text="TT").grid(row=0, column=1, sticky="w", padx=(0, 8))
+    tk.Label(f_mid, text="Valeur").grid(row=0, column=2, sticky="w", padx=(0, 8))
+    tk.Label(f_mid, text="Max").grid(row=0, column=3, sticky="w", padx=(0, 8))
 
-    # --- milieu : cases + spinbox ---
-    tk.Label(
-        f_mid,
-        text="Choisir les amphithéâtres",
-        font=("Arial", 11, "bold")
-    ).grid(row=0, column=0, columnspan=3, sticky="w", pady=(0, 6))
-
-    selections = []  # (nom, vcheck, vint, spin)
-    
-    total_var = tk.IntVar(value=0)   #   mémoriser le total courant
-
+    # (nom, max_base, vAmphi, vTT, vInt, spin, lbl_max, cb_amphi)
+    selections = []
+    total_var = tk.IntVar(value=0)
+    tt_index = {"idx": None}  # index de la ligne TT (unique), None si aucun
 
     def update_total(*_):
+        """Somme des valeurs des lignes où Amphi OU TT est coché."""
         total = 0
-        for _, vcheck, vint, _spin in selections:
-            if vcheck.get():
+        for nom, max_base, vA, vTT, vInt, _spin, _lbl_max, _cb in selections:
+            if vA.get() or vTT.get():
                 try:
-                    total += int(vint.get() or 0)
+                    total += int(vInt.get() or 0)
                 except ValueError:
                     pass
         total_var.set(total)
-        lbl_total_val.configure(
-            text=f"Total = {total} pour {nb_etudiants} étudiant(s) à placer."
-        )
+        lbl_total_val.config(text=f"Total = {total} pour {nb_etudiants} étudiant(s) à placer.")
         maj_test(total)
 
-    def on_toggle_spin(vcheck: tk.IntVar, vint: tk.StringVar, spin: tk.Spinbox, maxv: int):
-        if vcheck.get():
-            # Si coché : activer et mettre la valeur max
-            spin.configure(state="normal")
-            vint.set(str(maxv))
-        else:
-            # Si décoché : désactiver et remettre à 0
-            spin.configure(state="disabled")
-            vint.set("0")
+    # --- Gestion Amphi : activer/désactiver saisie uniquement ---
+    def on_toggle_amphi(idx: int):
+        nom, max_base, vA, vTT, vInt, spin, lbl_max, cb = selections[idx]
+        spin.configure(state=("normal" if vA.get() else "disabled"))
         update_total()
 
-    for i, (nom, maxv) in enumerate(amphis_spec, start=1):
-        row = i  # la ligne 0 est le titre de section
-        vcheck = tk.IntVar(value=0)
-        vint = tk.StringVar(value="0")
+    # --- Gestion TT : unique, sans effet sur valeur ni max ---
+    def on_click_tt(idx_clicked: int):
+        idx_old = tt_index["idx"]
+        nom_c, max_base_c, vA_c, vTT_c, vInt_c, spin_c, lbl_max_c, cb_c = selections[idx_clicked]
 
-        # --- Spinbox d'abord ---
+        if idx_old is None:
+            # activer TT sur la ligne cliquée
+            vTT_c.set(1)
+            tt_index["idx"] = idx_clicked
+            update_total()
+            return
+
+        if idx_old == idx_clicked:
+            # retirer TT
+            vTT_c.set(0)
+            tt_index["idx"] = None
+            update_total()
+            return
+
+        # transfert : retirer l'ancien et activer le nouveau
+        nom_o, max_base_o, vA_o, vTT_o, vInt_o, spin_o, lbl_max_o, cb_o = selections[idx_old]
+        vTT_o.set(0)
+        vTT_c.set(1)
+        tt_index["idx"] = idx_clicked
+        update_total()
+
+    # --- Création des lignes ---
+    for i, (nom, max_base) in enumerate(amphis_spec, start=1):
+        row = i
+        vA  = tk.IntVar(value=0)
+        vTT = tk.IntVar(value=0)
+        vInt = tk.StringVar(value="0")
+
+        # Spinbox (bornée au max de base, jamais modifié par TT)
         spin = tk.Spinbox(
-            f_mid, from_=0, to=maxv, width=6, justify="right",
-            textvariable=vint, state="disabled", validate="key"
+            f_mid, from_=0, to=max_base, width=6, justify="right",
+            textvariable=vInt, state="disabled", validate="key"
         )
 
-        def _validate_int(P, max_value=maxv):
+        def _validate_int(P, max_b=max_base):
             if P == "":
                 return True
             if P.isdigit():
                 try:
-                    return int(P) <= max_value
+                    return int(P) <= max_b
                 except ValueError:
                     return False
             return False
 
         vcmd = (win.register(_validate_int), "%P")
         spin.configure(validatecommand=vcmd)
-        spin.grid(row=row, column=1, sticky="w", padx=(0, 8))
+        spin.grid(row=row, column=2, sticky="w", padx=(0, 8))
+        vInt.trace_add("write", lambda *_: update_total())
 
-        # Mettre à jour le total dès qu’on tape
-        vint.trace_add("write", lambda *_: update_total())
+        # Label Max (affiche le max de base, constant)
+        lbl_max = tk.Label(f_mid, text=str(max_base))
+        lbl_max.grid(row=row, column=3, sticky="w", padx=(0, 8))
 
-        # --- Puis le Checkbutton (la commande voit bien 'spin' maintenant)
-        cb_text = f"{nom} (max={maxv})"
-        cb = tk.Checkbutton(
-            f_mid, text=cb_text, variable=vcheck,
-            command=lambda vc=vcheck, vi=vint, sp=spin, mv=maxv: on_toggle_spin(vc, vi, sp, mv)
+        # Checkbutton Amphi
+        cb_amphi = tk.Checkbutton(
+            f_mid, text=nom, variable=vA,
+            command=lambda idx=i-1: on_toggle_amphi(idx)
         )
-        cb.grid(row=row, column=0, sticky="w", padx=(0, 8))
+        cb_amphi.grid(row=row, column=0, sticky="w", padx=(0, 8))
 
-        selections.append((nom, vcheck, vint, spin))
+        # Checkbutton TT (unique, passif)
+        cb_tt = tk.Checkbutton(
+            f_mid, text="", variable=vTT,
+            command=lambda idx=i-1: on_click_tt(idx)
+        )
+        cb_tt.grid(row=row, column=1, sticky="w", padx=(0, 8))
 
+        selections.append([nom, max_base, vA, vTT, vInt, spin, lbl_max, cb_amphi])
 
-    # --- bas : total + boutons ---
+    # --- Bas de page ---
     lbl_total_val = tk.Label(
         f_bot,
         text=f"Total = 0 pour {nb_etudiants} étudiant(s) à placer.",
@@ -170,46 +192,30 @@ def definitRemplissage(nb_etudiants: int, parent: tk.Misc | None = None):
 
     result = []
 
-    def _ramener_fenetre():
-        """Remet la fenêtre devant et le focus sur elle."""
-        try:
-            win.lift()
-            win.focus_force()
-            win.bell()
-        except Exception:
-            pass
-        
     def do_validate():
         nonlocal result
         total = total_var.get()
-
         if total > nb_etudiants:
             messagebox.showwarning(
                 "Total trop grand",
-                f"Le total ({total}) dépasse le nombre d’étudiants à placer ({nb_etudiants})."
-                "\nAjustez les valeurs puis réessayez."
+                f"Le total ({total}) dépasse {nb_etudiants}."
             )
-            _ramener_fenetre()
             return
-
         if total < nb_etudiants:
             messagebox.showwarning(
                 "Total insuffisant",
-                f"Le total ({total}) est inférieur au nombre d’étudiants à placer ({nb_etudiants})."
-                "\nAjustez les valeurs puis réessayez."
+                f"Le total ({total}) est inférieur à {nb_etudiants}."
             )
-            _ramener_fenetre()
             return
 
-        # total == nb_etudiants → OK : on collecte et on ferme
         out = []
-        for nom, vcheck, vint, _spin in selections:
-            if vcheck.get():
+        for nom, _max_base, vA, vTT, vInt, _spin, _lbl_max, _cb in selections:
+            if vA.get() or vTT.get():
                 try:
-                    val = int(vint.get() or 0)
+                    val = int(vInt.get() or 0)
                 except ValueError:
                     val = 0
-                out.append((nom, val))
+                out.append((nom, val, bool(vTT.get())))
         result = out
         win.destroy()
 
@@ -217,13 +223,13 @@ def definitRemplissage(nb_etudiants: int, parent: tk.Misc | None = None):
         win.destroy()
 
     tk.Button(frm_btn, text="Annuler", command=do_cancel).pack(side="right", padx=6)
-    tk.Button(frm_btn, text="Valider. ", command=do_validate).pack(side="right")
+    tk.Button(frm_btn, text="Valider", command=do_validate).pack(side="right")
 
-    # Init total + test
+    # --- Init ---
     update_total()
 
     win.protocol("WM_DELETE_WINDOW", do_cancel)
-    win.wait_window()  # bloque jusqu’à Valider/Annuler
+    win.wait_window()
 
     if owns_root:
         try:
@@ -234,8 +240,7 @@ def definitRemplissage(nb_etudiants: int, parent: tk.Misc | None = None):
     return result
 
 
-# Petit test autonome (exécution directe du fichier)
-if __name__ == '__main__':
-    # Exemple : 320 étudiants à placer
-    res = definitRemplissage(nb_etudiants=90, parent=None)
+# Test autonome
+if __name__ == "__main__":
+    res = definitRemplissage(nb_etudiants=90, nb_tiers_temps=12, parent=None)
     print("Résultat :", res)

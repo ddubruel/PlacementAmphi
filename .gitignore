@@ -14,6 +14,9 @@
 tuto_modif_classe.py
 *.csv
 *.patch # les fichiers issus de git diff > *.patch
+
+*.txt
+
 # exclusion des répertoires suivants :
 Doc_Support/
 data/
