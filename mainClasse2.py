@@ -170,10 +170,10 @@ class Boustrophedon:
                 print(f"Affichage du premier étudiant de l'amphi : {amphitheatre.nom}. \n"
                           f"{[etud for etud in amphitheatre.listeTousLesEtudiantsDansAmphi[:1] ] } \n" )
         else : # else du test  if self.dataBrutes.apogee :       
-            allocationAmphi : list[Tuple[str,int]] = definitRemplissage(nb_etudiants= len(self.dataBrutes.moodle.data), parent=self.root)    
+            allocationAmphi : list[Tuple[str,int]] = definitRemplissage(nb_etudiants= len(self.dataBrutes.moodle.data),nb_tiers_temps = 12, parent=self.root)    
             print(f"Vous avez choisi la répartition suivante dans les amphithéatres :\n {allocationAmphi}")
             # création de la liste des amphi :
-            self.listeNomAmphi = [nom for (nom,nb) in allocationAmphi ]
+            self.listeNomAmphi = [nom for (nom,nb,boolTT) in allocationAmphi ]
             # création de l'arborescence des fichiers à partir de l'emplacement du fichier moodle            
             self.arborescence = arborescence( self.dataBrutes.moodle.chemin, self.listeNomAmphi )
             print(f"L'arborescence des fichiers est créée.\n Les fichiers de sortie se "
@@ -187,7 +187,7 @@ class Boustrophedon:
             # affectation des étudiants dans les amphi : avec moodle, on pioche le nombre dans allocationAMphi et les étudiant dans dataBrutes.moodle.data
             decalage : int =0 # pour récupér la tranche suivante dans la liste d'étudiant
             for amphitheatre in self.listAmphi :
-                listeNb  : list[int] = [valeur for (nomAmphi, valeur) in allocationAmphi if nomAmphi==amphitheatre.nom ]
+                listeNb  : list[int] = [valeur for (nomAmphi, valeur ,boolTT) in allocationAmphi if nomAmphi==amphitheatre.nom ]
                 nbEtudiantAPlacer : int = listeNb[0] 
                 extraitMoodle : list[list[str]] = self.dataBrutes.moodle.data[decalage:(decalage+nbEtudiantAPlacer)]
                 decalage = decalage+nbEtudiantAPlacer
