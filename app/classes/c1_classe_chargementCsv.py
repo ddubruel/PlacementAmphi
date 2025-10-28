@@ -3,12 +3,11 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 from dataclasses import  dataclass 
 from typing import Optional
-
 # ────────────────────────────────────────────────────────────────────────────────
 # Modèles de données
 # ────────────────────────────────────────────────────────────────────────────────
 @dataclass( init=False)  # parce qu'il y a un __init__
-class FichierCSV  :  
+class FichierCsv  :  
     formatFic : str     # Rem les arguments sans valeurs par défaut à écrire en premier ou !!
                         # ou alors écrire init=False au début.
     chemin: Optional[str] = None    # Optionnal pour dire  type None ou str (par la suite).
@@ -17,7 +16,7 @@ class FichierCSV  :
     valide : Optional[bool] = False 
        
     def __init__(self, formatFic: str, parent: Optional[tk.Tk] = None):
-        """Crée un objet FichierCSV et exécute automatiquement les étapes principales."""
+        """Crée un objet FichierCsv et exécute automatiquement les étapes principales."""
         self.formatFic = formatFic
         self.chemin = None
         self.entete = None
@@ -42,20 +41,20 @@ class FichierCSV  :
     def choisir_fichier(self,tkParent ,  titre  ,rep)-> None :
         messagebox.showwarning(
             title=f"Sélection du fichier {self.formatFic}",
-            message=f"Choisir un fichier {self.formatFic} au format CSV."
+            message=f"Choisir un fichier {self.formatFic} au format Csv."
         )
         
         self.chemin : str  = filedialog.askopenfilename(
                     title=titre,
                     initialdir='.',
-                    filetypes=[("Fichiers CSV", "*.csv")],
+                    filetypes=[("Fichiers csv", "*.csv")],
                             )
         if self.chemin =="" :
             messagebox.showwarning( title="Attention !!!!",
                 message=f"Vous n'avez pas choisi de fichier !!")
 
     def charger_csv(self) -> None :
-        """Lecture du fichier CSV et extraction entête et données."""
+        """Lecture du fichier csv et extraction entête et données."""
         try :
             # ouverture
             fichier : TextIOWrapper = open(self.chemin, "r", encoding="utf-8")
@@ -87,7 +86,7 @@ class FichierCSV  :
             (self.formatFic== "Partiel" and "Nom de famille"  not in entete )
         ):
                 messagebox.showwarning( title="Erreur de fichier",
-                                   message=f"Erreur, vous n'avez pas choisi un fichier {nature} au format CSV (à vérifier !).")
+                                   message=f"Erreur, vous n'avez pas choisi un fichier {nature} au format csv (à vérifier !).")
                 self.valide=False  
         self.valide=True
         
@@ -98,25 +97,25 @@ class FichierCSV  :
         
 ##########################
 #                        #
-# class chargementCSV    #
+# class chargementCsv    #
 #                        #
 ##########################
 
 @dataclass ( init=False)  # parce qu'il y a un __init__
-class chargementCSV:
+class chargementCsv:
     mode: str                              # "Examen" ou "Partiel"
-    apogee: FichierCSV                     # peut être vide en mode Partiel
-    moodle: FichierCSV
+    apogee: FichierCsv                     # peut être vide en mode Partiel
+    moodle: FichierCsv
 
     def __init__(self,mode : str ,tkparent : tk.Tk ):
         self.mode = mode   # "Examen" ou "Partiel"
         
         if self.mode == "Examen" : # chargement des 2 sources d'information
-            self.apogee = FichierCSV(formatFic="Apogée")
-            self.moodle = FichierCSV(formatFic="Moodle")
+            self.apogee = FichierCsv(formatFic="Apogée")
+            self.moodle = FichierCsv(formatFic="Moodle")
         else :
             self.apogee = None
-            self.moodle = FichierCSV(formatFic="Moodle")
+            self.moodle = FichierCsv(formatFic="Moodle")
     
     def getNbmoodle(self):
         return self.moodle.get_nbEtudiant()

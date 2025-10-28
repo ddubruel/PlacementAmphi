@@ -18,11 +18,11 @@ class arboAmphi:
     def __init__(self, nom_amphi: str, racine: str):
         """Construit les chemins des sous-répertoires pour un amphi."""
         self.nom_amphi = nom_amphi
-        self.racine = str(Path(racine))
-        base = Path(self.racine).resolve().parent / f"Amphi_{nom_amphi}"
-        self.pngOut = str(base / "pngOut")
-        self.texOut = str(base / "texOut")
-        self.listes_Emargement_pdf = str(base / "listes_Emargement_pdf")
+        self.racine = racine
+        base = self.racine +  f"/Amphi_{nom_amphi}"
+        self.pngOut = str(base + "/pngOut")
+        self.texOut = str(base + "/texOut")
+        self.listes_Emargement_pdf = str(base + "/listes_Emargement_pdf")
         
         self.creer_repertoires()
 
@@ -33,7 +33,7 @@ class arboAmphi:
         return getattr(self, nom_rep)
 
     def creer_repertoires(self):
-        """Crée physiquement les répertoires (idempotent)."""
+        """Crée physiquement les répertoires ."""
         for nom_rep in ("pngOut", "texOut", "listes_Emargement_pdf"):
             Path(self.get(nom_rep)).mkdir(parents=True, exist_ok=True)
 
@@ -46,15 +46,15 @@ class arboAmphi:
 class arborescence:
     """Arborescence complète pour plusieurs amphithéâtres."""
 
-    nomFicMoodle: str
+    nomFic: str
     racine: str
     listeNomDesAmphi: list[str]
     liste_arboAmphi: list[arboAmphi]
     chemins: list[str]
 
-    def __init__(self, nomFicMoodle: str, listeNomDesAmphi: list):
-        self.nomFicMoodle = nomFicMoodle
-        self.racine = str(Path(self.nomFicMoodle))
+    def __init__(self, nomFic: str, listeNomDesAmphi: list):
+        self.nomFic = nomFic
+        self.racine = str(Path(self.nomFic).resolve().parent) # pour garder le path (sans le nom du fichier!!)     
         self.listeNomDesAmphi = listeNomDesAmphi
         self.liste_arboAmphi = []
         self.chemins = []        

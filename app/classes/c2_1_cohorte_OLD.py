@@ -1,17 +1,17 @@
 from dataclasses import dataclass
 
 from classes.c2_0_classeS_etudiant_a_amphi import etudiant
-from classes.c1_classe_chargementCsv import chargementCSV
+from classes.c1_classe_chargementCsv import chargementCsv
 # ────────────────────────────────────────────────────────────────────────────────
 # Modèles de données
 # ────────────────────────────────────────────────────────────────────────────────
             
 @dataclass(init=False)  # parce qu'il y a un __init__
-class listeEtudiants:
+class cohorte :
     
     listeDesEtudiants : list[etudiant]
     
-    def __init__(self,dataBrutes : chargementCSV):
+    def __init__(self,dataBrutes : chargementCsv):
         
         self.listeDesEtudiants =[]
         
@@ -36,8 +36,8 @@ class listeEtudiants:
         """ cette méthode va récupérer l'adresse de courriel dans les données Moodle
          , le numéro d'étudiant est dans moodle et apogée."""
         def rechercheCourriel(liste : list[list[str]] , numeroEtuApogee):
-            for index, dateEtudiantMoodle  in enumerate(liste):                
-                if numeroEtuApogee in dateEtudiantMoodle:
+            for index, dataEtudiantMoodle  in enumerate(liste):                
+                if numeroEtuApogee in dataEtudiantMoodle:
                     return dataBrutes.moodle.data[ index ][3] 
             return ""
                                                                       
