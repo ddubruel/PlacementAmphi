@@ -227,7 +227,7 @@ class Boustrophedon:
                 print(f"{nbEtudiantAPlacer} étudiants dont {nb_tiers} étudiants ont été placés dans l'amphi {nomAmphi}.") 
             
             print(f"L'AAAAmphithéatre {amphitheatre.nom} a reçu {len(amphitheatre.listeTousLesEtudiantsDansAmphi)} instances d'étudiants.\n")
-            input("4) taper entrée")
+            #input("4) taper entrée")
         # fin exploiteMoodle(self)                
             
     def chargerDonnees(self):
