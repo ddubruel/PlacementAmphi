@@ -121,87 +121,97 @@ class Boustrophedon:
         self.btn_png.config(state=state)
         self.btn_pdf.config(state=state)
         self.btn_mail.config(state=state)
+    
+    def exploiteApogee(self):
+        """ configure les données d'Apogée dans les classe Amphi (y dépose la liste des étudiants)"""
+        # Fais le compte des amphi vides et  de la liste de nom des amphis
+        self.nbAmphiApogee ,  self.listeNomAmphi  = compteEtListeAmphiApogee(self.dataBrutes)
+        print(f" Le fichier apogée contient {self.nbAmphiApogee} amphi(s) dont les noms sont {self.listeNomAmphi}.\n ") 
 
+        # création de l'arborescence des fichiers à partir de l'emplacement du fichier moodle            
+        self.arborescence = arborescence( self.dataBrutes.apogee.chemin, self.listeNomAmphi )
+        print(f"L'arborescence des fichiers est créée.\n Les fichiers de sortie se "
+              f"trouvent dans le répertoire :\n {self.dataBrutes.apogee.chemin}.\n"
+              f"Chaque répertoire porte le nom de l'amphithéatre utilisé.\n")            
+        
+        # instanciation des amphi
+        self.listAmphi =[] 
+        for nom in  self.listeNomAmphi :                
+            self.listAmphi.append( amphi(nom) )   # création des n amphis du fichier apogée...amphi à peupler.
+        print( f"Création des instances amphi. Vérification des noms des amphis créés :\n {[ amphi.nom for amphi in self.listAmphi ]}\n\n" )
+        
+        # affectation des étudiants dans les amphi : avec apogee, recherche des étudiants par amphi
+        for amphitheatre in self.listAmphi :
+                            
+            extraitApogee : list[list[str]] = filtreApogee(dataBrutes = self.dataBrutes , nomAmphi = amphitheatre.nom )
+            print(f"L'amphithéatre {amphitheatre.nom} contient  {len(extraitApogee)} étudiants d'après les données apogée.\n"  )
+            for dataEtu in extraitApogee :
+                amphitheatre.ajouteEtudiant(etudiant(nom = dataEtu[17] ,
+                                                     prenom = dataEtu[18],
+                                                     numeroEtudiant = dataEtu[19],
+                                                     courriel=""
+                                                    ) 
+                                            )
+            
+            print(f"L'amphithéatre {amphitheatre.nom} a reçu {len(amphitheatre.listeTousLesEtudiantsDansAmphi)} instances d'étudiants.\n")
+            
+            # les étudiants issus de apogee n'ont pas de courriel (à récupérer dans les data Moodle).
+            for etu in amphitheatre.listeTousLesEtudiantsDansAmphi :
+                courriel : str  = recupereCourrielMoodle( numeroEtuApogee = etu.numeroEtudiant
+                                                          , dataBrutes =   self.dataBrutes )                    
+                etu.set_courriel(courriel)
+            print(f"Affichage du premier étudiant de l'amphi : {amphitheatre.nom}. \n"
+                      f"{[etud for etud in amphitheatre.listeTousLesEtudiantsDansAmphi[:1] ] } \n" )
+        # fin exploiteApogee(self)
+        
+    def exploiteMoodle(self):
+        """configure les données Moodle dans les classe Amphi (y dépose la liste des étudiants)"""
+        allocationAmphi : list[Tuple[str,int]] = definitRemplissage(nb_etudiants= len(self.dataBrutes.moodle.data),nb_tiers_temps = 12, parent=self.root)    
+        print(f"Vous avez choisi la répartition suivante dans les amphithéatres :\n {allocationAmphi}")
+        # création de la liste des amphi :
+        self.listeNomAmphi = [nom for (nom,nb,boolTT) in allocationAmphi ]
+        # création de l'arborescence des fichiers à partir de l'emplacement du fichier moodle            
+        self.arborescence = arborescence( self.dataBrutes.moodle.chemin, self.listeNomAmphi )
+        print(f"L'arborescence des fichiers est créée.\n Les fichiers de sortie se "
+              f"trouvent dans le répertoire :\n {self.dataBrutes.moodle.chemin}.\n"
+              f"Chaque répertoire porte le nom de l'amphithéatre utilisé.\n")
+        # instanciation des amphi
+        self.listAmphi =[] 
+        for nom in  self.listeNomAmphi :                
+            self.listAmphi.append( amphi(nom) )   # création des n amphis du fichier apogée...amphi à peupler.
+        print( f"Création des instances amphi. Vérification des noms des amphis créés :\n {[ amphi.nom for amphi in self.listAmphi ]}\n\n" )
+        # affectation des étudiants dans les amphi : avec moodle, on pioche le nombre dans allocationAMphi et les étudiant dans dataBrutes.moodle.data
+        decalage : int =0 # pour récupér la tranche suivante dans la liste d'étudiant
+        for amphitheatre in self.listAmphi :
+            listeNb  : list[int] = [valeur for (nomAmphi, valeur ,boolTT) in allocationAmphi if nomAmphi==amphitheatre.nom ]
+            nbEtudiantAPlacer : int = listeNb[0] 
+            extraitMoodle : list[list[str]] = self.dataBrutes.moodle.data[decalage:(decalage+nbEtudiantAPlacer)]
+            decalage = decalage+nbEtudiantAPlacer
+            for dataEtu in extraitMoodle :
+                amphitheatre.ajouteEtudiant(etudiant(nom = dataEtu[1] ,
+                                                     prenom = dataEtu[0],
+                                                     numeroEtudiant = dataEtu[2],
+                                                     courriel=dataEtu[3]
+                                                    ) 
+                                            )
+            
+            print(f"L'amphithéatre {amphitheatre.nom} a reçu {len(amphitheatre.listeTousLesEtudiantsDansAmphi)} instances d'étudiants.\n")
+        # fin exploiteMoodle(self)                
+            
     def chargerDonnees(self):
         # lit le mode sélectionné dans l'UI.
         self.etat.mode = self.var_mode.get() or "nil"
         # instanciation de la classe qui contient les données brutes (Moodle et Apogee si Examen)
         self.dataBrutes = chargementCsv(self.etat.mode, self.root)        
         print(f"Le fichier Moodle contient : {self.dataBrutes.getNbmoodle()} étudiants.\n")
+                
+        if self.dataBrutes.apogee : # exploitation des data apogee si Examen :
+            self.exploiteApogee()
+        else : # exploitation des data moodle si Partiel :
+            self.exploiteMoodle()
         
-        # exploitation des data apogee si Examen :
-        if self.dataBrutes.apogee :
-            # Fais le compte des amphi vides et  de la liste de nom des amphis
-            self.nbAmphiApogee ,  self.listeNomAmphi  = compteEtListeAmphiApogee(self.dataBrutes)
-            print(f" Le fichier apogée contient {self.nbAmphiApogee} amphi(s) dont les noms sont {self.listeNomAmphi}.\n ") 
-
-            # création de l'arborescence des fichiers à partir de l'emplacement du fichier moodle            
-            self.arborescence = arborescence( self.dataBrutes.apogee.chemin, self.listeNomAmphi )
-            print(f"L'arborescence des fichiers est créée.\n Les fichiers de sortie se "
-                  f"trouvent dans le répertoire :\n {self.dataBrutes.apogee.chemin}.\n"
-                  f"Chaque répertoire porte le nom de l'amphithéatre utilisé.\n")            
-            
-            # instanciation des amphi
-            self.listAmphi =[] 
-            for nom in  self.listeNomAmphi :                
-                self.listAmphi.append( amphi(nom) )   # création des n amphis du fichier apogée...amphi à peupler.
-            print( f"Création des instances amphi. Vérification des noms des amphis créés :\n {[ amphi.nom for amphi in self.listAmphi ]}\n\n" )
-            
-            # affectation des étudiants dans les amphi : avec apogee, recherche des étudiants par amphi
-            for amphitheatre in self.listAmphi :
-                amphitheatre.nom                
-                extraitApogee : list[list[str]] = filtreApogee(dataBrutes = self.dataBrutes , nomAmphi = amphitheatre.nom )
-                print(f"L'amphithéatre {amphitheatre.nom} contient  {len(extraitApogee)} étudiants d'après les données apogée.\n"  )
-                for dataEtu in extraitApogee :
-                    amphitheatre.ajouteEtudiant(etudiant(nom = dataEtu[17] ,
-                                                         prenom = dataEtu[18],
-                                                         numeroEtudiant = dataEtu[19],
-                                                         courriel=""
-                                                        ) 
-                                                )
-                
-                print(f"L'amphithéatre {amphitheatre.nom} a reçu {len(amphitheatre.listeTousLesEtudiantsDansAmphi)} instances d'étudiants.\n")
-                
-                # les étudiants issus de apogee n'ont pas de courriel (à récupérer dans les data Moodle).
-                for etu in amphitheatre.listeTousLesEtudiantsDansAmphi :
-                    courriel : str  = recupereCourrielMoodle( numeroEtuApogee = etu.numeroEtudiant
-                                                              , dataBrutes =   self.dataBrutes )                    
-                    etu.set_courriel(courriel)
-                print(f"Affichage du premier étudiant de l'amphi : {amphitheatre.nom}. \n"
-                          f"{[etud for etud in amphitheatre.listeTousLesEtudiantsDansAmphi[:1] ] } \n" )
-        else : # else du test  if self.dataBrutes.apogee :       
-            allocationAmphi : list[Tuple[str,int]] = definitRemplissage(nb_etudiants= len(self.dataBrutes.moodle.data),nb_tiers_temps = 12, parent=self.root)    
-            print(f"Vous avez choisi la répartition suivante dans les amphithéatres :\n {allocationAmphi}")
-            # création de la liste des amphi :
-            self.listeNomAmphi = [nom for (nom,nb,boolTT) in allocationAmphi ]
-            # création de l'arborescence des fichiers à partir de l'emplacement du fichier moodle            
-            self.arborescence = arborescence( self.dataBrutes.moodle.chemin, self.listeNomAmphi )
-            print(f"L'arborescence des fichiers est créée.\n Les fichiers de sortie se "
-                  f"trouvent dans le répertoire :\n {self.dataBrutes.moodle.chemin}.\n"
-                  f"Chaque répertoire porte le nom de l'amphithéatre utilisé.\n")
-            # instanciation des amphi
-            self.listAmphi =[] 
-            for nom in  self.listeNomAmphi :                
-                self.listAmphi.append( amphi(nom) )   # création des n amphis du fichier apogée...amphi à peupler.
-            print( f"Création des instances amphi. Vérification des noms des amphis créés :\n {[ amphi.nom for amphi in self.listAmphi ]}\n\n" )
-            # affectation des étudiants dans les amphi : avec moodle, on pioche le nombre dans allocationAMphi et les étudiant dans dataBrutes.moodle.data
-            decalage : int =0 # pour récupér la tranche suivante dans la liste d'étudiant
-            for amphitheatre in self.listAmphi :
-                listeNb  : list[int] = [valeur for (nomAmphi, valeur ,boolTT) in allocationAmphi if nomAmphi==amphitheatre.nom ]
-                nbEtudiantAPlacer : int = listeNb[0] 
-                extraitMoodle : list[list[str]] = self.dataBrutes.moodle.data[decalage:(decalage+nbEtudiantAPlacer)]
-                decalage = decalage+nbEtudiantAPlacer
-                for dataEtu in extraitMoodle :
-                    amphitheatre.ajouteEtudiant(etudiant(nom = dataEtu[1] ,
-                                                         prenom = dataEtu[0],
-                                                         numeroEtudiant = dataEtu[2],
-                                                         courriel=dataEtu[3]
-                                                        ) 
-                                                )
-                
-                print(f"L'amphithéatre {amphitheatre.nom} a reçu {len(amphitheatre.listeTousLesEtudiantsDansAmphi)} instances d'étudiants.\n")
-                                
-            
+        
+        
         self.update_buttons_state()
 
     def actionsBouton2(self):

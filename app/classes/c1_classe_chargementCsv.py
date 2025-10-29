@@ -10,14 +10,16 @@ from typing import Optional
 class FichierCsv  :  
     formatFic : str     # Rem les arguments sans valeurs par défaut à écrire en premier ou !!
                         # ou alors écrire init=False au début.
+    msgChoixFichier : str                     
     chemin: Optional[str] = None    # Optionnal pour dire  type None ou str (par la suite).
     entete: Optional[list[str]] = None
     data: Optional[list[list[str]]] = None
     valide : Optional[bool] = False 
        
-    def __init__(self, formatFic: str, parent: Optional[tk.Tk] = None):
+    def __init__(self, formatFic: str, msgChoixFichier : str , parent: Optional[tk.Tk] = None):
         """Crée un objet FichierCsv et exécute automatiquement les étapes principales."""
-        self.formatFic = formatFic
+        self.formatFic = formatFic    # contient "Moodle" ou "Apogée"
+        self.msgChoixFichier =msgChoixFichier    # pour ajouter "tiers temps" si besoin.
         self.chemin = None
         self.entete = None
         self.data = None
@@ -26,8 +28,8 @@ class FichierCsv  :
         
         # Étapes automatiques :
         rep="."
-        titre=f"Choix du fichier pour un {self.formatFic}."
-        self.choisir_fichier(parent, titre, rep )   # définit
+        titre=f"Choix du fichier {self.formatFic}."
+        self.choisir_fichier(parent, titre, rep )   
         if self.chemin:
             self.charger_csv()
             self.valider_contenu()
@@ -41,7 +43,7 @@ class FichierCsv  :
     def choisir_fichier(self,tkParent ,  titre  ,rep)-> None :
         messagebox.showwarning(
             title=f"Sélection du fichier {self.formatFic}",
-            message=f"Choisir un fichier {self.formatFic} au format Csv."
+            message=f"Choisir un fichier {self.formatFic} {self.msgChoixFichier} au format Csv."
         )
         
         self.chemin : str  = filedialog.askopenfilename(
@@ -79,16 +81,17 @@ class FichierCsv  :
         
         
     def valider_contenu(self)-> None :    
-        entete = self.entete or [] # pour éviter le cas None
+        entete = self.entete or [] # pour éviter le cas None                        
         if (
-            (self.formatFic=="Examen"  and "COD_EPR" not in entete)
+            (self.formatFic=="Apogée"  and entete[0]!="DAT_DEB_PES")  
             or
-            (self.formatFic== "Partiel" and "Nom de famille"  not in entete )
+            (self.formatFic== "Moodle" and entete[0]!="\ufeffPrénom"  )
         ):
                 messagebox.showwarning( title="Erreur de fichier",
-                                   message=f"Erreur, vous n'avez pas choisi un fichier {nature} au format csv (à vérifier !).")
-                self.valide=False  
-        self.valide=True
+                            message=f"Erreur, vous n'avez pas choisi un fichier {self.formatFic} au format csv (à vérifier !).")
+                self.valide=False                            
+        else :
+            self.valide=True
         
     
 # ────────────────────────────────────────────────────────────────────────────────
@@ -104,18 +107,24 @@ class FichierCsv  :
 @dataclass ( init=False)  # parce qu'il y a un __init__
 class chargementCsv:
     mode: str                              # "Examen" ou "Partiel"
-    apogee: FichierCsv                     # peut être vide en mode Partiel
-    moodle: FichierCsv
-
+    apogee   : FichierCsv                     # peut être vide en mode Partiel
+    moodle   : FichierCsv
+    moodleTt : FichierCsv
+    
     def __init__(self,mode : str ,tkparent : tk.Tk ):
         self.mode = mode   # "Examen" ou "Partiel"
         
         if self.mode == "Examen" : # chargement des 2 sources d'information
-            self.apogee = FichierCsv(formatFic="Apogée")
-            self.moodle = FichierCsv(formatFic="Moodle")
+            self.apogee = FichierCsv(formatFic="Apogée")  # les tiers temps sont déja placé dans Apogée
+            self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier="avec tous les étudiants")
         else :
             self.apogee = None
-            self.moodle = FichierCsv(formatFic="Moodle")
+            self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier="avec tous les étudiants")
+            tiersTemps : str = messagebox.askquestion("Tiers temps ?","Avez-vous un fichier tiers temps ?",icon ='question' )
+            if tiersTemps=='yes':  
+                self.moodleTt = FichierCsv(formatFic="Moodle",msgChoixFichier="contenant seulement les tiers temps")
+            else :
+                self.moodleT = None 
     
     def getNbmoodle(self):
         return self.moodle.get_nbEtudiant()
