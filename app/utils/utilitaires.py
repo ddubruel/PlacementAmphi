@@ -57,9 +57,8 @@ def compteEtListeAmphiApogee( dataBrutes : chargementCsv):
     return nbAmphi, listeNomAmphi # si test négatif, renvoie 0 et []
 
 def filtreApogee(dataBrutes : chargementCsv , nomAmphi : 'str' ) -> list[list[str]] :
-    extrait : list[list[str]] = []
-    
-    
+    """extrait des data apogée , tous les étudiants affectés dans un même amphi"""
+    extrait : list[list[str]] = []    
     for dataEtud in dataBrutes.apogee.data :
         if dataEtud[10] == reCodeAmphi(nomAmphi)  :
             extrait.append(dataEtud)

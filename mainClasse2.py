@@ -63,7 +63,7 @@ class Boustrophedon:
 
         tk.Label(
             frame_radio,
-            text='Cocher une case puis "Valider"',
+            text='Cocher une case puis cliquer sur "Chargement ..."',
             font=("Arial", 11)
         ).pack(side="left", padx=10)
 
@@ -180,7 +180,8 @@ class Boustrophedon:
         for nom in  self.listeNomAmphi :                
             self.listAmphi.append( amphi(nom) )   # création des n amphis du fichier apogée...amphi à peupler.
         print( f"Création des instances amphi. Vérification des noms des amphis créés :\n {[ amphi.nom for amphi in self.listAmphi ]}\n\n" )
-        # affectation des étudiants dans les amphi : avec moodle, on pioche le nombre dans allocationAMphi et les étudiant dans dataBrutes.moodle.data
+        # affectation des étudiants dans les amphi : avec moodle, on pioche le nombre dans allocationAMphi et les étudiants
+        #dans dataBrutes.moodle.data
         decalage : int =0 # pour récupér la tranche suivante dans la liste d'étudiant
         for amphitheatre in self.listAmphi :
             listeNb  : list[int] = [valeur for (nomAmphi, valeur ,boolTT) in allocationAmphi if nomAmphi==amphitheatre.nom ]
@@ -202,7 +203,9 @@ class Boustrophedon:
         # lit le mode sélectionné dans l'UI.
         self.etat.mode = self.var_mode.get() or "nil"
         # instanciation de la classe qui contient les données brutes (Moodle et Apogee si Examen)
-        self.dataBrutes = chargementCsv(self.etat.mode, self.root)        
+        self.dataBrutes = chargementCsv(self.etat.mode, self.root)
+        
+        
         print(f"Le fichier Moodle contient : {self.dataBrutes.getNbmoodle()} étudiants.\n")
                 
         if self.dataBrutes.apogee : # exploitation des data apogee si Examen :

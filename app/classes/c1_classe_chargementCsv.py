@@ -3,6 +3,8 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 from dataclasses import  dataclass 
 from typing import Optional
+from io import TextIOWrapper
+
 # ────────────────────────────────────────────────────────────────────────────────
 # Modèles de données
 # ────────────────────────────────────────────────────────────────────────────────
@@ -11,10 +13,10 @@ class FichierCsv  :
     formatFic : str     # Rem les arguments sans valeurs par défaut à écrire en premier ou !!
                         # ou alors écrire init=False au début.
     msgChoixFichier : str                     
-    chemin: Optional[str] = None    # Optionnal pour dire  type None ou str (par la suite).
-    entete: Optional[list[str]] = None
-    data: Optional[list[list[str]]] = None
-    valide : Optional[bool] = False 
+    chemin: Optional[str]     # Optionnal pour dire  type None ou str (par la suite).
+    entete: Optional[list[str]] 
+    data: Optional[list[list[str]]] 
+    valide : Optional[bool] 
        
     def __init__(self, formatFic: str, msgChoixFichier : str , parent: Optional[tk.Tk] = None):
         """Crée un objet FichierCsv et exécute automatiquement les étapes principales."""
@@ -24,7 +26,7 @@ class FichierCsv  :
         self.entete = None
         self.data = None
         self.valide = False
-        self.nbEtudiant : int
+        self.nbEtudiant : int = 0
         
         # Étapes automatiques :
         rep="."
@@ -32,14 +34,47 @@ class FichierCsv  :
         self.choisir_fichier(parent, titre, rep )   
         if self.chemin:
             self.charger_csv()
+            print(self.chemin)
+            print(f"Après self.charger_csv(), il y a {len(self.data)}étudiants.")
+            if self.formatFic=="Moodle" :
+                self.retirerDoublonsEtEncadrants() # pour enlever les enseingnant non étudiant et les doctorant&Etudiant enregistré 2 fois/
+                                                    # il reste quand même les doctorants-étudiant (mais une seule fois)
+                                                    # à filtrer avant ce code
+                self.nbEtudiant = len(self.data)
+                print(f"Après self.retirerDoublonsEtEncadrants(), il y a {self.nbEtudiant} étudiant ou (2eme verif) {len(self.data)} étudiants. ")
+                #input('1) presser entrée')
+            else :
+                pass # le fichier apogée est propre ! pas de doublons (...pour l'instant !!)
             self.valider_contenu()
         if self.valide :
             self.nbEtudiant = len(self.data)
+        print(f"La validité du fichier {self.chemin} est  : {self.valide}")
+            
+    def retirerDoublonsEtEncadrants(self):
+        """Retire les doublons dans self.data en se basant sur le numéro d'étudiant (colonne 2)."""
+        numeros_vus: set[str] = set()
+        data_filtrée: list[list[str]] = []
         
+        print( f" Avant filtrage {len(self.data)} étudiants.\n")
+        for etu in self.data:                
+            num : str = etu[2].strip()
+            if num!="" and num not in numeros_vus :
+                numeros_vus.add(num)
+                data_filtrée.append(etu)
+        print( f" Après filtrage {len(data_filtrée)} étudiants.\n")
+        print( f" {len(self.data)-len(data_filtrée)} étudiants en double + encadrant rétirés.\n")
+        self.data = data_filtrée
+        
+            
+    
     def get_nbEtudiant(self):
+        self.nbEtudiant = len(self.data)
         return self.nbEtudiant
     
-    
+    def miseAJourData(self,dataFiltree : list[list[str]] ) :
+        self.data=dataFiltree
+        self.nbEtudiant = len(self.data or [])
+                
     def choisir_fichier(self,tkParent ,  titre  ,rep)-> None :
         messagebox.showwarning(
             title=f"Sélection du fichier {self.formatFic}",
@@ -116,16 +151,54 @@ class chargementCsv:
         
         if self.mode == "Examen" : # chargement des 2 sources d'information
             self.apogee = FichierCsv(formatFic="Apogée",msgChoixFichier="avec tous les étudiants")  # les tiers temps sont déja placé dans Apogée
+            print("Le fichier apogée contient :", self.apogee.get_nbEtudiant(),'étudiants')
+            #input('2) presser entrée')
             self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier="avec tous les étudiants")
+            print("Le fichier apogée contient :", self.apogee.get_nbEtudiant())
+            print("Le fichier moodle contient :", self.moodle.get_nbEtudiant())
+            print("Le fichier moodle contient :", len(self.apogee.data))
+            #input('3) presser entrée')
         else :
             self.apogee = None
-            self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier="avec tous les étudiants")
+            self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier="avec tous les étudiants")                        
             tiersTemps : str = messagebox.askquestion("Tiers temps ?","Avez-vous un fichier tiers temps ?",icon ='question' )
             if tiersTemps=='yes':  
-                self.moodleTt = FichierCsv(formatFic="Moodle",msgChoixFichier="contenant seulement les tiers temps")
+                self.moodleTt = FichierCsv(formatFic="Moodle",msgChoixFichier="contenant seulement les tiers temps")                                    
             else :
-                self.moodleT = None 
-    
+                self.moodleTt = None            
+            self.retirerLesTiersTempsDeMoodle()
+        
+                
+    def retirerLesTiersTempsDeMoodle(self):
+        """Retire de l'attribut moodle les étudiants tiers temps s'il y en a."""
+        numeros_tt = {etu[2] for etu in self.moodleTt.data} # ensemble des numéros Tier Temps.
+        print(f" Il y a {len(self.moodleTt.data)} étudiants tiers temps.")
+
+        moodle_data_filtrée : list[list [str]]= []
+        nb_suppr : int = 0
+        
+        avant= len(self.moodle.data)
+        
+        for etu in self.moodle.data:
+            nmr : str = etu[2]
+            if (nmr in numeros_tt) and (nmr!=""):
+                nb_suppr = nb_suppr + 1
+                print("retrait de ",etu,"\n")
+            else:
+                moodle_data_filtrée.append(etu) # on garde l'étudiant si non tiers temps.
+        
+        apres = len(moodle_data_filtrée)
+        
+        print('avant-apres =' , avant,'-',apres,'=', avant-apres)
+        
+        print(f"  {nb_suppr} étudiants tiers temps/doublon ont été retiré(s) de la liste principale.\n"
+              f" sur {len(self.moodle.data)} étudiants au départ.\n"
+              f"La liste des tiers temps est composée de {len(numeros_tt)} étudiants.\n")
+        
+        self.moodle.miseAJourData(moodle_data_filtrée)
+        print(f"La liste néttoyée contient {self.moodle.get_nbEtudiant()} étudiants.")
+            
+
     def getNbmoodle(self):
         return self.moodle.get_nbEtudiant()
     
