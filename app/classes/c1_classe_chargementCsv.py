@@ -115,7 +115,7 @@ class chargementCsv:
         self.mode = mode   # "Examen" ou "Partiel"
         
         if self.mode == "Examen" : # chargement des 2 sources d'information
-            self.apogee = FichierCsv(formatFic="Apogée")  # les tiers temps sont déja placé dans Apogée
+            self.apogee = FichierCsv(formatFic="Apogée",msgChoixFichier="avec tous les étudiants")  # les tiers temps sont déja placé dans Apogée
             self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier="avec tous les étudiants")
         else :
             self.apogee = None
