@@ -11,12 +11,14 @@ sys.path.insert(0, project_root)
 
 from classes.c1_classe_chargementCsv import chargementCsv
 from classes.c2_0_classeS_etudiant_a_amphi import amphi,etudiant
-
 from classes.c3_classe_arborescence import arborescence
-from classes.c4_classe_champsApogee import champsApogee
+from classes.c4_classe_definitPlacementDansAmphi import definitPlacementDansAmphi
+from classes.c5_tracePlanAmphiEtGenerefichier import tracePlanAmphiEtGenerefichier
 
 from utils.utilitaires import *
 from utils.utilitaire_UI_amphiMoodle import definitRemplissage
+from utils.utilitaire_completeDefAmphi import completeDefinitionAmphi
+from utils.utilitaires_bouton2 import *
 # ---------- Modèle ----------
 @dataclass
 class EtatProjet:
@@ -36,8 +38,10 @@ class Boustrophedon:
         # variables :
         self.dataBrutes : chargementCsv = None
         self.nbAmphiApogee : int = 0
-        self.listeNomAmphi : list[amphi]
+        self.listeNomAmphi : list[amphi]=[]
+        self.listeDesRepartitions : list =[]
         
+        self.listeFenetreGraphiqueVisuAmphi = []
         
         # Construire l'UI
         self.build_header()
@@ -115,12 +119,17 @@ class Boustrophedon:
         tk.Button(self.root, text="Quitter (quit et pas destroy pour le dev)", command=self.root.quit).pack(pady=10)
 
     # ----- Contrôleur : logique -----
-    def update_buttons_state(self):
-        """Active/désactive les boutons selon l’état du projet."""
-        state = tk.NORMAL if self.etat.charge else tk.DISABLED
-        self.btn_png.config(state=state)
-        self.btn_pdf.config(state=state)
-        self.btn_mail.config(state=state)
+    def update_buttons_state(self, etape="initial"):
+        if etape == "initial":
+            self.btn_png.config(state=tk.DISABLED)
+            self.btn_pdf.config(state=tk.DISABLED)
+            self.btn_mail.config(state=tk.DISABLED)
+        elif etape == "donnees_chargees":
+            self.btn_png.config(state=tk.NORMAL)
+        elif etape == "png_genere":
+            self.btn_pdf.config(state=tk.NORMAL)
+        elif etape == "pdf_genere":
+            self.btn_mail.config(state=tk.NORMAL)
     
     def exploiteApogee(self):
         """ configure les données d'Apogée dans les classe Amphi (y dépose la liste des étudiants)"""
@@ -132,10 +141,11 @@ class Boustrophedon:
         self.arborescence = arborescence( self.dataBrutes.apogee.chemin, self.listeNomAmphi )
         print(f"L'arborescence des fichiers est créée.\n Les fichiers de sortie se "
               f"trouvent dans le répertoire :\n {self.dataBrutes.apogee.chemin}.\n"
-              f"Chaque répertoire porte le nom de l'amphithéatre utilisé.\n")            
-        
+              f"Chaque répertoire porte le nom de l'amphithéatre utilisé.\n")
+        # utilisation : chemin_png = self.arborescence.get_chemin(nom_amphi, "pngOut")
+    
         # instanciation des amphi
-        self.listAmphi =[] 
+        self.listAmphi : list [ amphi] =[] 
         for nom in  self.listeNomAmphi :                
             self.listAmphi.append( amphi(nom) )   # création des n amphis du fichier apogée...amphi à peupler.
         print( f"Création des instances amphi. Vérification des noms des amphis créés :\n {[ amphi.nom for amphi in self.listAmphi ]}\n\n" )
@@ -229,7 +239,9 @@ class Boustrophedon:
             print(f"L'AAAAmphithéatre {amphitheatre.nom} a reçu {len(amphitheatre.listeTousLesEtudiantsDansAmphi)} instances d'étudiants.\n")
             #input("4) taper entrée")
         # fin exploiteMoodle(self)                
-            
+    
+    
+    
     def chargerDonnees(self):
         # lit le mode sélectionné dans l'UI.
         self.etat.mode = self.var_mode.get() or "nil"
@@ -245,15 +257,44 @@ class Boustrophedon:
         else : # exploitation des data moodle si Partiel :
             self.exploiteMoodle()
         # A ce stade les amphi ont chacun leur liste d'étudiants non placés.
-       
         
-        self.update_buttons_state()
+        for amphiEtu in  self.listAmphi :
+            # on définit les zones de l'amphi 
+            completeDefinitionAmphi(amphiEtu)
+            # calcul des répartitions par amphi
+            placement = definitPlacementDansAmphi(amphiEtu)
+            repartition = placement.repartition
+            #remplissage des zones de l'amphi
+            indiceEtuDebut : int = 0
+            listeARepartir=amphiEtu.listeTousLesEtudiantsDansAmphi
+            for indiceZone , zone in enumerate(amphiEtu.zones) :
+                indiceEtuFin : int = indiceEtuDebut + repartition[indiceZone]
+                zone.set_listeDesEtudiantDansLaZone(listeARepartir[indiceEtuDebut:indiceEtuFin])
+                indiceEtuDebut = indiceEtuFin
+                
+            trace=tracePlanAmphiEtGenerefichier(amphiEtu,self.arborescence,self.root)
+            
+            self.listeFenetreGraphiqueVisuAmphi.append(trace.window)
+        # A ce stade les zones des amphi ont chacune leur liste d'étudiants non placés.
+        
+
+        #input("entrée")
+        self.update_buttons_state("donnees_chargees")
+         
 
     def actionsBouton2(self):
-        # Générer PNG
-        # >>> ICI ton code de génération des PNG <<<
+        if len(self.listeFenetreGraphiqueVisuAmphi) !=0 :
+            for fenetre in self.listeFenetreGraphiqueVisuAmphi:
+                fenetre.destroy()
+           
+        for amphi in self.listAmphi :  
+            genererLesPngPlacesIndividuelles(amphi,self.arborescence,self.root,self.listeFenetreGraphiqueVisuAmphi)
+            
+            remplitRangCompleteEtudiant(amphi)
+            
         messagebox.showinfo("PNG", "Génération des images PNG terminée.")
-
+        self.update_buttons_state("png_genere")
+        
     def actionsBouton3(self):
         # Générer PDF
         # >>> ICI ton code de génération des PDF <<<

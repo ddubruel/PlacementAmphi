@@ -21,4 +21,5 @@ tuto_modif_classe.py
 Doc_Support/
 data/
 app/classes/Proposition/
-png_oout/
+png_out/
+app/classes/RESERVE/
