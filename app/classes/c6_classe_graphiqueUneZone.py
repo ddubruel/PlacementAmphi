@@ -127,8 +127,12 @@ class GraphiqueUneZone:
     def referencePlace(self,row,col):
         # le point (0,0) dans tkinter est en haut à gauche.
         # les places sont numérotée avec le premier rang en bas...
-        prefixe_zone = self.titre[0]
-        reference_place = prefixe_zone+"-"+str(row) +"-"+str(col)        
+        if self.titre :  # cas avec 2 ou 3 zones
+            prefixe_zone = self.titre[0]        
+            reference_place = prefixe_zone+"-"+str(row) +"-"+str(col)
+        else :
+            reference_place = str(row) +"-"+str(col) # cas amphi 1 zone!!
+            
         rang = self.Nb_rang - row         # 1 en bas et croissant vers le haut
         numero_place_inverse = self.nb_places_par_rang_pour_cette_zone -  col  
         

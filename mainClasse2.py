@@ -14,11 +14,13 @@ from classes.c2_0_classeS_etudiant_a_amphi import amphi,etudiant
 from classes.c3_classe_arborescence import arborescence
 from classes.c4_classe_definitPlacementDansAmphi import definitPlacementDansAmphi
 from classes.c5_tracePlanAmphiEtGenerefichier import tracePlanAmphiEtGenerefichier
+from classes.c7_classe_codeEnteteApoge import codeEnteteApogee
 
 from utils.utilitaires import *
 from utils.utilitaire_UI_amphiMoodle import definitRemplissage
 from utils.utilitaire_completeDefAmphi import completeDefinitionAmphi
 from utils.utilitaires_bouton2 import *
+from utils.utilitaire_generer_et_compiler_fichier_tex import genererPdf
 # ---------- Modèle ----------
 @dataclass
 class EtatProjet:
@@ -296,8 +298,23 @@ class Boustrophedon:
         self.update_buttons_state("png_genere")
         
     def actionsBouton3(self):
+        
+        if len(self.listeFenetreGraphiqueVisuAmphi) !=0 :
+            for fenetre in self.listeFenetreGraphiqueVisuAmphi:
+                fenetre.destroy()
+        
+        if self.etat.mode=='Partiel' :
+            entetePdf : list[str] = codeEnteteApogee(  self.etat.mode   , self.dataBrutes , self.listAmphi , '', self.root )
+    
         # Générer PDF
-        # >>> ICI ton code de génération des PDF <<<
+        for Amphi in self.listAmphi :
+            chemin_tex : str  = self.arborescence.get_chemin(Amphi.nom, "texOut")
+            chemin_pdf : str = self.arborescence.get_chemin(Amphi.nom, "listes_Emargement_pdf")
+            if self.etat.mode=='Examen' :# les data de l'amphi change à chaque amphi !!
+                entetePdf : list[str] = codeEnteteApogee(  self.etat.mode   , self.dataBrutes , self.listAmphi , Amphi.nom, self.root )                                 
+            # rappel   self.etat.mode contient "Examen" ou "Partiel"
+            genererPdf(Amphi , chemin_tex , chemin_pdf , entetePdf, self.root)
+           
         messagebox.showinfo("PDF", "Génération des PDF terminée.")
 
     def envoyerMails(self):

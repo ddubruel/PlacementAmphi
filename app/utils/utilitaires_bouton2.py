@@ -1,6 +1,10 @@
 from  app.classes.c2_0_classeS_etudiant_a_amphi import amphi,rangDansZoneAmphi
 from classes.c5_tracePlanAmphiEtGenerefichier import tracePlanAmphiEtGenerefichier 
 
+
+    
+    
+
 def genererLesPngPlacesIndividuelles(Amphi,arborescence,root,listeFenetreGraphiqueVisuAmphi):
     """ cette méthode affiche et génère avec une temporisation de 200 ms les
     fichier png pour chaque étudiant.  1 minute maxi pour 300 étudiants """

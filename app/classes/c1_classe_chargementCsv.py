@@ -62,11 +62,9 @@ class FichierCsv  :
                 numeros_vus.add(num)
                 data_filtrée.append(etu)
         print( f" Après filtrage {len(data_filtrée)} étudiants.\n")
-        print( f" {len(self.data)-len(data_filtrée)} étudiants en double + encadrant rétirés.\n")
+        print( f" {len(self.data)-len(data_filtrée)} étudiants en double ou encadrant rétirés.\n")
         self.data = data_filtrée
         
-            
-    
     def get_nbEtudiant(self):
         self.nbEtudiant = len(self.data)
         return self.nbEtudiant
@@ -164,15 +162,15 @@ class chargementCsv:
             tiersTemps : str = messagebox.askquestion("Tiers temps ?","Avez-vous un fichier tiers temps ?",icon ='question' )
             if tiersTemps=='yes':  
                 self.moodleTt = FichierCsv(formatFic="Moodle",msgChoixFichier="contenant seulement les tiers temps")                                    
+                self.retirerLesTiersTempsDeMoodle()
             else :
-                self.moodleTt = None            
-            self.retirerLesTiersTempsDeMoodle()
-        
-                
+                self.moodleTt = None
+                                            
     def retirerLesTiersTempsDeMoodle(self):
-        """Retire de l'attribut moodle les étudiants tiers temps s'il y en a."""
+        """Retire de l'attribut moodle les étudiants tiers temps s'il y en a.
+        à faire en dehors de la classe fichierCsv car il faut les données moodle et moodle Tiers Temps."""
         numeros_tt = {etu[2] for etu in self.moodleTt.data} # ensemble des numéros Tier Temps.
-        print(f" Il y a {len(self.moodleTt.data)} étudiants tiers temps.")
+        print(f"\n\n Pour le retrait des tiers temps de la liste principale, il y a {len(self.moodleTt.data)} étudiants tiers temps.")
 
         moodle_data_filtrée : list[list [str]]= []
         nb_suppr : int = 0
@@ -196,9 +194,11 @@ class chargementCsv:
               f"La liste des tiers temps est composée de {len(numeros_tt)} étudiants.\n")
         
         self.moodle.miseAJourData(moodle_data_filtrée)
-        print(f"La liste néttoyée contient {self.moodle.get_nbEtudiant()} étudiants.")
-            
-
+        print(f"La liste principale contient {self.moodle.get_nbEtudiant()} étudiants.")
+        print(f"Il y a en plus {self.moodleTt.get_nbEtudiant()} Tiers Temps.\n")
+        print(f"Soit un total de {self.moodle.get_nbEtudiant()}+{self.moodleTt.get_nbEtudiant()}"
+              f" ={self.moodle.get_nbEtudiant() + self.moodleTt.get_nbEtudiant() } ")
+                    
     def getNbmoodle(self):
         return self.moodle.get_nbEtudiant()
     

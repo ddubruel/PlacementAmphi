@@ -58,6 +58,7 @@ class rangDansZoneAmphi :
         
     def __repr__(self):
         return f"{self.__class__.__name__}({self.__dict__})"
+    
 
 @dataclass(init=False)  # parce qu'il y a un __init__
 class zoneDansAmphi :
@@ -131,7 +132,10 @@ class amphi :
         self.listeTousLesEtudiantsDansAmphi.append(Etudiant)
         
     def set_zones(self,listeZones : list[zoneDansAmphi] ) -> None  :
-        self.zones = listeZones 
+        self.zones = listeZones
+        
+    def get_nbEtudiantAmphi(self) -> int  :
+        return len(self.listeTousLesEtudiantsDansAmphi) 
     
     def __repr__(self):
         return f"{self.__class__.__name__}({self.__dict__})"   
