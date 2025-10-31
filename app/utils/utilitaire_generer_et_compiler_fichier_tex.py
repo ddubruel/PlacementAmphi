@@ -281,7 +281,7 @@ def genererPdf(Amphi : amphi ,  # besoin pour définir des param graphiques
              
            
             
-            
+  
            
     generer_fichier_latex(  nom_fichier =  fichierPrincipalTex ,
                             annee_universitaire = entetePdf.annee_universitaire ,
@@ -290,7 +290,7 @@ def genererPdf(Amphi : amphi ,  # besoin pour définir des param graphiques
                             duree =  entetePdf.duree ,       
                             salle=   '',            
                             lieu=   'Valrose',             
-                            batiment= entetePdf.LIB_SAL,
+                            batiment= entetePdf.LIB_SAL.replace("_", ""), # pour éviter le plantage à la compilation tex
                             epreuve=  entetePdf.epreuve ,         
                             matiere= '',
                             nom_image=             Amphi.nomFicPlanAmphiPng,

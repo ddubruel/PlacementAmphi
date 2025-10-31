@@ -29,16 +29,25 @@ class codeEnteteApogee  :
         self.epreuve   :str 
         self.LIB_SAL   :str 
     
-        if  mode=='Partiel' :
-            self.annee_universitaire, self.date, self.horaires, self.duree, self.epreuve= UI_saisirDonneesEpreuve(self.root )
-            self.LIB_SAL = self.nomAmphi 
-        else :
+        
+        if mode == 'Examen':
             self.annee_universitaire = self.valeurCodeApogee(  code ='C_COD_ANU'     )
             self.date=                 self.valeurCodeApogee(  code = 'DAT_DEB_PES'  )
             self.horaires=             self.valeurCodeApogee(  code = 'HEURE_DEBUT'  )
             self.duree=                self.valeurCodeApogee(  code = 'DUREE_EXA'    )
             self.epreuve=              self.valeurCodeApogee(  code = 'COD_EPR'      )
             self.LIB_SAL = self.codeAmphiApogee()
+            
+    def set_valeurs(self, annee_universitaire, date, horaires,duree, epreuve, LIB_SAL):
+        self.annee_universitaire  = annee_universitaire
+        self.date      = date 
+        self.horaires  = horaires 
+        self.duree     = duree
+        self.epreuve   = epreuve
+        self.LIB_SAL   = LIB_SAL
+    
+    def set_LIB_SAL(self,nomAmphi : str ):
+        self.LIB_SAL =nomAmphi
         
     def codeAmphiApogee(self )-> str :
         """ renvoie le code apogée de l'amphi lu dans le fichier apogée"""        

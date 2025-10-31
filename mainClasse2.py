@@ -21,6 +21,7 @@ from utils.utilitaire_UI_amphiMoodle import definitRemplissage
 from utils.utilitaire_completeDefAmphi import completeDefinitionAmphi
 from utils.utilitaires_bouton2 import *
 from utils.utilitaire_generer_et_compiler_fichier_tex import genererPdf
+from utils.utilitaire_UI_saisirDonneesEpreuve import UI_saisirDonneesEpreuve
 # ---------- Modèle ----------
 @dataclass
 class EtatProjet:
@@ -126,10 +127,14 @@ class Boustrophedon:
             self.btn_png.config(state=tk.DISABLED)
             self.btn_pdf.config(state=tk.DISABLED)
             self.btn_mail.config(state=tk.DISABLED)
+            
         elif etape == "donnees_chargees":
+            self.action2finie : bool = False  # pour pouvoir zapper la gnération des png.
             self.btn_png.config(state=tk.NORMAL)
+            self.btn_pdf.config(state=tk.NORMAL)
         elif etape == "png_genere":
             self.btn_pdf.config(state=tk.NORMAL)
+            self.action2finie : bool = True # pour ne pas re instancier les rangs. Cela vient d'être fait.
         elif etape == "pdf_genere":
             self.btn_mail.config(state=tk.NORMAL)
     
@@ -280,7 +285,6 @@ class Boustrophedon:
         # A ce stade les zones des amphi ont chacune leur liste d'étudiants non placés.
         
 
-        #input("entrée")
         self.update_buttons_state("donnees_chargees")
          
 
@@ -295,6 +299,7 @@ class Boustrophedon:
             remplitRangCompleteEtudiant(amphi)
             
         messagebox.showinfo("PNG", "Génération des images PNG terminée.")
+        
         self.update_buttons_state("png_genere")
         
     def actionsBouton3(self):
@@ -303,17 +308,30 @@ class Boustrophedon:
             for fenetre in self.listeFenetreGraphiqueVisuAmphi:
                 fenetre.destroy()
         
-        if self.etat.mode=='Partiel' :
-            entetePdf : list[str] = codeEnteteApogee(  self.etat.mode   , self.dataBrutes , self.listAmphi , '', self.root )
-    
-        # Générer PDF
+        if not(self.action2finie) : # si l'étape 2 , longue a été zappée.
+            for amphi in self.listAmphi :
+                remplitRangCompleteEtudiant(amphi)    
+        
+        
+        # Générer PDF   LIB_SAL = self.nomAmphi 
+         
+        
+        if  self.etat.mode=='Partiel' :
+            entetePdf : list[str] = codeEnteteApogee(  self.etat.mode   , self.dataBrutes , self.listAmphi , "Nom provisoire", self.root )                                 
+            annee_universitaire, date, horaires, duree, epreuve= UI_saisirDonneesEpreuve(self.root )
+            entetePdf.set_valeurs( annee_universitaire, date, horaires,duree, epreuve,  LIB_SAL="Nom provisoire")
+            
+                                   
         for Amphi in self.listAmphi :
             chemin_tex : str  = self.arborescence.get_chemin(Amphi.nom, "texOut")
             chemin_pdf : str = self.arborescence.get_chemin(Amphi.nom, "listes_Emargement_pdf")
-            if self.etat.mode=='Examen' :# les data de l'amphi change à chaque amphi !!
-                entetePdf : list[str] = codeEnteteApogee(  self.etat.mode   , self.dataBrutes , self.listAmphi , Amphi.nom, self.root )                                 
-            # rappel   self.etat.mode contient "Examen" ou "Partiel"
-            genererPdf(Amphi , chemin_tex , chemin_pdf , entetePdf, self.root)
+            if self.etat.mode=='Examen' :# le LIB_SAL de l'amphi change à chaque amphi !!
+                entetePdf : list[str] = codeEnteteApogee(  self.etat.mode   , self.dataBrutes , self.listAmphi , Amphi.nom, self.root )                                                
+            else :
+                entetePdf.set_LIB_SAL(Amphi.nom)
+                                
+            genererPdf(Amphi , chemin_tex , chemin_pdf , entetePdf, self.root)    
+  
            
         messagebox.showinfo("PDF", "Génération des PDF terminée.")
 
