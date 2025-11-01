@@ -183,7 +183,12 @@ class Boustrophedon:
         
     def exploiteMoodle(self):
         """configure les données Moodle dans les classe Amphi (y dépose la liste des étudiants)"""
-        allocationAmphi : list[Tuple[str,int]] = definitRemplissage(nb_etudiants= len(self.dataBrutes.moodle.data),nb_tiers_temps = 12, parent=self.root)    
+        if   self.dataBrutes.moodleTt != None :
+            nb_TT : int = self(self.dataBrutes.moodleTt.data)
+        else :
+            nb_TT: int = 0 
+            
+        allocationAmphi : list[Tuple[str,int]] = definitRemplissage(nb_etudiants= len(self.dataBrutes.moodle.data),nb_tiers_temps = nb_TT, parent=self.root)    
         print(f"Vous avez choisi la répartition suivante dans les amphithéatres :\n {allocationAmphi}")
         # création de la liste des amphi :
         self.listeNomAmphi = [nom for (nom,nb,boolTT) in allocationAmphi ]

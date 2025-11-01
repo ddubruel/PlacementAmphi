@@ -126,7 +126,9 @@ class amphi :
         self.nomFicPlanAmphiPng = fichierPng
         
     def set_listeTousLesEtudiantsDansAmphi(self,listeEtu : list[etudiant] ):
+        shuffle(listeEtu)
         self.listeTousLesEtudiantsDansAmphi =  listeEtu
+        
         
     def ajouteEtudiant(self, Etudiant) :
         self.listeTousLesEtudiantsDansAmphi.append(Etudiant)

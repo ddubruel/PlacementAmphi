@@ -51,7 +51,7 @@ class FichierCsv  :
             self.nbEtudiant = len(self.data)
         # mélange aléatoire de la liste dans l'amphi
         
-        shuffle(self.data)
+        
         print(f"La validité du fichier {self.chemin} est  : {self.valide}")
             
     def retirerDoublonsEtEncadrants(self):
