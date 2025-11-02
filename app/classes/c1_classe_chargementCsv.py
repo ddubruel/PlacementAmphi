@@ -123,7 +123,7 @@ class FichierCsv  :
     def valider_contenu(self)-> None :    
         entete = self.entete or [] # pour éviter le cas None                        
         if (
-            (self.formatFic=="Apogée"  and entete[0]!="DAT_DEB_PES")  
+            (self.formatFic=="Apogée"  and entete[1]!="DHH_DEB_PES")  
             or
             (self.formatFic== "Moodle" and entete[1]!='Nom de famille')             
             ):
