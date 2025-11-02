@@ -136,7 +136,11 @@ class GraphiqueUneZone:
         rang = self.Nb_rang - row         # 1 en bas et croissant vers le haut
         numero_place_inverse = self.nb_places_par_rang_pour_cette_zone -  col  
         
-        pas = int (  0.8 * self.longueur  //   (self.nb_places_par_rang_pour_cette_zone - 1)  )  
+        if self.nb_places_par_rang_pour_cette_zone==1 :
+            pas = 0
+        else :
+            pas = int (  0.8 * self.longueur  //   (self.nb_places_par_rang_pour_cette_zone - 1)  )
+            
         xtex = self.xhg + 0.1 * self.longueur + pas * numero_place_inverse 
         ytex = self.yhg + rang * self.espace 
         return xtex,ytex, reference_place

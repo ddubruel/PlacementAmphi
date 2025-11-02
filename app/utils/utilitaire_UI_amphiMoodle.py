@@ -241,6 +241,6 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
 
 
 # # Test autonome
-# if __name__ == "__main__":
-#     res = definitRemplissage(nb_etudiants=90, nb_tiers_temps=12, parent=None)
-#     print("Résultat :", res)
+if __name__ == "__main__":
+     res = definitRemplissage(nb_etudiants=4 + 12, nb_tiers_temps=12, parent=None)
+     print("Résultat :", res)

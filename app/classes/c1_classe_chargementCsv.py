@@ -65,6 +65,9 @@ class FichierCsv  :
             if num!="" and num not in numeros_vus :
                 numeros_vus.add(num)
                 data_filtrée.append(etu)
+            else :
+                print( "doublon : ",etu)
+                
         print( f" Après filtrage {len(data_filtrée)} étudiants.\n")
         print( f" {len(self.data)-len(data_filtrée)} étudiants en double ou encadrant rétirés.\n")
         self.data = data_filtrée
@@ -122,8 +125,8 @@ class FichierCsv  :
         if (
             (self.formatFic=="Apogée"  and entete[0]!="DAT_DEB_PES")  
             or
-            (self.formatFic== "Moodle" and entete[0]!="\ufeffPrénom"  )
-        ):
+            (self.formatFic== "Moodle" and entete[1]!='Nom de famille')             
+            ):
                 messagebox.showwarning( title="Erreur de fichier",
                             message=f"Erreur, vous n'avez pas choisi un fichier {self.formatFic} au format csv (à vérifier !).")
                 self.valide=False                            

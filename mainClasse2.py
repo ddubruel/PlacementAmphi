@@ -183,12 +183,13 @@ class Boustrophedon:
         
     def exploiteMoodle(self):
         """configure les données Moodle dans les classe Amphi (y dépose la liste des étudiants)"""
-        if   self.dataBrutes.moodleTt != None :
-            nb_TT : int = self(self.dataBrutes.moodleTt.data)
+        if   self.dataBrutes.moodleTt.data :
+            nb_TT : int = len(self.dataBrutes.moodleTt.data)
         else :
             nb_TT: int = 0 
-            
-        allocationAmphi : list[Tuple[str,int]] = definitRemplissage(nb_etudiants= len(self.dataBrutes.moodle.data),nb_tiers_temps = nb_TT, parent=self.root)    
+        # on place la totalité des étudiant en liste moodle+ le nb de tiers Temps. Il faut cocher la case Amphi pour les TT
+        nbTotalEtudiant : int =  len(self.dataBrutes.moodle.data)+nb_TT
+        allocationAmphi : list[Tuple[str,int]] = definitRemplissage(nb_etudiants= nbTotalEtudiant,nb_tiers_temps = nb_TT, parent=self.root)    
         print(f"Vous avez choisi la répartition suivante dans les amphithéatres :\n {allocationAmphi}")
         # création de la liste des amphi :
         self.listeNomAmphi = [nom for (nom,nb,boolTT) in allocationAmphi ]
@@ -202,43 +203,47 @@ class Boustrophedon:
         for nom in  self.listeNomAmphi :                
             self.listAmphi.append( amphi(nom) )   # création des n amphis du fichier apogée...amphi à peupler.
         print( f"Création des instances amphi. Vérification des noms des amphis créés :\n {[ amphi.nom for amphi in self.listAmphi ]}\n\n" )
-        # affectation des étudiants dans les amphi : avec moodle, on pioche le nombre dans allocationAMphi et les étudiants
-        #dans dataBrutes.moodle.data
-        decalage : int =0 # pour récupér la tranche suivante dans la liste d'étudiant
+        # affectation des étudiants dans les amphi :
+        # pour un amphi sans tiers temps, on prend le nombre allouté (dans allocationAMphi )et les étudiants dans .moodle.data
+        # pour un amphi avec tiers temps, on prend le nombre alloué auquel on retire le nombre de tiers temps
+        #                                       on pioche la première partie dans  dataBrutes.moodle.data (Nalloué-Ntiers)
+        #                                       et la deuxieme partie dans   dataBrutes.moodleTt.data (Ntiers) !!!
+        #                                       on remplit ainsi l'amphi avec Nalloué-Ntiers + Ntiers = Nalloué 
+        decalage : int =0 # pour récupérer la tranche suivante dans la liste dataBrutes.moodle.data
         for amphitheatre in self.listAmphi :
             listeValeursUniques  : list[Tuple[int,bool]] = [(nomAmphi,valeur, boolTT)  for (nomAmphi, valeur ,boolTT) in allocationAmphi if nomAmphi==amphitheatre.nom ]
             nomAmphi : str = listeValeursUniques[0][0]
             nbEtudiantAPlacer : int = listeValeursUniques[0][1]
             TT : bool =  listeValeursUniques[0][2]
             print("Valeur bool" , TT)
-            if not TT : # si pas tiers temps
+            if not TT : # si pas de tiers temps on place directement Nalloué soit nbEtudiantAPlacer depuis moodle.data
                 print('branche not TT du test ok')
-                etudiantsAPlacer : list[list[str]] = self.dataBrutes.moodle.data[decalage:(decalage+nbEtudiantAPlacer)]
+                dataEtudiantsAPlacer : list[list[str]] = self.dataBrutes.moodle.data[decalage:(decalage+nbEtudiantAPlacer)]
                 decalage = decalage+nbEtudiantAPlacer # pour placer le pointeur sur le prochain étudiant dans la liste Moodle.
-                for dataEtu in etudiantsAPlacer :
+                for dataEtu in dataEtudiantsAPlacer :
                     amphitheatre.ajouteEtudiant(etudiant(nom = dataEtu[1] ,
                                                          prenom = dataEtu[0],
                                                          numeroEtudiant = dataEtu[2],
                                                          courriel=dataEtu[3]
                                                         ) 
                                                 )
-            else : # si tiers temps...
-                etudiantsAPlacer : list[list[str]] = self.dataBrutes.moodleTt.data # on pioche dans la liste Tiers Temps.
-                nb_tiers : int = len(etudiantsAPlacer)
-                # pas de décalage car on parcourt pas la liste moodle.
-                for dataEtu in etudiantsAPlacer :
+            else : # si tiers temps :
+                dataEtudiantsAPlacer : list[list[str]] = self.dataBrutes.moodleTt.data # on prend toute la liste Tiers Temps.
+                nb_tiersTemps : int = len(dataEtudiantsAPlacer)
+                 
+                for dataEtu in dataEtudiantsAPlacer :
                     amphitheatre.ajouteEtudiant(etudiant(nom = dataEtu[1] ,
                                                          prenom = dataEtu[0],
                                                          numeroEtudiant = dataEtu[2],
                                                          courriel=dataEtu[3]
                                                         ) 
                                                 )
-                print('branche  TT du test ok')
+                print(f"La liste de tiers temps est placée dans l'amphi {amphitheatre.nom}")
                 
-                # le complément dans l'amphi
-                nbEtudiantAPlacer=nbEtudiantAPlacer- len(etudiantsAPlacer) # on calcule les places restantes pour la liste Moodle.
-                etudiantsAPlacer : list[list[str]] = self.dataBrutes.moodle.data[decalage:(decalage+nbEtudiantAPlacer)]
-                decalage = decalage+nbEtudiantAPlacer # pour placer le pointeur sur le prochain étudiant dans la liste Moodle.
+                # le complément dans l'amphi qui est pris dans la liste moodle.
+                nb_complement = nbEtudiantAPlacer- nb_tiersTemps # on calcule les places restantes pour la liste Moodle.
+                etudiantsAPlacer : list[list[str]] = self.dataBrutes.moodle.data[decalage:(decalage+nb_complement)]
+                decalage = decalage+nb_complement # pour placer le pointeur sur le prochain étudiant dans la liste moodle.data
                 for dataEtu in etudiantsAPlacer :
                     amphitheatre.ajouteEtudiant(etudiant(nom = dataEtu[1] ,
                                                          prenom = dataEtu[0],
@@ -246,7 +251,7 @@ class Boustrophedon:
                                                          courriel=dataEtu[3]
                                                         ) 
                                                 )            
-                print(f"{nbEtudiantAPlacer} étudiants dont {nb_tiers} étudiants ont été placés dans l'amphi {nomAmphi}.") 
+                print(f"{nbEtudiantAPlacer} étudiants dont {nb_tiersTemps} étudiants ont été placés dans l'amphi {nomAmphi}.") 
             
             print(f"L'AAAAmphithéatre {amphitheatre.nom} a reçu {len(amphitheatre.listeTousLesEtudiantsDansAmphi)} instances d'étudiants.\n")
             #input("4) taper entrée")
@@ -259,10 +264,6 @@ class Boustrophedon:
         self.etat.mode = self.var_mode.get() or "nil"
         # instanciation de la classe qui contient les données brutes (Moodle et Apogee si Examen)
         self.dataBrutes = chargementCsv(self.etat.mode, self.root)
-        
-        
-        print(f"Le fichier Moodle contient : {self.dataBrutes.getNbmoodle()} étudiants.\n")
-        
         
         if self.dataBrutes.apogee : # exploitation des data apogee si Examen :
             self.exploiteApogee()
