@@ -38,6 +38,7 @@ class FichierCsv  :
             print(self.chemin)
             print(f"Après self.charger_csv(), il y a {len(self.data)}étudiants.")
             if self.formatFic=="Moodle" :
+                self.trierAlphaNom()
                 self.retirerDoublonsEtEncadrants() # pour enlever les enseingnant non étudiant et les doctorant&Etudiant enregistré 2 fois/
                                                     # il reste quand même les doctorants-étudiant (mais une seule fois)
                                                     # à filtrer avant ce code
@@ -53,7 +54,16 @@ class FichierCsv  :
         
         
         print(f"La validité du fichier {self.chemin} est  : {self.valide}")
-            
+    
+
+        
+    def trierAlphaNom(self):
+        """Trie les lignes en place sur la 2ᵉ colonne (insensible à la casse)."""
+        def cle_tri(element):
+            return element[1].lower()
+        self.data.sort(key=cle_tri)
+    
+        
     def retirerDoublonsEtEncadrants(self):
         """Retire les doublons dans self.data en se basant sur le numéro d'étudiant (colonne 2)."""
         numeros_vus: set[str] = set()

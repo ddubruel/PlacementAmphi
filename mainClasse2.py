@@ -183,7 +183,7 @@ class Boustrophedon:
         
     def exploiteMoodle(self):
         """configure les données Moodle dans les classe Amphi (y dépose la liste des étudiants)"""
-        if   self.dataBrutes.moodleTt.data :
+        if   self.dataBrutes.moodleTt != None :
             nb_TT : int = len(self.dataBrutes.moodleTt.data)
         else :
             nb_TT: int = 0 

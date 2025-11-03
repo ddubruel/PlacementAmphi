@@ -14,7 +14,6 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
     """
 
     amphis_spec = [
-        ("Petit_Valrose", 165),
         ("Chimie", 84),
         ("Mathématiques", 84),
         ("Sc_Physiques", 84),
@@ -22,6 +21,7 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
         ("Sc_Naturelles", 84),
         ("Biologie", 25),
         ("Géologie", 25),
+        ("Petit_Valrose", 165)
     ]
 
     # --- fenêtre ---
