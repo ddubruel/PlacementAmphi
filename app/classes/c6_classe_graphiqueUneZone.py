@@ -63,7 +63,7 @@ class GraphiqueUneZone:
         
         x_milieu_zone = self.xhg + self.longueur//2
         y_bas_zone =  self.yhg + self.Nb_rang * self.espace
-        self.canvas.create_text(x_milieu_zone, y_bas_zone, text=f"{self.titre}", font="arial 17")
+        self.canvas.create_text(x_milieu_zone, y_bas_zone, text=f"Zone {self.titre}", font="arial 17")
         self.ecritLaPlace()        
 #        self.entourePlaceEtSauveFicPng() 
         

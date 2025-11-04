@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 
 import os,sys
+
+import time
+
 from dataclasses import dataclass,fields 
 
 # Ajoute le dossier "app" à sys.path pour permettre les imports relatifs propres
@@ -15,6 +18,8 @@ from classes.c3_classe_arborescence import arborescence
 from classes.c4_classe_definitPlacementDansAmphi import definitPlacementDansAmphi
 from classes.c5_tracePlanAmphiEtGenerefichier import tracePlanAmphiEtGenerefichier
 from classes.c7_classe_codeEnteteApoge import codeEnteteApogee
+from classes.c8_classe_mailConfig import mailConfig
+from classes.c9_classe_dataEpreuve import dataEpreuve
 
 from utils.utilitaires import *
 from utils.utilitaire_UI_amphiMoodle import definitRemplissage
@@ -22,6 +27,10 @@ from utils.utilitaire_completeDefAmphi import completeDefinitionAmphi
 from utils.utilitaires_bouton2 import *
 from utils.utilitaire_generer_et_compiler_fichier_tex import genererPdf
 from utils.utilitaire_UI_saisirDonneesEpreuve import UI_saisirDonneesEpreuve
+from utils.utilitaire_UI_mail import UI_mail
+from utils.UI_preparation_message import UI_preparation_message
+from utils.utilitaire_EnvoiMail import  envoyerMail
+
 # ---------- Modèle ----------
 @dataclass
 class EtatProjet:
@@ -135,7 +144,7 @@ class Boustrophedon:
         elif etape == "png_genere":
             self.btn_pdf.config(state=tk.NORMAL)
             self.action2finie : bool = True # pour ne pas re instancier les rangs. Cela vient d'être fait.
-        elif etape == "pdf_genere":
+        elif etape == "pdf_generes": 
             self.btn_mail.config(state=tk.NORMAL)
     
     def exploiteApogee(self):
@@ -302,7 +311,7 @@ class Boustrophedon:
         for amphi in self.listAmphi :  
             genererLesPngPlacesIndividuelles(amphi,self.arborescence,self.root,self.listeFenetreGraphiqueVisuAmphi)
             
-            remplitRangCompleteEtudiant(amphi)
+            remplitRangCompleteEtudiant(amphi) # voir utilitaries bouton 2.
             
         messagebox.showinfo("PNG", "Génération des images PNG terminée.")
         
@@ -326,8 +335,9 @@ class Boustrophedon:
             entetePdf : list[str] = codeEnteteApogee(  self.etat.mode   , self.dataBrutes , self.listAmphi , "Nom provisoire", self.root )                                 
             annee_universitaire, date, horaires, duree, epreuve= UI_saisirDonneesEpreuve(self.root )
             entetePdf.set_valeurs( annee_universitaire, date, horaires,duree, epreuve,  LIB_SAL="Nom provisoire")
-            
-                                   
+            # on remplit les data à réutiliser pour envoyer le mail plus tard.
+            self.dataEpreuvePourMail : dataEpreuve = dataEpreuve(date ,horaires ,duree ,epreuve)
+                
         for Amphi in self.listAmphi :
             chemin_tex : str  = self.arborescence.get_chemin(Amphi.nom, "texOut")
             chemin_pdf : str = self.arborescence.get_chemin(Amphi.nom, "listes_Emargement_pdf")
@@ -335,16 +345,67 @@ class Boustrophedon:
                 entetePdf : list[str] = codeEnteteApogee(  self.etat.mode   , self.dataBrutes , self.listAmphi , Amphi.nom, self.root )                                                
             else :
                 entetePdf.set_LIB_SAL(Amphi.nom)
-                                
+            # on remplit les data à réutiliser pour envoyer le mail plus tard.
+            self.dataEpreuvePourMail : dataEpreuve = dataEpreuve(entetePdf.date ,entetePdf.horaires ,entetePdf.duree ,entetePdf.epreuve)
+            
             genererPdf(Amphi , chemin_tex , chemin_pdf , entetePdf, self.root)    
   
            
         messagebox.showinfo("PDF", "Génération des PDF terminée.")
-
+        self.update_buttons_state("pdf_generes")
+    
     def envoyerMails(self):
+        # creer une UI pour ces champs.
+        #global SMTP_SERVER,SMTP_PORT,EMAIL_SENDER, EMAIL_PASSWORD,Nom_utilisateur
+        #SMTP_SERVER = "webmail.univ-cotedazur.fr" 
+        #SMTP_PORT = 587  
+        #EMAIL_SENDER = "denis.dubruel@univ-cotedazur.fr"  # Remplacez par votre email
+        #EMAIL_PASSWORD = input("Mot de passe  mail ?")  
+        #Nom_utilisateur="ddubruel"
+        
+        # mailConfig à récupérer en sortie d'UI
+        SMTP_SERVER, SMTP_PORT,EMAIL_SENDER, EMAIL_PASSWORD,Nom_utilisateur   = UI_mail(self.root)
+        
+        setUpMail : mailConfig = mailConfig (SMTP_SERVER,SMTP_PORT,EMAIL_SENDER,EMAIL_PASSWORD,Nom_utilisateur)
+        
+        sujet: str
+        corpsDuMessageCommun: str
+        sujet, corpsDuMessageCommun  = UI_preparation_message(self.root , self.dataEpreuvePourMail )
+        
+        
+        
+        
+        
         # Envoi des mails
-        # >>> ICI ton code d’envoi <<<
-        messagebox.showinfo("Mail", "Envoi des emails terminé.")
+        nb : int = 0
+        nbok : int = 0
+        for amphi in self.listAmphi :
+            for etu in amphi.get_etudiants():
+                ### pourrait être mis dans une fonction...
+                debut : str = f"Bonjour {etu.prenom} \n\n"
+                fin: str = (
+                            f"\n\n Vous avez la place {etu.reference_place}, amphithéâtre {amphi.nom}.\n"
+                            f"Qui se trouve en Zone : {etu.prefixe_zone} — Rang n° {etu.numeroRang} — Place n° {etu.numeroPlace}."
+                        )
+                corpsDuMessage: str  = debut + corpsDuMessageCommun  +fin # le contenu du mail est complet
+                ####  ...plus tard...
+
+                # Pause aléatoire entre les envois
+                #time.sleep(1) #  à activer pour la suite.
+                nb=nb+1
+                envoiReussi : bool  = envoyerMail (sujet = sujet,
+                                         corpsDuMessage = corpsDuMessage,
+                                         email = etu.courriel,                       
+                                         fichierPng = etu.fichierPng ,
+                                         setUpMail = setUpMail,
+                                         go = False  # go pour bloquer l'envoi pour le développement.
+                                         )
+                if envoiReussi :
+                    nbok = nbok + 1 
+                etu.set_verifEnvoi(envoiReussi)
+                
+        messagebox.showinfo("Bilan des envois",f"{nb} mail envoyés.Dont {nbok} correctement.")
+
     ### affichage 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.__dict__})"

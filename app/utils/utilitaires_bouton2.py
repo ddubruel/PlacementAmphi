@@ -2,7 +2,7 @@ from  app.classes.c2_0_classeS_etudiant_a_amphi import amphi,rangDansZoneAmphi
 from classes.c5_tracePlanAmphiEtGenerefichier import tracePlanAmphiEtGenerefichier 
 
 
-    
+ 
     
 
 def genererLesPngPlacesIndividuelles(Amphi,arborescence,root,listeFenetreGraphiqueVisuAmphi):
@@ -21,21 +21,25 @@ def genererLesPngPlacesIndividuelles(Amphi,arborescence,root,listeFenetreGraphiq
 def remplitRangCompleteEtudiant(Amphi):
     # remplissage des classes Etudiant pour tous les étudiants.
         
-    for nmrZone in range(len(Amphi.zones))  :
-        nbRang =   Amphi.zones[nmrZone].nbRang
+    for nmrZone,zone  in enumerate(Amphi.zones)  :
+        prefixe_zone : str = zone.labelZone
+        nbRang =   zone.nbRang
         # instanciation des rangs vides
         listeRang=[] # attention indice 0 pour le rang 1 !!!!
         for nmrRang in range(1,nbRang+1) :
             listeRang.append(rangDansZoneAmphi( numeroRang = nmrRang , listeEtudiant=[]  ))
             #print('nmrRang =',nmrRang ,'listeRang[ ]=',listeRang[nmrRang-1])
             #print()
-        for  k, (row,col)  in enumerate (Amphi.zones[nmrZone].placement) :
+        for  k, (row,col)  in enumerate (zone.placement) :
             # remplissage des attributs non encore définit pour les étudiants 
-            etudiantPourLeRang = Amphi.zones[nmrZone].listeDesEtudiantDansLaZone[k]
+            etudiantPourLeRang = zone.listeDesEtudiantDansLaZone[k]
             etudiantPourLeRang.set_numeroPlace(col)
-            etudiantPourLeRang.set_numeroRang(row)
-            if len(Amphi.zones[nmrZone].liste_nom_fic_png)!=0 : # cas où les fichiers png existent :
-                nomFichierPng = Amphi.zones[nmrZone].liste_nom_fic_png[k]
+            etudiantPourLeRang.set_numeroRang(row)            
+            reference_place : str  = prefixe_zone+"-"+str(row) +"-"+str(col)
+            etudiantPourLeRang.set_place( reference_place ) #####!!!!!!
+            etudiantPourLeRang.set_zone( prefixe_zone )                 #####!!!!!!
+            if len(zone.liste_nom_fic_png)!=0 : # cas où les fichiers png existent :
+                nomFichierPng = zone.liste_nom_fic_png[k]
             else :
                 nomFichierPng=""                                                   
             # remplissage du rang (indice 0 pour le rang 1 !!!)
@@ -46,4 +50,4 @@ def remplitRangCompleteEtudiant(Amphi):
         for nmrRang in range(1,nbRang+1) :
             #print('nmrRang =',nmrRang)
             #print(listeRang[nmrRang-1])
-            Amphi.zones[nmrZone].ajouterRang(listeRang[nmrRang-1])
+            zone.ajouterRang(listeRang[nmrRang-1])

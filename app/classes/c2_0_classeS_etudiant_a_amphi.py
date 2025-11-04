@@ -12,9 +12,12 @@ class etudiant:
     numeroEtudiant : str 
     courriel : str 
     
+    reference_place : str
+    prefixe_zone : str
     numeroPlace : int 
     numeroRang :  int 
-    fichierPng :  str 
+    fichierPng :  str
+    statut     : bool   # True si l'envoi est réussi , False sinon.
         
     def __init__(self,nom,prenom,numeroEtudiant,courriel):
         self.nom = nom 
@@ -22,10 +25,23 @@ class etudiant:
         self.numeroEtudiant = numeroEtudiant
         self.courriel = courriel
         
+        self.reference_place =""
+        self.prefixe_zone =""
         self.numeroPlace = 0
         self.numeroRang  = 0
         self.fichierPng  = ""
-            
+        self.statut = False #  True si l'envoi est réussi , False sinon.
+        
+        
+    def set_verifEnvoi(self, statut) :
+        self.statut = statut
+    
+    def set_place(self, reference_place ):
+        self.reference_place = reference_place
+                
+    def set_zone(self, prefixe_zone ):
+        self.prefixe_zone = prefixe_zone
+
     def set_courriel(self,courriel):
         self.courriel = courriel
         
@@ -55,6 +71,10 @@ class rangDansZoneAmphi :
     def ajouterEtudiant(self, etudiant):
         """Ajoute un étudiant à la liste du rang."""
         self.listeEtudiant.append(etudiant)
+    
+    def get_etudiants(self) -> list:
+        """la liste des étudiants du rang."""
+        return self.listeEtudiant
         
     def __repr__(self):
         return f"{self.__class__.__name__}({self.__dict__})"
@@ -101,7 +121,13 @@ class zoneDansAmphi :
         
     def set_liste_nom_fic_png(self,liste : list[str] ) -> None:
         self.liste_nom_fic_png=liste
-        
+    
+    def get_etudiants(self) -> list:
+        """Retourne la liste de tous les étudiants de la zone."""
+        etudiants = []
+        for rang in self.listeRangDansZoneAmphi:
+            etudiants.extend(rang.get_etudiants())
+        return etudiants
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.__dict__})"
@@ -138,6 +164,13 @@ class amphi :
         
     def get_nbEtudiantAmphi(self) -> int  :
         return len(self.listeTousLesEtudiantsDansAmphi) 
+    
+    def get_etudiants(self) -> list:
+        """ la liste de tous les étudiants de l'amphi."""
+        etudiants = []
+        for zone in self.zones:
+            etudiants.extend(zone.get_etudiants())
+        return etudiants
     
     def __repr__(self):
         return f"{self.__class__.__name__}({self.__dict__})"   
