@@ -31,7 +31,6 @@ from utils.utilitaire_UI_mail import UI_mail
 from utils.UI_preparation_message import UI_preparation_message
 from utils.utilitaire_EnvoiMail import  envoyerMail
 from utils.utilitaire_sauvegarde import sauvegarde_etudiants_non_envoyes
-from utils.UI_confirmationEnvoi import UI_confirmationEnvoi
 
 # ---------- Modèle ----------
 @dataclass
@@ -61,8 +60,7 @@ class Boustrophedon:
         self.build_header()
         self.build_controls()
         self.build_buttons()
-        
-        self.update_buttons_state("initial")
+        self.update_buttons_state()
 
         # Boucle principale
         self.root.mainloop()
@@ -87,10 +85,6 @@ class Boustrophedon:
         ).pack(side="left", padx=10)
 
         self.var_mode = tk.StringVar(value=self.etat.mode)
-        
-        # quand la variable change, on appelle on_mode_selected()
-        self.var_mode.trace_add("write", lambda *args: self.on_mode_selected())
-        
         tk.Radiobutton(
             frame_radio, text="Examen",
             variable=self.var_mode, value="Examen"
@@ -138,24 +132,12 @@ class Boustrophedon:
         tk.Button(self.root, text="Quitter (quit et pas destroy pour le dev)", command=self.root.quit).pack(pady=10)
 
     # ----- Contrôleur : logique -----
-    def on_mode_selected(self):
-        # Met à jour l'état interne
-        self.etat.mode = self.var_mode.get()
-        # Exécute l'action demandée
-        self.update_buttons_state("choixModeFait")
-    
     def update_buttons_state(self, etape="initial"):
         if etape == "initial":
-            self.btn_load.config(state=tk.DISABLED)
             self.btn_png.config(state=tk.DISABLED)
             self.btn_pdf.config(state=tk.DISABLED)
             self.btn_mail.config(state=tk.DISABLED)
-        elif etape== "choixModeFait":
-            self.btn_load.config(state=tk.NORMAL)
-            self.btn_png.config(state=tk.DISABLED)
-            self.btn_pdf.config(state=tk.DISABLED)
-            self.btn_mail.config(state=tk.DISABLED)        
-        
+            
         elif etape == "donnees_chargees":
             self.action2finie : bool = False  # pour pouvoir zapper la gnération des png.
             self.btn_png.config(state=tk.NORMAL)
@@ -374,14 +356,7 @@ class Boustrophedon:
         self.update_buttons_state("pdf_generes")
     
     def envoyerMails(self):
-        # creer une UI pour ces champs.
-        #global SMTP_SERVER,SMTP_PORT,EMAIL_SENDER, EMAIL_PASSWORD,Nom_utilisateur
-        #SMTP_SERVER = "webmail.univ-cotedazur.fr" 
-        #SMTP_PORT = 587  
-        #EMAIL_SENDER = "denis.dubruel@univ-cotedazur.fr"  # Remplacez par votre email
-        #EMAIL_PASSWORD = input("Mot de passe  mail ?")  
-        #Nom_utilisateur="ddubruel"
-        
+       
         # mailConfig à récupérer en sortie d'UI
         SMTP_SERVER, SMTP_PORT,EMAIL_SENDER, EMAIL_PASSWORD,Nom_utilisateur   = UI_mail(self.root)
         
@@ -390,33 +365,16 @@ class Boustrophedon:
         sujet: str
         corpsDuMessageCommun: str
         sujet, corpsDuMessageCommun  = UI_preparation_message(self.root , self.dataEpreuvePourMail )
+<<<<<<< HEAD
         
+=======
                 
+>>>>>>> modifEnvoiMail
         # Envoi des mails
         nb : int = 0
         nbok : int = 0
-        
-        # interface graphique pour savoir si envoi réel ou test à blanc...
-        envoiReel : bool  = UI_confirmationEnvoi(self.root)
-        
-        # lancer controleur
-        self.ouvrir_fenetre_interruption()
-        
         for amphi in self.listAmphi :
-            if not self.controleur_ok:
-                break
             for etu in amphi.get_etudiants():
-                # Maintient l'UI réactive pour capter le clic sur "interuption"
-                try:
-                    self.root.update_idletasks()
-                    self.root.update()
-                except tk.TclError:
-                    pass  # si la fenêtre principale est fermée
-
-                if not self.controleur_ok:
-                    break  # stop immédiat si l'utilisateur a demandé l'interuption
-
-                
                 ### pourrait être mis dans une fonction...
                 debut : str = f"Bonjour {etu.prenom} \n\n"
                 fin: str = (
@@ -429,23 +387,20 @@ class Boustrophedon:
                 ####  ...plus tard...
 
                 # Pause aléatoire entre les envois
-                time.sleep(1) #  à activer pour la suite.
+                #time.sleep(2) #  à activer pour la suite.
                 nb=nb+1
                 envoiReussi : bool  = envoyerMail (sujet = sujet,
                                          corpsDuMessage = corpsDuMessage,
                                          email = etu.courriel,                       
                                          fichierPng = etu.fichierPng ,
                                          setUpMail = setUpMail,
-                                         go = envoiReel  # mis à False pour un test à blanc.
+                                         go = False  # go pour bloquer l'envoi pour le développement.
                                          )
-                
+                envoiReussi=False
                 if envoiReussi :
                     nbok = nbok + 1
                     print("ok =",nbok ,'sur',nb)
                 etu.set_verifEnvoi(envoiReussi)
-            # sortie propre si demande d'arrêt
-            if not self.controleur_ok:
-                break
                 
         messagebox.showinfo("Bilan des envois",f"{nb} mail envoyés.Dont {nbok} correctement.")
         nomFichier = sauvegarde_etudiants_non_envoyes(self.listAmphi, chemin_dossier="")
@@ -453,48 +408,8 @@ class Boustrophedon:
     ### affichage 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.__dict__})"
-
-    def ouvrir_fenetre_interruption(self):
-        """Ouvre une petite fenêtre avec 'Interuption des envoi' et un bouton 'interuption'."""
-        self.controleur_ok = True  # réinitialise le contrôleur à OK
-
-        self._win_interruption = tk.Toplevel(self.root)
-        self._win_interruption.title("Interuption des envoi")
-        self._win_interruption.resizable(False, False)
-        self._win_interruption.transient(self.root)
-        self._win_interruption.grab_set()
-
-        frm = tk.Frame(self._win_interruption, padx=12, pady=12)
-        frm.pack(fill="both", expand=True)
-
-        tk.Label(
-            frm,
-            text="Interuption des envoi",
-            font=("Arial", 12, "bold")
-        ).pack(pady=(0, 10))
-
-        tk.Button(
-            frm,
-            text="interuption",
-            width=14,
-            command=self._declencher_interuption
-        ).pack()
-
-        # Si on ferme la fenêtre avec la croix, on laisse l'envoi continuer
-        self._win_interruption.protocol("WM_DELETE_WINDOW", self._fermer_sans_interrompre)
-
-    def _declencher_interuption(self):
-        """Appelé quand on clique sur le bouton 'interuption'."""
-        self.controleur_ok = False
-        if hasattr(self, "_win_interruption") and self._win_interruption.winfo_exists():
-            self._win_interruption.destroy()
-
-    def _fermer_sans_interrompre(self):
-        """Fermeture de la mini-fenêtre sans stopper l'envoi."""
-        if hasattr(self, "_win_interruption") and self._win_interruption.winfo_exists():
-            self._win_interruption.destroy()
-
-
+        
+   
 if __name__ == '__main__':
     root: tk.Tk = tk.Tk()
     # Assure une fermeture propre via la croix de la fenêtre (Thonny-friendly) A METTRE A LA FIN
