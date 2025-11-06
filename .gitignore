@@ -1,9 +1,8 @@
 # exclusion des   fichiers *.png produits sur le site github (RGPD)
-*.png
+
 # les data étudiants
 *.gz
-# exclusion des fichier  3_test 4_test* etc..
-*_test*
+*.csv
 
 # exclusion des fichiers intermédiaires LaTeX
 *.ps
@@ -12,7 +11,7 @@
 
 # les fichiers emacs si il y en a...
 \#*#
-*.csv
+
 *.patch # les fichiers issus de git diff > *.patch
 
 *.txt

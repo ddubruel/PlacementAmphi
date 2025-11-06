@@ -30,6 +30,7 @@ from utils.utilitaire_UI_saisirDonneesEpreuve import UI_saisirDonneesEpreuve
 from utils.utilitaire_UI_mail import UI_mail
 from utils.UI_preparation_message import UI_preparation_message
 from utils.utilitaire_EnvoiMail import  envoyerMail
+from utils.utilitaire_sauvegarde import sauvegarde_etudiants_non_envoyes
 
 # ---------- Modèle ----------
 @dataclass
@@ -355,14 +356,7 @@ class Boustrophedon:
         self.update_buttons_state("pdf_generes")
     
     def envoyerMails(self):
-        # creer une UI pour ces champs.
-        #global SMTP_SERVER,SMTP_PORT,EMAIL_SENDER, EMAIL_PASSWORD,Nom_utilisateur
-        #SMTP_SERVER = "webmail.univ-cotedazur.fr" 
-        #SMTP_PORT = 587  
-        #EMAIL_SENDER = "denis.dubruel@univ-cotedazur.fr"  # Remplacez par votre email
-        #EMAIL_PASSWORD = input("Mot de passe  mail ?")  
-        #Nom_utilisateur="ddubruel"
-        
+       
         # mailConfig à récupérer en sortie d'UI
         SMTP_SERVER, SMTP_PORT,EMAIL_SENDER, EMAIL_PASSWORD,Nom_utilisateur   = UI_mail(self.root)
         
@@ -371,10 +365,6 @@ class Boustrophedon:
         sujet: str
         corpsDuMessageCommun: str
         sujet, corpsDuMessageCommun  = UI_preparation_message(self.root , self.dataEpreuvePourMail )
-        
-        
-        
-        
         
         # Envoi des mails
         nb : int = 0
@@ -391,7 +381,7 @@ class Boustrophedon:
                 ####  ...plus tard...
 
                 # Pause aléatoire entre les envois
-                #time.sleep(1) #  à activer pour la suite.
+                #time.sleep(2) #  à activer pour la suite.
                 nb=nb+1
                 envoiReussi : bool  = envoyerMail (sujet = sujet,
                                          corpsDuMessage = corpsDuMessage,
@@ -400,12 +390,15 @@ class Boustrophedon:
                                          setUpMail = setUpMail,
                                          go = False  # go pour bloquer l'envoi pour le développement.
                                          )
+                envoiReussi=False
                 if envoiReussi :
-                    nbok = nbok + 1 
+                    nbok = nbok + 1
+                    print("ok =",nbok ,'sur',nb)
                 etu.set_verifEnvoi(envoiReussi)
                 
         messagebox.showinfo("Bilan des envois",f"{nb} mail envoyés.Dont {nbok} correctement.")
-
+        nomFichier = sauvegarde_etudiants_non_envoyes(self.listAmphi, chemin_dossier="")
+        
     ### affichage 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.__dict__})"
