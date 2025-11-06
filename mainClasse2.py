@@ -371,11 +371,7 @@ class Boustrophedon:
         sujet: str
         corpsDuMessageCommun: str
         sujet, corpsDuMessageCommun  = UI_preparation_message(self.root , self.dataEpreuvePourMail )
-        
-        
-        
-        
-        
+                
         # Envoi des mails
         nb : int = 0
         nbok : int = 0
@@ -385,7 +381,9 @@ class Boustrophedon:
                 debut : str = f"Bonjour {etu.prenom} \n\n"
                 fin: str = (
                             f"\n\n Vous avez la place {etu.reference_place}, amphithéâtre {amphi.nom}.\n"
-                            f"Qui se trouve en Zone : {etu.prefixe_zone} — Rang n° {etu.numeroRang} — Place n° {etu.numeroPlace}."
+                            f"Qui se trouve en Zone : {etu.prefixe_zone} — Rang n° {etu.numeroRang} — Place n° {etu.numeroPlace}.\n"
+                            f"\n"
+                            f"---Ce courriel a été envoyé automatiquement. Merci de ne pas y répondre.---"
                         )
                 corpsDuMessage: str  = debut + corpsDuMessageCommun  +fin # le contenu du mail est complet
                 ####  ...plus tard...
