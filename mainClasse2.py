@@ -356,7 +356,14 @@ class Boustrophedon:
         self.update_buttons_state("pdf_generes")
     
     def envoyerMails(self):
-       
+        # creer une UI pour ces champs.
+        #global SMTP_SERVER,SMTP_PORT,EMAIL_SENDER, EMAIL_PASSWORD,Nom_utilisateur
+        #SMTP_SERVER = "webmail.univ-cotedazur.fr" 
+        #SMTP_PORT = 587  
+        #EMAIL_SENDER = "denis.dubruel@univ-cotedazur.fr"  # Remplacez par votre email
+        #EMAIL_PASSWORD = input("Mot de passe  mail ?")  
+        #Nom_utilisateur="ddubruel"
+        
         # mailConfig à récupérer en sortie d'UI
         SMTP_SERVER, SMTP_PORT,EMAIL_SENDER, EMAIL_PASSWORD,Nom_utilisateur   = UI_mail(self.root)
         
@@ -365,6 +372,10 @@ class Boustrophedon:
         sujet: str
         corpsDuMessageCommun: str
         sujet, corpsDuMessageCommun  = UI_preparation_message(self.root , self.dataEpreuvePourMail )
+        
+        
+        
+        
         
         # Envoi des mails
         nb : int = 0
@@ -375,13 +386,15 @@ class Boustrophedon:
                 debut : str = f"Bonjour {etu.prenom} \n\n"
                 fin: str = (
                             f"\n\n Vous avez la place {etu.reference_place}, amphithéâtre {amphi.nom}.\n"
-                            f"Qui se trouve en Zone : {etu.prefixe_zone} — Rang n° {etu.numeroRang} — Place n° {etu.numeroPlace}."
+                            f"Qui se trouve en Zone : {etu.prefixe_zone} — Rang n° {etu.numeroRang} — Place n° {etu.numeroPlace}.\n"
+                            f"\n"
+                            f"---Ce courriel a été envoyé automatiquement. Merci de ne pas y répondre.---"
                         )
                 corpsDuMessage: str  = debut + corpsDuMessageCommun  +fin # le contenu du mail est complet
                 ####  ...plus tard...
 
                 # Pause aléatoire entre les envois
-                #time.sleep(2) #  à activer pour la suite.
+                #time.sleep(1) #  à activer pour la suite.
                 nb=nb+1
                 envoiReussi : bool  = envoyerMail (sujet = sujet,
                                          corpsDuMessage = corpsDuMessage,
