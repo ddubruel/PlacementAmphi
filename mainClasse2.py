@@ -508,3 +508,4 @@ if __name__ == '__main__':
     print(">>> Pour relancer l’UI, taper : root.mainloop()")
     
     print(vars(app))
+app
