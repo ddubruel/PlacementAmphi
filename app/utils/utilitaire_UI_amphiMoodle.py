@@ -77,8 +77,8 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
 
     # --- entêtes ---
     tk.Label(f_mid, text="Amphi").grid(row=0, column=0, sticky="w", padx=(0, 8))
-    tk.Label(f_mid, text="TT").grid(row=0, column=1, sticky="w", padx=(0, 8))
-    tk.Label(f_mid, text="Valeur").grid(row=0, column=2, sticky="w", padx=(0, 8))
+    tk.Label(f_mid, text="Tiers Temps").grid(row=0, column=1, sticky="w", padx=(0, 8))
+    tk.Label(f_mid, text="Nombre \n d'étudiants").grid(row=0, column=2, sticky="w", padx=(0, 8))
     tk.Label(f_mid, text="Max").grid(row=0, column=3, sticky="w", padx=(0, 8))
 
     # (nom, max_base, vAmphi, vTT, vInt, spin, lbl_max, cb_amphi)

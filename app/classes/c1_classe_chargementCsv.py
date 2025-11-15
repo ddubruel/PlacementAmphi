@@ -1,10 +1,13 @@
 import csv
 import tkinter as tk
+import unicodedata
+
 from tkinter import messagebox, filedialog
 from dataclasses import  dataclass 
 from typing import Optional
 from io import TextIOWrapper
 from random import shuffle
+
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Modèles de données
@@ -21,7 +24,7 @@ class FichierCsv  :
        
     def __init__(self, formatFic: str, msgChoixFichier : str , parent: Optional[tk.Tk] = None):
         """Crée un objet FichierCsv et exécute automatiquement les étapes principales."""
-        self.formatFic = formatFic    # contient "Moodle" ou "Apogée"
+        self.formatFic = formatFic    # contient "Moodle" ou "Apogée"  ou Ade
         self.msgChoixFichier =msgChoixFichier    # pour ajouter "tiers temps" si besoin.
         self.chemin = None
         self.entete = None
@@ -32,9 +35,29 @@ class FichierCsv  :
         # Étapes automatiques :
         rep="."
         titre=f"Choix du fichier {self.formatFic}."
-        self.choisir_fichier(parent, titre, rep )   
+        
+        self.choisir_fichier(parent, titre, rep )
+        
         if self.chemin:
-            self.charger_csv()
+            self.valide = False
+            while not self.valide and self.chemin :
+                self.charger_csv()   #  on charge le fichier
+                self.valider_contenu() # on regarde sa validité 
+                print(f"La validité du fichier {self.chemin} est  : {self.valide}")
+                if not self.valide:
+                    messagebox.showwarning(
+                        title="Erreur de fichier",
+                        message=f"Ce fichier n'est pas un {self.formatFic} valide.\n"
+                        f"Veuillez en choisir un autre."
+                    )
+                    # redemande d'un fichier (peut devenir "")
+                    self.choisir_fichier(parent, titre, rep)
+            # si on sort de la boucle parce que self.chemin == ""
+            if not self.chemin:
+                messagebox.showwarning("Annulation", "Aucun fichier sélectionné.")
+                return        
+
+
             print(self.chemin)
             print(f"Après self.charger_csv(), il y a {len(self.data)}étudiants.")
             if self.formatFic=="Moodle" :
@@ -47,15 +70,9 @@ class FichierCsv  :
                 #input('1) presser entrée')
             else :
                 pass # le fichier apogée est propre ! pas de doublons (...pour l'instant !!)
-            self.valider_contenu()
-        if self.valide :
-            self.nbEtudiant = len(self.data)
+            
         # mélange aléatoire de la liste dans l'amphi
-        
-        
-        print(f"La validité du fichier {self.chemin} est  : {self.valide}")
-    
-
+                
         
     def trierAlphaNom(self):
         """Trie les lignes en place sur la 2ᵉ colonne (insensible à la casse)."""
@@ -86,18 +103,40 @@ class FichierCsv  :
         self.nbEtudiant = len(self.data)
         return self.nbEtudiant
     
+    def ajouteEtudiantAde(self, dataAde : list[str] ):
+    
+        def retirer_accents(txt: str) -> str:
+            resultat = ""
+            for c in unicodedata.normalize('NFD', txt):
+                if unicodedata.category(c) != 'Mn':   # Mn = marque d'accent
+                    resultat += c
+            return resultat
+        
+        nomAde : str    = dataAde[1]
+        prenomAde : str = dataAde[2]
+        numeroAde : str = dataAde[0]
+        
+        nom    = retirer_accents(  nomAde.replace(" ","-").lower() )
+        prenom = retirer_accents( prenomAde.replace(" ","-").lower() )
+        courriel=f"{prenom}.{nom}@etu.univ-cotedazur.fr"
+    
+        newData : list[list[str]] =[ prenom , nom , numeroAde , courriel , "nil"]
+        print(f"Ajout de {newData} dans la liste qui contient actuellement {len(self.data)} étudiants.")
+        self.data.append(newData)        
+        
+    
     def miseAJourData(self,dataFiltree : list[list[str]] ) :
         self.data=dataFiltree
         self.nbEtudiant = len(self.data or [])
                 
     def choisir_fichier(self,tkParent ,  titre  ,rep)-> None :
         messagebox.showwarning(
-            title=f"Sélection du fichier {self.formatFic}",
+            title=f"Sélection du fichier {self.formatFic} - {self.msgChoixFichier} ",
             message=f"Choisir un fichier {self.formatFic} {self.msgChoixFichier} au format Csv."
         )
         
         self.chemin : str  = filedialog.askopenfilename(
-                    title=titre,
+                    title=titre + f"-{self.msgChoixFichier}",
                     initialdir='.',
                     filetypes=[("Fichiers csv", "*.csv")],
                             )
@@ -126,22 +165,22 @@ class FichierCsv  :
         except Exception as e: 
             raise ValueError(f"Plantage dans charger_csv, voici la cause :  ({type(e).__name__}) : {e} \n\n"
                              f"Veuillez vérifier vos fichiers csv d'origine.\n"
-                             f" Attention à vos modifications et vos sauvegardes.") from e
-        
-        
+                             f" Attention à vos modifications et vos sauvegardes.") from e        
         
     def valider_contenu(self)-> None :    
-        entete = self.entete or [] # pour éviter le cas None                        
-        if (
-            (self.formatFic=="Apogée"  and entete[1]!="DHH_DEB_PES")  
-            or
-            (self.formatFic== "Moodle" and entete[1]!='Nom de famille')             
-            ):
-                messagebox.showwarning( title="Erreur de fichier",
-                            message=f"Erreur, vous n'avez pas choisi un fichier {self.formatFic} au format csv (à vérifier !).")
-                self.valide=False                            
+        entete = self.entete or [] # pour éviter le cas None
+        print(self.formatFic, entete[1])
+        if self.formatFic=="Apogée" :
+            self.valide = (entete[1] == "DHH_DEB_PES" )
+            print(self.formatFic, entete[1], self.valide)
+        elif self.formatFic== "Moodle" :
+            self.valide = ( entete[1]=='Nom de famille')
+        elif self.formatFic== "Ade" :
+            self.valide = ( entete[1]=='Nom')
         else :
-            self.valide=True
+            self.valide=False
+        
+
         
     
 # ────────────────────────────────────────────────────────────────────────────────
@@ -156,15 +195,16 @@ class FichierCsv  :
 
 @dataclass ( init=False)  # parce qu'il y a un __init__
 class chargementCsv:
-    mode: str                              # "Examen" ou "Partiel"
+    mode: str                              # "Examen" ou "Partiel" ou "PartielAde"
     apogee   : FichierCsv                     # peut être vide en mode Partiel
     moodle   : FichierCsv
     moodleTt : FichierCsv
+    ade      : FichierCsv
     
     def __init__(self,mode : str ,tkparent : tk.Tk ):
-        self.mode = mode   # "Examen" ou "Partiel"
+        self.mode = mode   # "Examen" ou "Partiel" ou "PartielAde"
         
-        if self.mode == "Examen" : # chargement des 2 sources d'information
+        if self.mode == "Examen" : # chargement des 2 sources d'information (Apogée et Moodle pour les mails).
             self.apogee = FichierCsv(formatFic="Apogée",msgChoixFichier="avec tous les étudiants")  # les tiers temps sont déja placé dans Apogée
             print("Le fichier apogée contient :", self.apogee.get_nbEtudiant(),'étudiants')
             #input('2) presser entrée')
@@ -173,7 +213,7 @@ class chargementCsv:
             print("Le fichier moodle contient :", self.moodle.get_nbEtudiant())
             print("Le fichier moodle contient :", len(self.apogee.data))
             #input('3) presser entrée')
-        else :
+        elif self.mode == "Partiel" :
             self.apogee = None
             self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier="avec tous les étudiants")                        
             tiersTemps : str = messagebox.askquestion("Tiers temps ?","Avez-vous un fichier tiers temps ?",icon ='question' )
@@ -182,11 +222,78 @@ class chargementCsv:
                 self.retirerLesTiersTempsDeMoodle()
             else :
                 self.moodleTt = None
-                                            
+                
+        elif self.mode == "PartielAde" :
+            self.apogee = None
+            self.ade = FichierCsv(formatFic="Ade", msgChoixFichier="avec uniquement les étudiants inscrits à jour dans ADE.")            
+            self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier="avec tous les étudiants, pour avoir les mails.")
+            
+            print(f"linge 229 ade contient :  {len(self.ade.data)}  étudiants.")
+            print(f"ligne 229 moodle contient :  {len(self.moodle.data)}  étudiants.")
+            
+            numeroAde: set[str] = {etu[0] for etu in self.ade.data} # ensemble des numéros étudiant de ADE.
+            # on ne garde que les étudiants de la liste issue de ADE
+            self.gardeLesNumeros( numeroAde , self.moodle ) 
+            print(f"ligne 235 : moodle contient :  {len(self.moodle.data)}  étudiants.")
+            
+            tiersTemps : str = messagebox.askquestion("Tiers temps ?","Avez-vous un fichier tiers temps ?",icon ='question' )
+            
+            if tiersTemps=='yes':  
+                self.moodleTt = FichierCsv(formatFic="Moodle",msgChoixFichier="contenant seulement les tiers temps")
+                print(f"linge 241 moodleTt contient :  {len(self.moodleTt.data)}  étudiants.")
+                numeroTiersTemps : set[str] =  {etu[2] for etu in self.moodleTt.data} # pour après le test
+                self.gardeLesNumeros( numeroAde , self.moodleTt ) # retrait des fantômes de la liste Tiers Temps
+                print(f"linge 244 moodleTt contient :  {len(self.moodleTt.data)}  étudiants.")
+            else : 
+                self.moodleTt=None
+                numeroTiersTemps : set[str] = set()
+                
+            # on retire de la liste principale les étudiants Tiers Temps
+            numeroListePrincipale : set[str] = numeroAde - numeroTiersTemps            
+            self.gardeLesNumeros( numeroListePrincipale , self.moodle)
+            print(f"ligne 252  : La liste principale après retrait des tiers temps contient {len(self.moodle.data) }étudiant(e)s")
+            
+            # cas où des étudiants sont dans ADE mais pas encore dans Moodle :
+            if len(self.ade.data)> len(self.moodle.data) + len(self.moodleTt.data) :
+                nManquant : int = len(self.ade.data) - len(self.moodle.data) - len(self.moodleTt.data)
+                messagebox.showwarning( title="Attention !!!!",
+                message=f"Il manque {nManquant} étudiant(es) dans Moodle. La liste principale va être complétée.")                                
+                listeEtudiantAdeEnPlus=self.completeListeMoodleAvecAde()
+                print(f"La liste principale après ajout des étudiants d'ADE contient {len(self.moodle.data)}étudiant(e)s")
+                    
+    def completeListeMoodleAvecAde(self):
+        numeroAde        : set[str] = {etu[0] for etu in self.ade.data}
+        numeroMoodle     : set[str] = {etu[2] for etu in self.moodle.data}
+        numeroTiersTemps : set[str] = {etu[2] for etu in self.moodleTt.data}
+        
+        numeroManquant = numeroAde - numeroMoodle -numeroTiersTemps
+        listeManquant : list[list[str]] =[ etu for etu in  self.ade.data if etu[0] in numeroManquant ]       
+        for etu in listeManquant:
+            print( f"{etu} va être ajouté à la liste principale.")
+            self.moodle.ajouteEtudiantAde(etu)
+        
+
+    def gardeLesNumeros(self, numeroRef : set[str], ficCsv : FichierCsv ):
+        data_filtrees : list[list [str]]= []
+        nb_suppr : int = 0        
+        avant= len(ficCsv.data)        
+        for etu in ficCsv.data:
+            nmr : str = etu[2]
+            if (nmr not in numeroRef) and (nmr!=""):
+                nb_suppr = nb_suppr + 1
+                print("retrait de ",etu,"\n")
+            else:
+                data_filtrees.append(etu) # on garde l'étudiant .        
+        apres = len(data_filtrees)        
+        
+        ficCsv.miseAJourData(data_filtrees)
+        print(f" {avant-apres } étudiant(s) fantômes retirés la liste  qui contient maintenant {ficCsv.get_nbEtudiant()} étudiants.")
+
+        
     def retirerLesTiersTempsDeMoodle(self):
         """Retire de l'attribut moodle les étudiants tiers temps s'il y en a.
         à faire en dehors de la classe fichierCsv car il faut les données moodle et moodle Tiers Temps."""
-        numeros_tt = {etu[2] for etu in self.moodleTt.data} # ensemble des numéros Tier Temps.
+        numeros_tt : set[str] = {etu[2] for etu in self.moodleTt.data} # ensemble des numéros Tier Temps.
         print(f"\n\n Pour le retrait des tiers temps de la liste principale, il y a {len(self.moodleTt.data)} étudiants tiers temps.")
 
         moodle_data_filtrée : list[list [str]]= []

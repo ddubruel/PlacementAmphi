@@ -71,20 +71,34 @@ class Boustrophedon:
     def build_header(self):
         tk.Label(
             self.root,
-            text  ="Étape 1 : Chargement des données.",
+            text  ="Choisissez vos données de référence pour un nouveau projet :",
             font =("Arial", 11, "bold")
         ).pack(pady=10)
+        tk.Label(
+            text  ="APOGÉE (fournit par la scolarité avant un examen).",
+            font =("Arial", 10)
+        ).pack(pady=10)
+        tk.Label(
+            text  ="ADE (liste filtrée par Olivier avec la liste à jour des étudiants).",
+            font =("Arial", 10)
+        ).pack(pady=10)
+        tk.Label(
+            text  ="MOODLE (Il peut y avoir des doctorants ou des étudiants désinscrits d'ADE).",
+            font =("Arial", 10)
+        ).pack(pady=10)
+        
+            
 
     # ----- Vue : contrôles (radio) -----
     def build_controls(self):
         frame_radio = tk.Frame(self.root)
         frame_radio.pack(pady=10)
 
-        tk.Label(
-            frame_radio,
-            text='Cocher une case puis cliquer sur "Chargement ..."',
-            font=("Arial", 11)
-        ).pack(side="left", padx=10)
+#         tk.Label(
+#             frame_radio,
+#             text='Cocher le type de données que vous avez : "',
+#             font=("Arial", 11)
+#         ).pack(side="left", padx=10)
 
         self.var_mode = tk.StringVar(value=self.etat.mode)
         
@@ -92,13 +106,20 @@ class Boustrophedon:
         self.var_mode.trace_add("write", lambda *args: self.on_mode_selected())
         
         tk.Radiobutton(
-            frame_radio, text="Examen",
+            frame_radio, text="APOGÉE (examen)",
             variable=self.var_mode, value="Examen"
         ).pack(side="left", padx=10)
+        
         tk.Radiobutton(
-            frame_radio, text="Partiel",
+            frame_radio, text="ADE (partiel)",
+            variable=self.var_mode, value="PartielAde"
+        ).pack(side="left", padx=10)
+        
+        tk.Radiobutton(
+            frame_radio, text="MOODLE (partiel)",
             variable=self.var_mode, value="Partiel"
         ).pack(side="left", padx=10)
+        
 
     # ----- Vue : boutons d’actions -----
     def build_buttons(self):
@@ -140,9 +161,11 @@ class Boustrophedon:
     # ----- Contrôleur : logique -----
     def on_mode_selected(self):
         # Met à jour l'état interne
-        self.etat.mode = self.var_mode.get()
+        self.etat.mode = self.var_mode.get()        
         # Exécute l'action demandée
         self.update_buttons_state("choixModeFait")
+
+
     
     def update_buttons_state(self, etape="initial"):
         if etape == "initial":
@@ -177,6 +200,7 @@ class Boustrophedon:
         print(f"L'arborescence des fichiers est créée.\n Les fichiers de sortie se "
               f"trouvent dans le répertoire :\n {self.dataBrutes.apogee.chemin}.\n"
               f"Chaque répertoire porte le nom de l'amphithéatre utilisé.\n")
+        
         # utilisation : chemin_png = self.arborescence.get_chemin(nom_amphi, "pngOut")
     
         # instanciation des amphi
@@ -281,7 +305,7 @@ class Boustrophedon:
                                                 )            
                 print(f"{nbEtudiantAPlacer} étudiants dont {nb_tiersTemps} étudiants ont été placés dans l'amphi {nomAmphi}.") 
             
-            print(f"L'AAAAmphithéatre {amphitheatre.nom} a reçu {len(amphitheatre.listeTousLesEtudiantsDansAmphi)} instances d'étudiants.\n")
+            print(f"L'Amphithéatre {amphitheatre.nom} a reçu {len(amphitheatre.listeTousLesEtudiantsDansAmphi)} instances d'étudiants.\n")
             #input("4) taper entrée")
         # fin exploiteMoodle(self)                
     
@@ -350,7 +374,7 @@ class Boustrophedon:
         # Générer PDF   LIB_SAL = self.nomAmphi 
          
         
-        if  self.etat.mode=='Partiel' :
+        if  self.etat.mode in ['Partiel' ,'PartielAde'] :
             entetePdf : list[str] = codeEnteteApogee(  self.etat.mode   , self.dataBrutes , self.listAmphi , "Nom provisoire", self.root )                                 
             annee_universitaire, date, horaires, duree, epreuve= UI_saisirDonneesEpreuve(self.root )
             entetePdf.set_valeurs( annee_universitaire, date, horaires,duree, epreuve,  LIB_SAL="Nom provisoire")
@@ -448,7 +472,8 @@ class Boustrophedon:
                 break
                 
         messagebox.showinfo("Bilan des envois",f"{nb} mail envoyés.Dont {nbok} correctement.")
-        nomFichier = sauvegarde_etudiants_non_envoyes(self.listAmphi, chemin_dossier="")
+        nom_OK,nom_NOK = sauvegarde_etudiants_non_envoyes(self.listAmphi, chemin_dossier=self.arborescence.racine)
+        messagebox.showinfo("La suite",f"Le fichier {nom_NOK} contient la liste des étudiants qui n'ont pas encore reçu le mail.")
         
     ### affichage 
     def __repr__(self):
@@ -469,7 +494,7 @@ class Boustrophedon:
 
         tk.Label(
             frm,
-            text="Interuption des envoi",
+            text="Interuption des envois.",
             font=("Arial", 12, "bold")
         ).pack(pady=(0, 10))
 
