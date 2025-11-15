@@ -40,3 +40,17 @@ def sauvegarde_etudiants_non_envoyes(listAmphi, chemin_dossier=""):
 
 
     return nom_OK,nom_NOK
+
+def sauveCsv(nomFic : str , entete : list[str], lignes : list[list[str]]):
+    print(f"[sauveCsv] écriture dans : {nomFic}")
+    try :
+        with open(nomFic, mode="w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f, delimiter=";")
+            writer.writerow(entete)        
+            for ligne in lignes :
+                writer.writerow(ligne)
+            print("[sauveCsv] OK, fichier écrit.")
+    except Exception as e:
+        print("[sauveCsv] ERREUR :", type(e).__name__, e)
+    
+     

@@ -1,13 +1,14 @@
 import csv
 import tkinter as tk
 import unicodedata
+import sys, os
 
 from tkinter import messagebox, filedialog
 from dataclasses import  dataclass 
 from typing import Optional
 from io import TextIOWrapper
 from random import shuffle
-
+from app.utils.utilitaire_sauvegarde import  sauveCsv
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Modèles de données
@@ -27,6 +28,7 @@ class FichierCsv  :
         self.formatFic = formatFic    # contient "Moodle" ou "Apogée"  ou Ade
         self.msgChoixFichier =msgChoixFichier    # pour ajouter "tiers temps" si besoin.
         self.chemin = None
+        self.repertoire = None 
         self.entete = None
         self.data = None
         self.valide = False
@@ -143,6 +145,8 @@ class FichierCsv  :
         if self.chemin =="" :
             messagebox.showwarning( title="Attention !!!!",
                 message=f"Vous n'avez pas choisi de fichier !!")
+        else :
+            self.repertoire = os.path.dirname(self.chemin)
 
     def charger_csv(self) -> None :
         """Lecture du fichier csv et extraction entête et données."""
@@ -225,13 +229,24 @@ class chargementCsv:
                 
         elif self.mode == "PartielAde" :
             self.apogee = None
-            self.ade = FichierCsv(formatFic="Ade", msgChoixFichier="avec uniquement les étudiants inscrits à jour dans ADE.")            
-            self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier="avec tous les étudiants, pour avoir les mails.")
+            self.ade = FichierCsv(formatFic="Ade", msgChoixFichier="avec uniquement les étudiants inscrits à jour dans ADE ")            
+            self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier=" avec tous les étudiants, pour avoir les mails.")
             
             print(f"linge 229 ade contient :  {len(self.ade.data)}  étudiants.")
             print(f"ligne 229 moodle contient :  {len(self.moodle.data)}  étudiants.")
             
-            numeroAde: set[str] = {etu[0] for etu in self.ade.data} # ensemble des numéros étudiant de ADE.
+            numeroAde: set[str] = {etu[0] for etu in self.ade.data} # ensemble des numéros étudiant de ADE.            
+            # on sauvegarde dans un fichier les étudiants qui ne sont pas dans ADE.
+            numeroMoodle  : set[str] = {etu[2] for etu in self.moodle.data} # ensemble des numéros étudiant de Moodle.
+            numeroAEffacer = numeroMoodle - numeroAde
+            listeAeffacer= [etu for etu in self.moodle.data if etu[2] in numeroAEffacer]
+            
+            print( self.moodle.repertoire+'/etudiants_a_effacer_dans_moodle.csv')
+            sauveCsv(nomFic= self.moodle.repertoire+'/etudiants_a_effacer_dans_moodle.csv' ,
+                     entete = self.moodle.entete  ,
+                     lignes = listeAeffacer)
+            
+            
             # on ne garde que les étudiants de la liste issue de ADE
             self.gardeLesNumeros( numeroAde , self.moodle ) 
             print(f"ligne 235 : moodle contient :  {len(self.moodle.data)}  étudiants.")
@@ -247,18 +262,17 @@ class chargementCsv:
             else : 
                 self.moodleTt=None
                 numeroTiersTemps : set[str] = set()
-                
             # on retire de la liste principale les étudiants Tiers Temps
             numeroListePrincipale : set[str] = numeroAde - numeroTiersTemps            
             self.gardeLesNumeros( numeroListePrincipale , self.moodle)
             print(f"ligne 252  : La liste principale après retrait des tiers temps contient {len(self.moodle.data) }étudiant(e)s")
             
             # cas où des étudiants sont dans ADE mais pas encore dans Moodle :
-            if len(self.ade.data)> len(self.moodle.data) + len(self.moodleTt.data) :
+            if len(self.ade.data)> len(self.moodle.data) + len(numeroTiersTemps) :
                 nManquant : int = len(self.ade.data) - len(self.moodle.data) - len(self.moodleTt.data)
                 messagebox.showwarning( title="Attention !!!!",
                 message=f"Il manque {nManquant} étudiant(es) dans Moodle. La liste principale va être complétée.")                                
-                listeEtudiantAdeEnPlus=self.completeListeMoodleAvecAde()
+                self.completeListeMoodleAvecAde()
                 print(f"La liste principale après ajout des étudiants d'ADE contient {len(self.moodle.data)}étudiant(e)s")
                     
     def completeListeMoodleAvecAde(self):

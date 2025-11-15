@@ -46,9 +46,15 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
     f_bot.pack(fill="x")
 
     # --- Titre ---
+    
+    if nb_tiers_temps==0 :
+        titre =f"Placement de {nb_etudiants} étudiant(s)"
+    else :
+        titre =f"Placement de {nb_etudiants} étudiant(s) en tout, dont {nb_tiers_temps} tiers temps."
+    
     tk.Label(
         f_top,
-        text=f"Placement de {nb_etudiants} étudiant(s) — TT ({nb_tiers_temps})",
+        text=titre,
         font=("Arial", 12, "bold")
     ).pack(anchor="w")
 
@@ -178,6 +184,15 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
         cb_tt.grid(row=row, column=1, sticky="w", padx=(0, 8))
 
         selections.append([nom, max_base, vA, vTT, vInt, spin, lbl_max, cb_amphi])
+        # --- Désactiver TT si aucun étudiant tiers-temps ---
+        if nb_tiers_temps == 0:
+            for nom, max_base, vA, vTT, vInt, spin, lbl_max, cb_amphi in selections:
+                # On désactive la case TT
+                vTT.set(0)
+            for child in f_mid.grid_slaves():
+                info = child.grid_info()
+                if info["column"] == 1 and isinstance(child, tk.Checkbutton):
+                    child.configure(state="disabled")
 
     # --- Bas de page ---
     lbl_total_val = tk.Label(
@@ -204,9 +219,56 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
         if total < nb_etudiants:
             messagebox.showwarning(
                 "Total insuffisant",
-                f"Le total ({total}) est inférieur à {nb_etudiants}."
+                f"Le total {total} est inférieur à {nb_etudiants}."
             )
-            return
+        # --- Vérification Tiers Temps ---
+        if nb_tiers_temps != 0:
+
+            idx_tt = None
+            tt_trouve = False
+
+            # Trouver la ligne TT (sans break)
+            for i, (_nom, _max_base, _vA, vTT, _vInt, *_rest) in enumerate(selections):
+                if vTT.get():
+                    idx_tt = i
+                    tt_trouve = True
+
+            if not tt_trouve:
+                messagebox.showwarning(
+                    "Oubli des tiers temps",
+                    "Il faut cocher une case d'amphi pour les tiers temps."
+                )
+                return
+
+            # Vérifier que l'amphi choisi contient assez de places pour tous les TT
+            nom, max_base, vA, vTT, vInt, *_rest = selections[idx_tt]
+            try:
+                val_tt = int(vInt.get() or 0)
+            except ValueError:
+                val_tt = 0
+
+            if val_tt < nb_tiers_temps:
+                messagebox.showwarning(
+                    "Erreur Tiers Temps",
+                    f"L'amphi {nom} sélectionné pour les tiers temps "
+                    f"ne contient que {val_tt} étudiants."
+                    f" Il y a {nb_tiers_temps} étudiant(s) tiers temps."
+                )
+                return
+        # --- Vérification qu'aucun amphi sélectionné n'est vide ---
+        for nom, _max_base, vA, vTT, vInt, *_rest in selections:
+            if vA.get() or vTT.get():  # amphi utilisé
+                try:
+                    val = int(vInt.get() or 0)
+                except ValueError:
+                    val = 0
+
+                if val == 0:
+                    messagebox.showwarning(
+                        "Amphi vide",
+                        f"L'amphi {nom} est sélectionné mais contient 0 étudiant."
+                    )
+                    return
 
         out = []
         for nom, _max_base, vA, vTT, vInt, _spin, _lbl_max, _cb in selections:
@@ -242,5 +304,5 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
 
 # # Test autonome
 if __name__ == "__main__":
-     res = definitRemplissage(nb_etudiants=4 + 12, nb_tiers_temps=12, parent=None)
+     res = definitRemplissage(nb_etudiants=4 + 12, nb_tiers_temps=5, parent=None)
      print("Résultat :", res)
