@@ -269,7 +269,7 @@ class chargementCsv:
             
             # cas où des étudiants sont dans ADE mais pas encore dans Moodle :
             if len(self.ade.data)> len(self.moodle.data) + len(numeroTiersTemps) :
-                nManquant : int = len(self.ade.data) - len(self.moodle.data) - len(self.moodleTt.data)
+                nManquant : int = len(self.ade.data) - len(self.moodle.data) - len(numeroTiersTemps)
                 messagebox.showwarning( title="Attention !!!!",
                 message=f"Il manque {nManquant} étudiant(es) dans Moodle. La liste principale va être complétée.")                                
                 self.completeListeMoodleAvecAde()
@@ -278,9 +278,12 @@ class chargementCsv:
     def completeListeMoodleAvecAde(self):
         numeroAde        : set[str] = {etu[0] for etu in self.ade.data}
         numeroMoodle     : set[str] = {etu[2] for etu in self.moodle.data}
-        numeroTiersTemps : set[str] = {etu[2] for etu in self.moodleTt.data}
+        if self.moodleTt!=None :
+            numeroTiersTemps : set[str] = {etu[2] for etu in self.moodleTt.data}
+        else :
+            numeroTiersTemps=set()
         
-        numeroManquant = numeroAde - numeroMoodle -numeroTiersTemps
+        numeroManquant = numeroAde - numeroMoodle - numeroTiersTemps
         listeManquant : list[list[str]] =[ etu for etu in  self.ade.data if etu[0] in numeroManquant ]       
         for etu in listeManquant:
             print( f"{etu} va être ajouté à la liste principale.")
