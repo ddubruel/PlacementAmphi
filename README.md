@@ -16,7 +16,7 @@ Application Python (Tkinter) permettant de **placer les étudiants dans les amph
 
 ---
 
-##  Installation
+##  Installation standard :
 
 Avec la version python 3.11.2
 1) créer un environnement virtuel
@@ -30,6 +30,37 @@ pip install -r requirements.txt
 
 4)lancer le code dans l'environement virtuel
 python mainClasse2.py
+
+
+## INSTALLATION SPECIFIQUE MAC OS SI L'INSTALLATION STANDARD NE PAS FONCTIONNE PAS  :
+macOS Intel :
+cd ~
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
+bash Miniconda3-latest-MacOSX-x86_64.sh
+
+macOS Apple Silicon (M1/M2/M3) :
+cd ~
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
+bash Miniconda3-latest-MacOSX-arm64.sh
+
+source ~/.zshrc   # ou ~/.bashrc selon votre  shell
+conda --version
+
+Récupérer sur le dépot le fichier environment.yml
+
+Recréer l’environnement Conda sur macOS :
+
+cd /chemin/vers/ton/projet
+conda env create -f environment.yml
+
+Activer l'environnement virtuel :
+conda activate placement-etudiants
+
+
+Lancer le code :
+python mainClasse2.py
+
+
 
 
 ###  Prérequis
