@@ -15,7 +15,7 @@
 
 *.patch # les fichiers issus de git diff > *.patch
 
-test*
+test*.py
 
 # exclusion des répertoires suivants :
 Doc_Support/
