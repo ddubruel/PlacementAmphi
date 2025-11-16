@@ -1,17 +1,36 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+venv/
+.env/
+.env*/
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
 # exclusion des   fichiers *.png produits sur le site github (RGPD)
 *.png
 
-# les data étudiants restantes
-*.gz
-*.csv
 
 # exclusion des fichiers intermédiaires LaTeX
 *.ps
 *.aux
 *.log
 
-# les fichiers emacs si il y en a...
-\#*#
 
 *.patch # les fichiers issus de git diff > *.patch
 

@@ -1,0 +1,92 @@
+Nom;Prénom;Numéro Étudiant;Email;Amphi;Place
+DELANNOY;BERNARD;22258211;bernard.delannoy@unice.fr;Chimie;B-5-2;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-5-2.png
+MATHIEU-BERTIN;BENOÎT;22195763;benoit.mathieu-bertin@unice.fr;Chimie;B-5-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-5-3.png
+MARQUES;AIMÉ;22264401;aime.marques@unice.fr;Chimie;B-5-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-5-4.png
+MERCIER;ZOÉ-CHARLOTTE;22165514;zoe-charlotte.mercier@unice.fr;Chimie;B-7-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-7-1.png
+LE GOFF;MARYSE;22208036;maryse.le-goff@unice.fr;Chimie;B-7-2;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-7-2.png
+COURTOIS;AIMÉ;22268983;aime.courtois@unice.fr;Chimie;B-7-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-7-3.png
+TOUSSAINT;ÉRIC;22288468;eric.toussaint@unice.fr;Chimie;B-7-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-7-4.png
+AUBERT;ÉDOUARD-THIERRY;22159372;edouard-thierry.aubert@unice.fr;Chimie;B-9-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-9-1.png
+RIBEIRO-PEREIRA;GILBERT;22150204;gilbert.ribeiro-pereira@unice.fr;Chimie;B-9-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-9-3.png
+PINTO;HENRI;22207066;henri.pinto@unice.fr;Chimie;B-9-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-9-4.png
+LOMBARD;THÉODORE;22252557;theodore.lombard@unice.fr;Chimie;B-11-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-11-1.png
+MARTEL;NOÉMI-GENEVIÈVE;22225468;noemi-genevieve.martel@unice.fr;Chimie;B-11-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-11-3.png
+SCHMITT;RENÉE;22190684;renee.schmitt@unice.fr;Chimie;B-11-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-11-4.png
+COLIN;ANAÏS;22141465;anais.colin@unice.fr;Chimie;B-13-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-13-1.png
+ROLLAND LE HERVÉ;PHILIPPE;22115902;philippe.rolland-le-herve@unice.fr;Chimie;B-13-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-13-3.png
+BIGOT;AIMÉ;22222944;aime.bigot@unice.fr;Chimie;B-13-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_B-13-4.png
+COSTE;NATH;22112357;nath.coste@unice.fr;Chimie;A-1-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-1-1.png
+KLEIN DU MARCHAND;GILBERT;22273680;gilbert.klein-du-marchand@unice.fr;Chimie;A-1-2;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-1-2.png
+PICHON;RAYMOND;22225572;raymond.pichon@unice.fr;Chimie;A-1-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-1-3.png
+JACQUES;ZOÉ;22213827;zoe.jacques@unice.fr;Chimie;A-1-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-1-4.png
+LOISEAU DE LA DANIEL;GILLES;22202470;gilles.loiseau-de-la-daniel@unice.fr;Chimie;A-3-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-3-1.png
+COLIN;MADELEINE;22277778;madeleine.colin@unice.fr;Chimie;A-3-2;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-3-2.png
+MASSE;MAURICE;22144167;maurice.masse@unice.fr;Chimie;A-3-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-3-3.png
+MENARD;ÉMILE;22145733;emile.menard@unice.fr;Chimie;A-3-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-3-4.png
+LE MARIE;STÉPHANE;22214256;stephane.le-marie@unice.fr;Chimie;A-5-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-5-1.png
+DE BAUDRY;GEORGES;22133910;georges.de-baudry@unice.fr;Chimie;A-5-2;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-5-2.png
+RAMOS;ARTHUR;22260401;arthur.ramos@unice.fr;Chimie;A-5-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-5-3.png
+DE LA LECOMTE;RÉMY;22206666;remy.de-la-lecomte@unice.fr;Chimie;A-5-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-5-4.png
+MALLET;NATHALIE;22184560;nathalie.mallet@unice.fr;Chimie;A-7-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-7-1.png
+PRÉVOST;GABRIEL;22132376;gabriel.prevost@unice.fr;Chimie;A-7-2;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-7-2.png
+FERRAND;CLAUDE;22203065;claude.ferrand@unice.fr;Chimie;A-7-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-7-3.png
+CLÉMENT;JOSEPH;22192846;joseph.clement@unice.fr;Chimie;A-7-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-7-4.png
+MULLER;LÉON;22184050;leon.muller@unice.fr;Chimie;A-9-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-9-1.png
+GUILBERT;ODETTE;22189756;odette.guilbert@unice.fr;Chimie;A-9-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-9-3.png
+DIDIER;OLIVIER;22164175;olivier.didier@unice.fr;Chimie;A-9-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-9-4.png
+COLIN;CHRISTINE;22234752;christine.colin@unice.fr;Chimie;A-11-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-11-1.png
+JOLY LE NAVARRO;GILBERT;22158013;gilbert.joly-le-navarro@unice.fr;Chimie;A-11-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-11-3.png
+MEUNIER;RÉMY;22267089;remy.meunier@unice.fr;Chimie;A-11-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-11-4.png
+FAURE;JEANNINE;22226564;jeannine.faure@unice.fr;Chimie;A-13-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-13-1.png
+CAMUS;CATHERINE;22244030;catherine.camus@unice.fr;Chimie;A-13-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-13-3.png
+TEXIER;HUGUES-ÉTIENNE;22272721;hugues-etienne.texier@unice.fr;Chimie;A-13-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Chimie/pngOut/Chimie_A-13-4.png
+GAUDIN;SABINE;22201043;sabine.gaudin@unice.fr;Informatique;B-1-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-1-1.png
+DESCAMPS;WILLIAM;22138638;william.descamps@unice.fr;Informatique;B-1-2;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-1-2.png
+SCHMITT;BERTRAND;22116133;bertrand.schmitt@unice.fr;Informatique;B-1-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-1-3.png
+HUBERT;ÉDITH;22183253;edith.hubert@unice.fr;Informatique;B-1-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-1-4.png
+BOUCHER-COHEN;FRANÇOIS;22262999;francois.boucher-cohen@unice.fr;Informatique;B-3-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-3-1.png
+GOMEZ-GOMES;THIBAUT;22180629;thibaut.gomez-gomes@unice.fr;Informatique;B-3-2;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-3-2.png
+LENOIR-MAILLARD;PHILIPPINE;22156086;philippine.lenoir-maillard@unice.fr;Informatique;B-3-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-3-3.png
+PERROT;JACQUES;22102358;jacques.perrot@unice.fr;Informatique;B-3-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-3-4.png
+LÉVY-MARÉCHAL;RENÉE;22114008;renee.levy-marechal@unice.fr;Informatique;B-5-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-5-1.png
+MARTINS;ROLAND;22230296;roland.martins@unice.fr;Informatique;B-5-2;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-5-2.png
+BAILLY;OCÉANE;22103357;oceane.bailly@unice.fr;Informatique;B-5-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-5-3.png
+LEDOUX LE JULIEN;ISABELLE;22162263;isabelle.ledoux-le-julien@unice.fr;Informatique;B-5-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-5-4.png
+BOUCHER;DANIEL;22261485;daniel.boucher@unice.fr;Informatique;B-7-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-7-1.png
+RIVIÈRE DE LA VALLET;VALENTINE;22212891;valentine.riviere-de-la-vallet@unice.fr;Informatique;B-7-2;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-7-2.png
+MARCHAND;JOSÉPHINE;22151998;josephine.marchand@unice.fr;Informatique;B-7-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-7-3.png
+LÉVY-BERNIER;THIERRY;22205784;thierry.levy-bernier@unice.fr;Informatique;B-7-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-7-4.png
+CARRE;ANAÏS;22142702;anais.carre@unice.fr;Informatique;B-9-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-9-1.png
+DELANNOY;LORRAINE;22158659;lorraine.delannoy@unice.fr;Informatique;B-9-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-9-3.png
+MILLET;SUSAN;22199130;susan.millet@unice.fr;Informatique;B-9-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-9-4.png
+JACQUOT;EUGÈNE-MARTIN;22192381;eugene-martin.jacquot@unice.fr;Informatique;B-11-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-11-1.png
+LEBRUN;LUCAS;22240072;lucas.lebrun@unice.fr;Informatique;B-11-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-11-3.png
+POULAIN;MICHEL;22141791;michel.poulain@unice.fr;Informatique;B-11-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-11-4.png
+LE ROBERT;VIRGINIE;22183176;virginie.le-robert@unice.fr;Informatique;B-13-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-13-1.png
+GIRARD;SYLVIE;22288719;sylvie.girard@unice.fr;Informatique;B-13-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-13-3.png
+PARENT;VALENTINE;22151012;valentine.parent@unice.fr;Informatique;B-13-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_B-13-4.png
+HAMON-ÉTIENNE;THOMAS;22290794;thomas.hamon-etienne@unice.fr;Informatique;A-1-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-1-1.png
+LE BLOT;MICHELLE;22277003;michelle.le-blot@unice.fr;Informatique;A-1-2;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-1-2.png
+GÉRARD;ALEXANDRE;22232470;alexandre.gerard@unice.fr;Informatique;A-1-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-1-3.png
+HARDY;JACQUELINE;22289324;jacqueline.hardy@unice.fr;Informatique;A-1-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-1-4.png
+GUILLON DE LA CARRE;MICHEL;22261106;michel.guillon-de-la-carre@unice.fr;Informatique;A-3-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-3-1.png
+GUILLOT-ROSSI;HENRI;22269835;henri.guillot-rossi@unice.fr;Informatique;A-3-2;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-3-2.png
+BLONDEL;PATRICK;22131607;patrick.blondel@unice.fr;Informatique;A-3-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-3-3.png
+DUMONT-DUPUIS;ÉRIC;22255538;eric.dumont-dupuis@unice.fr;Informatique;A-3-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-3-4.png
+LE LEDOUX;ALPHONSE;22225270;alphonse.le-ledoux@unice.fr;Informatique;A-5-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-5-1.png
+VAILLANT;MARGUERITE;22257039;marguerite.vaillant@unice.fr;Informatique;A-5-2;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-5-2.png
+DA COSTA;CHRISTINE;22197144;christine.da-costa@unice.fr;Informatique;A-5-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-5-3.png
+LEROUX;GILBERT;22245323;gilbert.leroux@unice.fr;Informatique;A-5-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-5-4.png
+OLIVIER;LUCIE;22202230;lucie.olivier@unice.fr;Informatique;A-7-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-7-1.png
+GUICHARD;EMMANUEL-ÉMILE;22225811;emmanuel-emile.guichard@unice.fr;Informatique;A-7-2;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-7-2.png
+LEGRAND;ALEXANDRIA-ANDRÉE;22258588;alexandria-andree.legrand@unice.fr;Informatique;A-7-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-7-3.png
+LOPES DE LA IMBERT;JULES;22107084;jules.lopes-de-la-imbert@unice.fr;Informatique;A-7-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-7-4.png
+TESSIER;RICHARD;22242167;richard.tessier@unice.fr;Informatique;A-9-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-9-1.png
+DUPUY;JOSETTE;22216099;josette.dupuy@unice.fr;Informatique;A-9-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-9-3.png
+NORMAND;GILLES;22111701;gilles.normand@unice.fr;Informatique;A-9-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-9-4.png
+SIMON;JACQUES;22112645;jacques.simon@unice.fr;Informatique;A-11-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-11-1.png
+GRONDIN;ÉLÉONORE;22105004;eleonore.grondin@unice.fr;Informatique;A-11-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-11-3.png
+GIRAUD-GIRARD;ÉRIC;22117866;eric.giraud-girard@unice.fr;Informatique;A-11-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-11-4.png
+WEBER;NOËL;22266247;noel.weber@unice.fr;Informatique;A-13-1;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-13-1.png
+MOREL-ROUSSET;CATHERINE;22164908;catherine.morel-rousset@unice.fr;Informatique;A-13-3;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-13-3.png
+POULAIN;SUSANNE;22221306;susanne.poulain@unice.fr;Informatique;A-13-4;/home/denis/00_Universite/BousGit/AC_BousGit/DataExemple/Amphi_Informatique/pngOut/Informatique_A-13-4.png
