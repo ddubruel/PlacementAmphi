@@ -58,9 +58,13 @@ class Boustrophedon:
         self.listeFenetreGraphiqueVisuAmphi = []
         
         # Construire l'UI
-        self.build_header()
-        self.build_controls()
+        self.build_header1()
+        self.build_controls_part1()
+        
+        self.build_header2()
+        self.build_controls_part2()
         self.build_buttons()
+        
         
         self.update_buttons_state("initial")
 
@@ -68,7 +72,7 @@ class Boustrophedon:
         self.root.mainloop()
 
     # ----- Vue : entête -----
-    def build_header(self):
+    def build_header1(self):
         tk.Label(
             self.root,
             text  ="Choisissez vos données de référence pour un nouveau projet :",
@@ -87,38 +91,60 @@ class Boustrophedon:
             font =("Arial", 10)
         ).pack(pady=10)
         
-            
-
+    def build_header2(self):
+        tk.Label(
+            self.root,
+            text  ="Poursuivez un projet existant",
+            font =("Arial", 11, "bold")
+        ).pack(pady=10)
+        tk.Label(
+            text  ="Vous voulez poursuivre l'envoi des courriels aux étudiants.",
+            font =("Arial", 10)
+        ).pack(pady=10)
+        
+        
     # ----- Vue : contrôles (radio) -----
-    def build_controls(self):
+    def build_controls_part1(self):
         frame_radio = tk.Frame(self.root)
         frame_radio.pack(pady=10)
 
-#         tk.Label(
-#             frame_radio,
-#             text='Cocher le type de données que vous avez : "',
-#             font=("Arial", 11)
-#         ).pack(side="left", padx=10)
-
         self.var_mode = tk.StringVar(value=self.etat.mode)
-        
-        # quand la variable change, on appelle on_mode_selected()
-        self.var_mode.trace_add("write", lambda *args: self.on_mode_selected())
-        
+        # nouvelle variable dédiée au bouton "Poursuite"
+        self.var_poursuite = tk.BooleanVar(value=False)
+
+        # Radiobuttons "classiques" (APOGÉE / ADE / MOODLE)
         tk.Radiobutton(
             frame_radio, text="APOGÉE (examen)",
-            variable=self.var_mode, value="Examen"
+            variable=self.var_mode, value="Examen",
+            command=self.on_mode_clicked           
         ).pack(side="left", padx=10)
-        
+
         tk.Radiobutton(
             frame_radio, text="ADE (partiel)",
-            variable=self.var_mode, value="PartielAde"
+            variable=self.var_mode, value="PartielAde",
+            command=self.on_mode_clicked           
         ).pack(side="left", padx=10)
-        
+
         tk.Radiobutton(
             frame_radio, text="MOODLE (partiel)",
-            variable=self.var_mode, value="Partiel"
+            variable=self.var_mode, value="Partiel",
+            command=self.on_mode_clicked           
         ).pack(side="left", padx=10)
+
+    # ----- Vue : contrôles (radio) -----
+    def build_controls_part2(self):
+        # Bouton "Poursuite d'un projet existant"
+        frame_radio2 = tk.Frame(self.root)
+        frame_radio2.pack(pady=10)
+
+        tk.Radiobutton(
+            frame_radio2,
+            text="Poursuite d'un projet existant",
+            variable=self.var_poursuite,
+            value=True,
+            command=self.on_poursuite_clicked      
+        ).pack(side="bottom", pady=10)
+
         
 
     # ----- Vue : boutons d’actions -----
@@ -155,6 +181,16 @@ class Boustrophedon:
             state=tk.DISABLED
         )
         self.btn_mail.pack(pady=10)
+        
+        
+        self.btn_poursuite = tk.Button(
+            self.root,
+            text="Poursuivre l'envoi des courriels.",
+            command=self.poursuiteEnvoiMail,
+            state=tk.DISABLED
+        )
+        self.btn_poursuite.pack(pady=10)
+        
         tk.Button(self.root, text="Quitter  ", command=self.root.destroy).pack(pady=10)
         tk.Button(self.root, text="Quitter (quit et pas destroy pour le dev)", command=self.root.quit).pack(pady=10)
 
@@ -165,6 +201,26 @@ class Boustrophedon:
         # Exécute l'action demandée
         self.update_buttons_state("choixModeFait")
 
+    def on_mode_clicked(self):
+        """
+        Appelé quand on clique sur APOGÉE / ADE / MOODLE.
+        - Décoche 'Poursuite'
+        - Puis applique la logique habituelle (on_mode_selected).
+        """
+        self.var_poursuite.set(False)   # décocher le bouton 'Poursuite'
+        self.on_mode_selected()         # garde votre logique existante
+
+    def on_poursuite_clicked(self):
+        """
+        Appelé quand on clique sur 'Poursuite d'un projet existant'.
+        - Décoche les trois autres Radiobuttons (APOGÉE / ADE / MOODLE)
+        - Ne touche PAS à l'état des boutons de chargement.
+        """
+        # Met la variable des 3 radios sur une valeur qui ne correspond à aucun d’eux
+        # ils se retrouvent tous décochés
+        self.var_mode.set("nil")
+        self.update_buttons_state(etape="poursuite")
+
 
     
     def update_buttons_state(self, etape="initial"):
@@ -173,12 +229,19 @@ class Boustrophedon:
             self.btn_png.config(state=tk.DISABLED)
             self.btn_pdf.config(state=tk.DISABLED)
             self.btn_mail.config(state=tk.DISABLED)
+            self.btn_poursuite.config(state=tk.DISABLED)
         elif etape== "choixModeFait":
             self.btn_load.config(state=tk.NORMAL)
             self.btn_png.config(state=tk.DISABLED)
             self.btn_pdf.config(state=tk.DISABLED)
-            self.btn_mail.config(state=tk.DISABLED)        
-        
+            self.btn_mail.config(state=tk.DISABLED)
+            self.btn_poursuite.config(state=tk.DISABLED)
+        elif etape=="poursuite":
+            self.btn_load.config(state=tk.DISABLED)
+            self.btn_png.config(state=tk.DISABLED)
+            self.btn_pdf.config(state=tk.DISABLED)
+            self.btn_mail.config(state=tk.DISABLED)
+            self.btn_poursuite.config(state=tk.NORMAL)                      
         elif etape == "donnees_chargees":
             self.action2finie : bool = False  # pour pouvoir zapper la gnération des png.
             self.btn_png.config(state=tk.NORMAL)
@@ -368,12 +431,8 @@ class Boustrophedon:
         
         if not(self.action2finie) : # si l'étape 2 , longue a été zappée.
             for amphi in self.listAmphi :
-                remplitRangCompleteEtudiant(amphi)    
-        
-        
-        # Générer PDF   LIB_SAL = self.nomAmphi 
-         
-        
+                remplitRangCompleteEtudiant(amphi)            
+        # Générer PDF   LIB_SAL = self.nomAmphi                  
         if  self.etat.mode in ['Partiel' ,'PartielAde'] :
             entetePdf : list[str] = codeEnteteApogee(  self.etat.mode   , self.dataBrutes , self.listAmphi , "Nom provisoire", self.root )                                 
             annee_universitaire, date, horaires, duree, epreuve= UI_saisirDonneesEpreuve(self.root )
@@ -392,10 +451,13 @@ class Boustrophedon:
             self.dataEpreuvePourMail : dataEpreuve = dataEpreuve(entetePdf.date ,entetePdf.horaires ,entetePdf.duree ,entetePdf.epreuve)
             
             genererPdf(Amphi , chemin_tex , chemin_pdf , entetePdf, self.root)    
-  
-           
+             
         messagebox.showinfo("PDF", "Génération des PDF terminée.")
         self.update_buttons_state("pdf_generes")
+        nom_OK,nom_NOK = sauvegarde_etudiants_non_envoyes(self.listAmphi, chemin_dossier=self.arborescence.racine)
+        messagebox.showinfo("La suite",f"Le fichier {nom_NOK} contient la liste"
+                            " des étudiants qui n'ont pas encore reçu le mail."
+                            "Vous pouvez poursuivre plus tard.")
     
     def envoyerMails(self):
         # creer une UI pour ces champs.
@@ -438,9 +500,7 @@ class Boustrophedon:
                     pass  # si la fenêtre principale est fermée
 
                 if not self.controleur_ok:
-                    break  # stop immédiat si l'utilisateur a demandé l'interuption
-
-                
+                    break  # stop immédiat si l'utilisateur a demandé l'interuption                
                 ### pourrait être mis dans une fonction...
                 debut : str = f"Bonjour {etu.prenom} \n\n"
                 fin: str = (
@@ -474,7 +534,10 @@ class Boustrophedon:
         messagebox.showinfo("Bilan des envois",f"{nb} mail envoyés.Dont {nbok} correctement.")
         nom_OK,nom_NOK = sauvegarde_etudiants_non_envoyes(self.listAmphi, chemin_dossier=self.arborescence.racine)
         messagebox.showinfo("La suite",f"Le fichier {nom_NOK} contient la liste des étudiants qui n'ont pas encore reçu le mail.")
-        
+
+    def poursuiteEnvoiMail(self):
+        print("poursuite")
+    
     ### affichage 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.__dict__})"
