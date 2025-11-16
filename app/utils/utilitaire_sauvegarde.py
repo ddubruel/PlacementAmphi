@@ -29,14 +29,14 @@ def sauvegarde_etudiants_non_envoyes(listAmphi, chemin_dossier=""):
     nom_NOK = f"Z_etudiants_avec_mail_NON_envoyes.csv"
     # Si un chemin est fourni (ex : répertoire racine du projet)
     if chemin_dossier:
-        nom_NOK = os.path.join(chemin_dossier , nom_NOK)        
-    ecritFichier(listAmphi, nom_NOK , critere =False  )
+        nom_NOK_path : str  = os.path.join(chemin_dossier , nom_NOK)        
+    ecritFichier(listAmphi, nom_NOK_path , critere =False  )
     
     nom_OK = f"Z_etudiants_avec_mail_envoyes.csv"
     # Si un chemin est fourni (ex : répertoire racine du projet)
     if chemin_dossier:
-        nom_OK = os.path.join(chemin_dossier, nom_OK)        
-    ecritFichier(listAmphi, nom_OK , critere =True  )
+        nom_OK_path : str  = os.path.join(chemin_dossier, nom_OK)        
+    ecritFichier(listAmphi, nom_OK_path , critere =True  )
 
 
     return nom_OK,nom_NOK

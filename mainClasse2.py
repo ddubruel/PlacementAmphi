@@ -536,7 +536,7 @@ class Boustrophedon:
         messagebox.showinfo("La suite",f"Le fichier {nom_NOK} contient la liste des étudiants qui n'ont pas encore reçu le mail.")
 
     def poursuiteEnvoiMail(self):
-        print("poursuite")
+        messagebox.showinfo("Pour info","La reprise d'envoi d'envoi des mails n'est pas encore disponible. Patience...")
     
     ### affichage 
     def __repr__(self):

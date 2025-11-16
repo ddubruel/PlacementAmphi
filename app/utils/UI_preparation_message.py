@@ -74,16 +74,17 @@ def UI_preparation_message (root , dataEpreuvePourMail : dataEpreuve )-> str :
     lbl_corps = tk.Label(frame, text="Corps du message", anchor="w")
     lbl_corps.grid(row=3, column=0, columnspan=2, sticky="w", pady=(0, 6))
 
-    # 5) Zone multiligne éditable
-    import tkinter.scrolledtext as scrolledtext
-    txt_corps = scrolledtext.ScrolledText(frame, width=60, height=18, wrap="word")
-    txt_corps.grid(row=4, column=0, columnspan=2, sticky="nsew")
-    txt_corps.insert("1.0", modele_message)
 
+    # 5) Zone multiligne éditable
+    txt_corps = scrolledtext.ScrolledText(frame, width=60, height=18, wrap="word")
+    txt_corps.grid(row=5, column=0, columnspan=2, sticky="nsew")
+    txt_corps.insert("1.0", modele_message)
+    
     # Rendre le layout extensible
     frame.grid_columnconfigure(0, weight=1)
     frame.grid_columnconfigure(1, weight=1)
-    frame.grid_rowconfigure(4, weight=1)
+    frame.grid_rowconfigure(5, weight=1)
+
     
     # Résultat final
     result = {"values": None}
