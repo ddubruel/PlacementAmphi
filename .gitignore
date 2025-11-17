@@ -10,7 +10,7 @@ dist/
 *.egg-info/
 
 # Virtual environments
-venv/
+Placement/
 .env/
 .env*/
 
