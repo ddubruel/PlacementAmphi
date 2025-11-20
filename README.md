@@ -53,7 +53,7 @@ python mainClasse2.py
 
 ### 🍏   sur macOS (si l’installation standard échoue)
 
-Téléchargement et installation de Miniconda :
+#### Téléchargement et installation de Miniconda :
 
 #### **👉 macOS Intel**
 ```bash
