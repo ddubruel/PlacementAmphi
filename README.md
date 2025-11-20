@@ -54,14 +54,18 @@ python3 -V
 
 #5 vérifier si tkinter est installé :
 python3 -c "import tkinter; print(tkinter)"
-
-#6 lancer le code dans l'environnement virtuel activé
-python mainClasse2.py
 ```
-Si tkinter n'est pas installé sur macOS :
+
+tkinter n'est pas toujours installé sur macOS :
 
 [Télécharger Python pour macOS](https://www.python.org/downloads/macos/)
+[Téléccharger Python 3.11.2 pour macOS] (https://www.python.org/downloads/release/python-3112/)
 
+```bash
+# lancer le code dans l'environnement virtuel activé
+python mainClasse2.py
+```
+Si l'installation standard ne fonctionne pas sur macOs, utiliser l'installation suivante.
 
 ### 🍏   sur macOS (si l’installation standard échoue)
 
