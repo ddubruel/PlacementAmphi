@@ -101,7 +101,7 @@ python mainClasse2.py
 Avant le lancement il est recommandé de mettre les fichiers de données
 dans un même répertoire.
 
-Le code va créer par exemple l'arborescence contenant tous les fichiers de sortie.
+Le code va créer  l'arborescence contenant tous les fichiers de sortie.
 
 Part exemple ici le cas de 2 fichier Moodle pour un partiel,la liste principale avec 50 étudiants, et la liste des étudiants avec tiers temps :
 ```text
@@ -114,8 +114,8 @@ En sortie, plusieurs fichiers en fin de liste
 ├── Z_etudiants_avec_mail_NON_envoye.csv
 ```
 
-Dans le même répertoire que les fichiers de données, le programme crée l'arborescence suivante avec les
-différents fichier de sortie. Comme le plan général des amphi, les plans individuels par étudiant , les fichier LaTeX, la liste d'émargement en pdf.
+Dans le même répertoire  que les fichiers de données, le programme crée l'arborescence suivante avec les
+différents fichier de sortie. Comme le plan général des amphithéatres, les plans individuels par étudiant , les fichier LaTeX, la liste d'émargement en pdf.
 ```text
 ├── Amphi_Géologie
 │   ├── listes_Emargement_pdf
@@ -139,8 +139,10 @@ différents fichier de sortie. Comme le plan général des amphi, les plans indi
 
 En complément à côté des fichiers de données initiaux le code écrit les fichiers avec le  statut d'envoi des mails, si l'utilisateur souhaite envoyer les messages en plusieurs fois.
 
+```text
 ├─Z_etudiants_avec_mail_envoyes.csv
 ├─Z_etudiants_avec_mail_NON_envoyes.csv
-
+```
 Eventuellement un fichier de comparaison entre les données ADE(si fournies) et Moodle.
+
 ├─Z_etudiants_dans_moodle_mais_pas_dans_ADE.csv
