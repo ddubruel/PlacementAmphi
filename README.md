@@ -26,6 +26,7 @@ Application Python (Tkinter) permettant de **placer les étudiants dans les amph
 - `pip` installé
 - (Recommandé) Un environnement virtuel
 
+
 ###  Récupérer le projet
 
 ```bash
@@ -36,10 +37,10 @@ git clone https://github.com/ddubruel/PlacementAmphi
 
 Avec la version python **3.11.2**
 ```bash
-#1) créer un environnement virtuel
+#1 créer un environnement virtuel
 python -m venv NomDeVotreEnvironnement
 
-#2) activer l'environnement virtuel:
+#2 activer l'environnement virtuel:
 source NomDeVotreEnvironnement/bin/activate # Linux/Mac
 # ou pour windows :
 # NomDeVotreEnvironnement\Scripts\activate     # Windows
@@ -47,7 +48,14 @@ source NomDeVotreEnvironnement/bin/activate # Linux/Mac
 #3 installer les dépendances requises  :
 pip install -r requirements.txt
 
-#4 lancer le code dans l'environnement virtuel activé
+#4 Vérifier la version de Python installée
+which python3
+python3 -V
+
+#5 vérifier si tkinter est installé :
+python3 -c "import tkinter; print(tkinter)"
+
+#6 lancer le code dans l'environnement virtuel activé
 python mainClasse2.py
 ```
 
