@@ -28,7 +28,9 @@ Application Python (Tkinter) permettant de **placer les étudiants dans les amph
 
 ###  Récupérer le projet
 
+```bash
 git clone https://github.com/ddubruel/PlacementAmphi
+```
 
 ##  Installation standard :
 
