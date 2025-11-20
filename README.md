@@ -58,6 +58,10 @@ python3 -c "import tkinter; print(tkinter)"
 #6 lancer le code dans l'environnement virtuel activé
 python mainClasse2.py
 ```
+Si tkinter n'est pas installé sur macOS :
+
+[Télécharger Python pour macOS](https://www.python.org/downloads/macos/)
+
 
 ### 🍏   sur macOS (si l’installation standard échoue)
 
