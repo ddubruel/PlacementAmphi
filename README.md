@@ -20,6 +20,15 @@ Application Python (Tkinter) permettant de **placer les étudiants dans les amph
 - 🏛️ Plans d’amphis exportés en images
 - 📁 Arborescence organisée par épreuve
 
+###  Prérequis
+
+- **Python 3.11.2**
+- `pip` installé
+- (Recommandé) Un environnement virtuel
+
+###  Récupérer le projet
+
+git clone https://github.com/ddubruel/PlacementAmphi
 
 ##  Installation standard :
 
@@ -84,19 +93,7 @@ Lancer le code :
 python mainClasse2.py
 ```
 
-
-
-###  Prérequis
-
-- **Python 3.11.2**
-- `pip` installé
-- (Recommandé) Un environnement virtuel
-
-###  Récupérer le projet
-
-git clone https://github.com/ddubruel/PlacementAmphi
-
-####
+## RECOMMANDATIONS
 Avant le lancement il est recommandé de mettre les fichiers de données
 dans un même répertoire.
 
