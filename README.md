@@ -66,7 +66,7 @@ tkinter n'est pas toujours installé sur macOS :
 # lancer le code dans l'environnement virtuel activé
 python mainClasse2.py
 ```
-Si l'installation standard ne fonctionne pas sur macOs, utiliser l'installation suivante.
+Si l'installation standard ne fonctionne pas sur macOs, utiliser l'installation suivante avec Miniconda.
 
 ### 🍏   sur macOS (si l’installation standard échoue)
 
@@ -97,6 +97,8 @@ conda --version
 ```
 
 #### Créer l’environnement Conda sur macOS :
+
+environment.yml est un des fichiers du dépôt.
 
 ```bash
 cd /chemin/vers/ton/projet
