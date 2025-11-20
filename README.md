@@ -47,7 +47,7 @@ python mainClasse2.py
 cd ~
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
 bash Miniconda3-latest-MacOSX-x86_64.sh
-```bash
+```
 
 #### **👉 macOS Apple Silicon (M1/M2/M3)**
 ```bash
