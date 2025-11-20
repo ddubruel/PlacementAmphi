@@ -1,0 +1,144 @@
+# 🎓 Placement Étudiants – Organisation d’examens
+
+Application Python (Tkinter) permettant de **placer automatiquement les étudiants dans différents amphithéâtres** à partir de fichiers CSV, puis de **générer l’ensemble des documents nécessaires aux examens** :
+
+- 📄 Listes d’émargement (PDF)
+- ✉️ Envoi de mails personnalisés
+- 🏛️ Plans d’amphis exportés en images
+- 📁 Arborescence organisée par épreuve
+
+---
+
+## 🚀 Fonctionnalités
+
+- Import de fichiers CSV issus de :
+  - **Moodle**
+  - **ADE**
+  - **Apogée**
+- Placement automatique des étudiants dans les amphis
+- Génération des **PDF d’émargement**
+- Export des plans au format PNG
+- Envoi automatique d’un **mail par étudiant**
+- Interface graphique basée sur **Tkinter**
+
+---
+
+## 📦 Installation
+
+### **🟢 Installation standard (recommandée)**
+
+> Compatible Python **3.11.2**
+
+```bash
+# 1) Créer un environnement virtuel
+python -m venv NomDeVotreEnvironnement
+
+# 2) Activer l'environnement
+source NomDeVotreEnvironnement/bin/activate  # Linux/Mac
+# ou
+NomDeVotreEnvironnement\Scripts\activate     # Windows
+
+# 3) Installer les dépendances
+pip install -r requirements.txt
+
+# 4) Lancer l’application
+python mainClasse2.py
+```
+
+---
+
+### 🍏 Installation spécifique macOS (si l’installation standard échoue)
+
+#### **👉 macOS Intel**
+
+```bash
+cd ~
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
+bash Miniconda3-latest-MacOSX-x86_64.sh
+```
+
+#### **👉 macOS Apple Silicon (M1/M2/M3)**
+
+```bash
+cd ~
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
+bash Miniconda3-latest-MacOSX-arm64.sh
+```
+
+Activer conda :
+
+```bash
+source ~/.zshrc  # ou ~/.bashrc
+conda --version
+```
+
+Créer l’environnement :
+
+```bash
+cd /chemin/vers/projet/
+conda env create -f environment.yml
+conda activate placement-etudiants
+python mainClasse2.py
+```
+
+
+## 📂 Organisation des fichiers générés
+
+Lors de l’exécution, le programme crée automatiquement une arborescence structurée :
+
+```
+├── Amphi_Chimie
+│   ├── listes_Emargement_pdf
+│   │   ├── Chimie.pdf
+│   ├── pngOut
+│   │   ├── Chimie_A-11-1.png
+│   │   ├── Chimie_A-11-3.png
+│   │   ├── Chimie_plan_general.png
+│   └── texOut
+│       ├── Chimie.tex
+│       ├── table_alpha.tex
+│       └── table.tex
+```
+
+Fichiers de suivi d’envoi des mails :
+
+```
+├── etudiants_a_effacer_dans_moodle.csv
+├── Z_etudiants_avec_mail_envoyes.csv
+└── Z_etudiants_avec_mail_NON_envoyes.csv
+```
+
+---
+
+## 🔧 Prérequis
+
+| Composant | Requis |
+|----------|--------|
+| Version Python | **3.11.2** |
+| Gestionnaire de paquets | `pip` |
+| Environnement virtuel | (recommandé) |
+
+---
+
+## 📥 Récupération du projet
+
+```bash
+git clone https://github.com/ddubruel/PlacementAmphi
+```
+
+---
+
+## 📎 Notes d’utilisation
+
+- Regrouper tous les fichiers CSV d’entrée **dans un même dossier** avant exécution
+- Le programme génère automatiquement les sorties dans une arborescence dédiée
+
+---
+
+## 👤 Auteur
+
+**David Dubruel**  
+Projet open-source universitaire
+
+---
+

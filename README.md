@@ -9,63 +9,87 @@ Application Python (Tkinter) permettant de **placer les étudiants dans les amph
   - **Moodle**
   - **ADE**
   - **Apogée**
-- Définit automatiquement le **placement des étudiants dans les amphis**
-- Génère les **listes d'émargement au format PDF**
-- Envoie un **mail personnalisé à chaque étudiant**
-- Interface graphique basée sur **Tkinter**
+- Définit automatiquement le **placement des étudiants dans les amphis**.
+- Génère les **listes d'émargement au format PDF**.
+- Envoie un **mail personnalisé à chaque étudiant**.
+- Interface graphique basée sur **Tkinter**.
 
----
+
+- 📄 Listes d’émargement (PDF)
+- ✉️ Envoi de mails personnalisés
+- 🏛️ Plans d’amphis exportés en images
+- 📁 Arborescence organisée par épreuve
+
 
 ##  Installation standard :
 
-Avec la version python 3.11.2
-1) créer un environnement virtuel
+Avec la version python **3.11.2**
+```bash
+#1) créer un environnement virtuel
 python -m venv NomDeVotreEnvironnement
 
-2) activer l'environnement virtuel:
-source NomDeVotreEnvironnement/bin/activate
+#2) activer l'environnement virtuel:
+source NomDeVotreEnvironnement/bin/activate # Linux/Mac
+# ou pour windows :
+# NomDeVotreEnvironnement\Scripts\activate     # Windows
 
-3)installer les requis :
+#3 installer les dépendances requises  :
 pip install -r requirements.txt
 
-4)lancer le code dans l'environement virtuel
+#4 lancer le code dans l'environement virtuel activé
 python mainClasse2.py
+```
 
+### 🍏 Installation spécifique macOS (si l’installation standard échoue)
 
-## INSTALLATION SPECIFIQUE MAC OS SI L'INSTALLATION STANDARD NE PAS FONCTIONNE PAS  :
-macOS Intel :
+#### **👉 macOS Intel**
+```bash
 cd ~
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
 bash Miniconda3-latest-MacOSX-x86_64.sh
+```bash
 
-macOS Apple Silicon (M1/M2/M3) :
+#### **👉 macOS Apple Silicon (M1/M2/M3)**
+```bash
 cd ~
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
 bash Miniconda3-latest-MacOSX-arm64.sh
+```
 
-source ~/.zshrc   # ou ~/.bashrc selon votre  shell
+Activer conda :
+
+```bash
+# en fonction de votre shell :
+source ~/.zshrc
+# source  ~/.bashrc
 conda --version
+```
 
-Récupérer sur le dépot le fichier environment.yml
+Récupérer sur le dépôt le fichier **environment.yml**
 
-Recréer l’environnement Conda sur macOS :
+Créer l’environnement Conda sur macOS :
 
+```bash
 cd /chemin/vers/ton/projet
 conda env create -f environment.yml
+```
 
 Activer l'environnement virtuel :
-conda activate placement-etudiants
 
+```bash
+conda activate placement-etudiants
+```
 
 Lancer le code :
+```bash
 python mainClasse2.py
-
+```
 
 
 
 ###  Prérequis
 
-- Python 3.11.2
+- ***Python 3.11.2**
 - `pip` installé
 - (Recommandé) Un environnement virtuel
 
@@ -74,7 +98,7 @@ python mainClasse2.py
 git clone https://github.com/ddubruel/PlacementAmphi
 
 ####
-Avant le lancement il est recomandé de mettre les fichiers de données
+Avant le lancement il est recommandé de mettre les fichiers de données
 dans un même répertoire.
 
 Le code va créer par exemple l'arborescence contenant tous les fichiers de sortie.
@@ -108,6 +132,8 @@ Le code va créer par exemple l'arborescence contenant tous les fichiers de sort
 │       └── table.tex
 
 
-En complément à côté des fichiers de données initiales vous trouverez les fichiers suivants  contenant le statut d'envoi des mails.
+En complément à côté des ffichiers suivants  contenant le statut d'envoi des mails.
 
-├─etudiants_a_effacer_dans_moodle.csv                                       ├──Z_etudiants_avec_mail_envoyes.csv                                        |──Z_etudiants_avec_mail_NON_envoyes.csv
+├─Z_etudiants_dans_moodle_mais_pas_dans_ADE.csv
+├─Z_etudiants_avec_mail_envoyes.csv
+├─Z_etudiants_avec_mail_NON_envoyes.csv
