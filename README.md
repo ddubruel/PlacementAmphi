@@ -56,13 +56,13 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
 bash Miniconda3-latest-MacOSX-arm64.sh
 ```
 
-Activer conda :
+Initialiser conda  dans votre shell :
 
 ```bash
 # en fonction de votre shell :
 source ~/.zshrc
 # source  ~/.bashrc
-# pour vérifier si l'installation s'est bien passée :
+# pour vérifier si Conda est bien disponible (affiche juste la version) :
 conda --version
 ```
 
@@ -116,6 +116,7 @@ En sortie, plusieurs fichiers en fin de liste
 ```
 
 Dans le même répertoire que les fichiers de données, le programme crée l'arborescence suivante avec les
+différents fichier de sortie. Comme le plan général des amphi, les plans individuels par étudiant , les fichier LaTeX, la liste d'émargement en pdf.
 ```text
 ├── Amphi_Géologie
 │   ├── listes_Emargement_pdf
