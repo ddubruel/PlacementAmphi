@@ -56,7 +56,7 @@ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
 bash Miniconda3-latest-MacOSX-arm64.sh
 ```
 
-Initialiser conda  dans votre shell :
+#### Initialiser conda  dans votre shell :
 
 ```bash
 # en fonction de votre shell :
@@ -66,16 +66,14 @@ source ~/.zshrc
 conda --version
 ```
 
-Récupérer sur le dépôt le fichier **environment.yml**
-
-Créer l’environnement Conda sur macOS :
+#### Créer l’environnement Conda sur macOS :
 
 ```bash
 cd /chemin/vers/ton/projet
 conda env create -f environment.yml
 ```
 
-Activer l'environnement virtuel :
+#### Activer l'environnement virtuel :
 
 ```bash
 conda activate placement-etudiants
