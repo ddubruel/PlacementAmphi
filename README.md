@@ -62,6 +62,7 @@ Activer conda :
 # en fonction de votre shell :
 source ~/.zshrc
 # source  ~/.bashrc
+# pour vérifier si l'installation s'est bien passée :
 conda --version
 ```
 
@@ -89,7 +90,7 @@ python mainClasse2.py
 
 ###  Prérequis
 
-- ***Python 3.11.2**
+- **Python 3.11.2**
 - `pip` installé
 - (Recommandé) Un environnement virtuel
 
@@ -103,7 +104,7 @@ dans un même répertoire.
 
 Le code va créer par exemple l'arborescence contenant tous les fichiers de sortie.
 
-
+```text
 ├── Amphi_Chimie
 │   ├── listes_Emargement_pdf
 │   │   ├── Chimie.pdf
@@ -130,7 +131,7 @@ Le code va créer par exemple l'arborescence contenant tous les fichiers de sort
 │       ├── Chimie.tex
 │       ├── table_alpha.tex
 │       └── table.tex
-
+```
 
 En complément à côté des ffichiers suivants  contenant le statut d'envoi des mails.
 
