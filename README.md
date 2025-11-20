@@ -120,16 +120,12 @@ dans un même répertoire.
 
 Le code va créer  l'arborescence contenant tous les fichiers de sortie.
 
-Part exemple ici le cas de 2 fichier Moodle pour un partiel,la liste principale avec 50 étudiants, et la liste des étudiants avec tiers temps :
+Part exemple ici le cas de 2 fichiers Moodle pour un partiel, la liste principale avec 50 étudiants, et la liste des étudiants avec tiers temps :
 ```text
 ├── Moodle_50_etu.csv
 ├── MoodleTiersTemps_10_etu.csv
 ```
-En sortie, plusieurs fichiers en fin de liste
-```text
-├── Z_etudiants_avec_mail_envoye.csv
-├── Z_etudiants_avec_mail_NON_envoye.csv
-```
+
 
 Dans le même répertoire  que les fichiers de données, le programme crée l'arborescence suivante avec les
 différents fichier de sortie. Comme le plan général des amphithéatres, les plans individuels par étudiant , les fichier LaTeX, la liste d'émargement en pdf.
