@@ -51,7 +51,9 @@ pip install -r requirements.txt
 python mainClasse2.py
 ```
 
-### 🍏  Téléchargement et installation spécifique de miniconda sur macOS (si l’installation standard échoue)
+### 🍏   sur macOS (si l’installation standard échoue)
+
+Téléchargement et installation de Miniconda :
 
 #### **👉 macOS Intel**
 ```bash
