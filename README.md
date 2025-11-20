@@ -47,11 +47,11 @@ source NomDeVotreEnvironnement/bin/activate # Linux/Mac
 #3 installer les dépendances requises  :
 pip install -r requirements.txt
 
-#4 lancer le code dans l'environement virtuel activé
+#4 lancer le code dans l'environnement virtuel activé
 python mainClasse2.py
 ```
 
-### 🍏 Installation spécifique macOS (si l’installation standard échoue)
+### 🍏  Téléchargement et installation spécifique de miniconda sur macOS (si l’installation standard échoue)
 
 #### **👉 macOS Intel**
 ```bash
