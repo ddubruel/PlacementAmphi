@@ -59,7 +59,8 @@ python3 -c "import tkinter; print(tkinter)"
 tkinter n'est pas toujours installé sur macOS :
 
 [Télécharger Python pour macOS](https://www.python.org/downloads/macos/)
-[Téléccharger Python 3.11.2 pour macOS] (https://www.python.org/downloads/release/python-3112/)
+
+[Téléccharger Python 3.11.2 pour macOS](https://www.python.org/downloads/release/python-3112/)
 
 ```bash
 # lancer le code dans l'environnement virtuel activé
