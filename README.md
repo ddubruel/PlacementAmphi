@@ -33,7 +33,7 @@ Application Python (Tkinter) permettant de **placer les étudiants dans les amph
 git clone https://github.com/ddubruel/PlacementAmphi
 ```
 
-##  Installation standard  🐧**Linux**  💻 ** Windows **:
+##  Installation standard  🐧**Linux**  💻 **Windows**:
 
 Avec la version python **3.11.2**
 ```bash
@@ -53,19 +53,12 @@ pip install -r requirements.txt
 python mainClasse2.py
 ```
 
-tkinter n'est pas toujours installé sur macOS :
-
-
-```bash
-# lancer le code dans l'environnement virtuel activé
-python mainClasse2.py
-```
-
 
 ### 🍏   sur macOS
 
+Tkinter n'est pas sur macOS, utiliser la version python de www.python.org :
 
-[Téléccharger Python 3.11.2 pour macOS](https://www.python.org/ftp/python/3.11.2/python-3.11.2-macos11.pkg)
+[Télécharger Python 3.11.2 pour macOS](https://www.python.org/ftp/python/3.11.2/python-3.11.2-macos11.pkg)
 
 ### Téléchargement et installation de Miniconda :
 
