@@ -33,9 +33,9 @@ Application Python (Tkinter) permettant de **placer les étudiants dans les amph
 git clone https://github.com/ddubruel/PlacementAmphi
 ```
 
-##  Installation standard :
+##  Installation standard  🐧**Linux**  💻 ** Windows **:
 
-Avec la version python **3.11.2** **LINUX** **Windows**
+Avec la version python **3.11.2**
 ```bash
 #1 créer un environnement virtuel
 python -m venv NomDeVotreEnvironnement
