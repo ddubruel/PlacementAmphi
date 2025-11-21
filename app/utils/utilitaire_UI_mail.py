@@ -10,9 +10,10 @@ def UI_mail (root )-> [str,str,str,str,str] :
     
     SMTP_SERVER : str  = "webmail.univ-cotedazur.fr" 
     SMTP_PORT    : int = 587 
-    EMAIL_SENDER :str  = "denis.dubruel@univ-cotedazur.fr"
+    EMAIL_SENDER :str  = " @univ-cotedazur.fr"
     EMAIL_PASSWORD :str =""
-    Nom_utilisateur :str = "ddubruel"
+    Nom_utilisateur :str = ""
+    t_tempo : str = "10"
     
     # ----------- fenêtre modale -----------
     win = tk.Toplevel(root)
@@ -31,6 +32,7 @@ def UI_mail (root )-> [str,str,str,str,str] :
         ("Votre email",            EMAIL_SENDER),
         ("Votre mot de passe",               EMAIL_PASSWORD),
         ("Votre nom d'utilisateur (session)",             Nom_utilisateur),
+        ("Temps de pause entre 2 envois de mails (s)",  t_tempo)
         ]
 
     # Création des widgets de saisie
@@ -39,7 +41,12 @@ def UI_mail (root )-> [str,str,str,str,str] :
     for i, (lab, val) in enumerate(fields):
         tk.Label(frame, text=lab, anchor="w").grid(row=i, column=0, sticky="w", pady=(0,6))
         v = tk.StringVar(value=val)
-        e = tk.Entry(frame, textvariable=v, width=40)
+        
+        # Mot de passe masqué
+        if "mot de passe" in lab.lower():
+            e = tk.Entry(frame, textvariable=v, width=40, show="*")
+        else:
+            e = tk.Entry(frame, textvariable=v, width=40)
         e.grid(row=i, column=1, sticky="ew", padx=(8,0), pady=(0,6))
         vars_.append(v)
         entries.append(e)
@@ -96,11 +103,12 @@ def UI_mail (root )-> [str,str,str,str,str] :
      SMTP_PORT,
      EMAIL_SENDER,
      EMAIL_PASSWORD,
-     Nom_utilisateur) = result["values"]
+     Nom_utilisateur,
+      t_tempo) = result["values"]
     
     
 
-    return SMTP_SERVER, SMTP_PORT, EMAIL_SENDER,EMAIL_PASSWORD,Nom_utilisateur
+    return SMTP_SERVER, SMTP_PORT, EMAIL_SENDER,EMAIL_PASSWORD,Nom_utilisateur,t_tempo
 
 
 # --------------------------------------------------------------------
