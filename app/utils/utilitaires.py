@@ -6,7 +6,7 @@ def decodeCodeAmphi(code: str) -> str:
     match code:
         case 'SAMPINFO': return 'Informatique'
         case 'SAMPVAL':  return 'Petit_Valrose'
-        case 'SPHYS2':   return 'Sc_Physiques'
+        case 'SPHYS2':   return 'Physique'
         case 'SAMPBIOL': return 'Biologie'
         case 'SAMPHIM':  return 'Mathématiques'
         case 'SCHIMIE':  return 'Chimie'
@@ -18,7 +18,7 @@ def reCodeAmphi(nom: str) -> str:
     match nom:
         case 'Informatique'    : return 'SAMPINFO' 
         case 'Petit_Valrose'   : return 'SAMPVAL'
-        case 'Sc_Physiques'    : return 'SPHYS2'
+        case 'Physique'    : return 'SPHYS2'
         case 'Biologie'        : return 'SAMPBIOL'
         case 'Mathématiques'   : return 'SAMPHIM'
         case 'Chimie'          : return 'SCHIMIE'

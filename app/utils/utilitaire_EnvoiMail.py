@@ -22,7 +22,7 @@ def attach_file(msg: MIMEMultipart, file_path: str | None) -> None:
 
     except Exception as e:
         print(f"[PJ] Erreur lors de l'ajout de la pièce jointe '{file_path}': {e}")
-        
+
 def send_email_via_smtp(
                         receiver_email: str,
                         subject: str,
@@ -47,21 +47,21 @@ def send_email_via_smtp(
         return True
     except Exception as e:
         print(f"[SMTP] Échec de l'envoi à {receiver_email}: {e}")
-        return False        
+        return False
 
 
 def envoyerMail(sujet : str ,
                 corpsDuMessage : str ,
-                email : str,                       
+                email : str,
                 fichierPng : str,
                 setUpMail : mailConfig,
                 go: bool = False
-                ) -> bool:                
+                ) -> bool:
     """
     Prépare et envoie un email avec pièce jointe (optionnelle) en utilisant la config SMTP fournie.
     go=False → mode développement (n'envoie pas, affiche seulement).
     """
-    
+
     if not email or "@" not in email:
         print("[CHK] Adresse email invalide.")
         return False
@@ -75,7 +75,7 @@ def envoyerMail(sujet : str ,
             print(f"Pièce jointe (si existe) : {fichierPng}")
         print("==========================")
         return True
-    
+
     statut : bool = send_email_via_smtp(
                                             receiver_email=email,
                                             subject=sujet,
@@ -87,13 +87,13 @@ def envoyerMail(sujet : str ,
 
 def main():
     cfg = mailConfig(
-        EMAIL_PASSWORD=input(" Entrer le mot de passe : ")   
+        EMAIL_PASSWORD=input(" Entrer le mot de passe : ")
     )
 
-    ok = envoyerMail(   sujet = "news",                        
+    ok = envoyerMail(   sujet = "news",
                         corpsDuMessage="Quoi de neuf ?",
                         email="denis.dubruel@gmail.com",
-                        fichierPng="/home/denis/00_Universite/BousGit/GenerateurMoodleApogee/Amphi_Sc_Physiques/pngOut/Sc_Physiques_plan_general.png",
+                        fichierPng="/home/denis/00_Universite/BousGit/GenerateurMoodleApogee/Amphi_Physique/pngOut/Physique_plan_general.png",
                         setUpMail=cfg,
                         go=True,   # True : envoie vraiment le mail False : tir à blanc!
                     )

@@ -12,16 +12,16 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
       - Total/Reste: une ligne compte si Amphi cochée OU TT cochée.
       - Sortie: [(nom_amphi, valeur, is_tiers_temps), ...]
     """
-
+    # nom de l'amphi , capacité max, capacité min)
     amphis_spec = [
-        ("Chimie", 84),
-        ("Mathématiques", 84),
-        ("Sc_Physiques", 84),
-        ("Informatique", 84),
-        ("Sc_Naturelles", 84),
-        ("Biologie", 25),
-        ("Géologie", 25),
-        ("Petit_Valrose", 165)
+        ("Chimie", 84, 15),
+        ("Mathématiques", 84,15),
+        ("Physique", 84,15),
+        ("Informatique", 84,15),
+        ("Sc_Naturelles", 84,15),
+        ("Biologie", 25,10),
+        ("Géologie", 25,10),
+        ("Petit_Valrose", 165,40)
     ]
 
     # --- fenêtre ---
@@ -95,7 +95,7 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
     def update_total(*_):
         """Somme des valeurs des lignes où Amphi OU TT est coché."""
         total = 0
-        for nom, max_base, vA, vTT, vInt, _spin, _lbl_max, _cb in selections:
+        for nom, max_base, min_base , vA, vTT, vInt, _spin, _lbl_max, _cb in selections:
             if vA.get() or vTT.get():
                 try:
                     total += int(vInt.get() or 0)
@@ -107,14 +107,14 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
 
     # --- Gestion Amphi : activer/désactiver saisie uniquement ---
     def on_toggle_amphi(idx: int):
-        nom, max_base, vA, vTT, vInt, spin, lbl_max, cb = selections[idx]
+        nom, max_base, min_base, vA, vTT, vInt, spin, lbl_max, cb = selections[idx]
         spin.configure(state=("normal" if vA.get() else "disabled"))
         update_total()
 
     # --- Gestion TT : unique, sans effet sur valeur ni max ---
     def on_click_tt(idx_clicked: int):
         idx_old = tt_index["idx"]
-        nom_c, max_base_c, vA_c, vTT_c, vInt_c, spin_c, lbl_max_c, cb_c = selections[idx_clicked]
+        nom_c, max_base_c, min_base_c, vA_c, vTT_c, vInt_c, spin_c, lbl_max_c, cb_c = selections[idx_clicked]
 
         if idx_old is None:
             # activer TT sur la ligne cliquée
@@ -131,14 +131,14 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
             return
 
         # transfert : retirer l'ancien et activer le nouveau
-        nom_o, max_base_o, vA_o, vTT_o, vInt_o, spin_o, lbl_max_o, cb_o = selections[idx_old]
+        nom_o, max_base_o , min_base_o , vA_o, vTT_o, vInt_o, spin_o, lbl_max_o, cb_o = selections[idx_old]
         vTT_o.set(0)
         vTT_c.set(1)
         tt_index["idx"] = idx_clicked
         update_total()
 
     # --- Création des lignes ---
-    for i, (nom, max_base) in enumerate(amphis_spec, start=1):
+    for i, (nom, max_base,  min_base) in enumerate(amphis_spec, start=1):
         row = i
         vA  = tk.IntVar(value=0)
         vTT = tk.IntVar(value=0)
@@ -183,7 +183,7 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
         )
         cb_tt.grid(row=row, column=1, sticky="w", padx=(0, 8))
 
-        selections.append([nom, max_base, vA, vTT, vInt, spin, lbl_max, cb_amphi])
+        selections.append([nom, max_base, min_base, vA, vTT, vInt, spin, lbl_max, cb_amphi])
         # --- Désactiver TT si aucun étudiant tiers-temps ---
         if nb_tiers_temps == 0:
             for nom, max_base, vA, vTT, vInt, spin, lbl_max, cb_amphi in selections:
@@ -210,17 +210,20 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
     def do_validate():
         nonlocal result
         total = total_var.get()
+        
         if total > nb_etudiants:
             messagebox.showwarning(
                 "Total trop grand",
                 f"Le total ({total}) dépasse {nb_etudiants}."
             )
             return
+        
         if total < nb_etudiants:
             messagebox.showwarning(
                 "Total insuffisant",
                 f"Le total {total} est inférieur à {nb_etudiants}."
             )
+            return
         # --- Vérification Tiers Temps ---
         if nb_tiers_temps != 0:
 
@@ -228,7 +231,7 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
             tt_trouve = False
 
             # Trouver la ligne TT (sans break)
-            for i, (_nom, _max_base, _vA, vTT, _vInt, *_rest) in enumerate(selections):
+            for i, (_nom, _max_base, _min_base, _vA, vTT, _vInt, *_rest) in enumerate(selections):
                 if vTT.get():
                     idx_tt = i
                     tt_trouve = True
@@ -241,7 +244,7 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
                 return
 
             # Vérifier que l'amphi choisi contient assez de places pour tous les TT
-            nom, max_base, vA, vTT, vInt, *_rest = selections[idx_tt]
+            nom, max_base, min_base, vA, vTT, vInt, *_rest = selections[idx_tt]
             try:
                 val_tt = int(vInt.get() or 0)
             except ValueError:
@@ -256,7 +259,7 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
                 )
                 return
         # --- Vérification qu'aucun amphi sélectionné n'est vide ---
-        for nom, _max_base, vA, vTT, vInt, *_rest in selections:
+        for nom, _max_base, _min_base, vA, vTT, vInt, *_rest in selections:
             if vA.get() or vTT.get():  # amphi utilisé
                 try:
                     val = int(vInt.get() or 0)
@@ -269,9 +272,24 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
                         f"L'amphi {nom} est sélectionné mais contient 0 étudiant."
                     )
                     return
+        # vérification des minimums :
+        for nom, max_base, min_base, vA, vTT, vInt, *_rest in selections:
+            if vA.get() or vTT.get():
+                try:
+                    val = int(vInt.get() or 0)
+                except ValueError:
+                    val = 0
 
+                if val <= min_base:
+                    messagebox.showwarning(
+                        "Effectif insuffisant",
+                        f"Avec moins de {min_base} étudiants dans {nom}, "
+                        "faites un placement libre."
+                    )
+                    return
+        
         out = []
-        for nom, _max_base, vA, vTT, vInt, _spin, _lbl_max, _cb in selections:
+        for nom, _max_base, _min_base, vA, vTT, vInt, _spin, _lbl_max, _cb in selections:
             if vA.get() or vTT.get():
                 try:
                     val = int(vInt.get() or 0)

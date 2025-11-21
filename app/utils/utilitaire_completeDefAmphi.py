@@ -52,7 +52,7 @@ def cree_3_zones() :
 
 def completeDefinitionAmphi ( amphitheatre : amphi):    
     amphi1zone =['Biologie','Géologie']
-    amphi2zones=['Chimie','Sc_Naturelles','Informatique','Sc_Physiques','Mathématiques']
+    amphi2zones=['Chimie','Sc_Naturelles','Informatique','Physique','Mathématiques']
     amphi3zones=['Petit_Valrose']
     
     if amphitheatre.nom in amphi1zone :
@@ -70,7 +70,7 @@ def completeDefinitionAmphi ( amphitheatre : amphi):
 
 def main():
     amphi1zone =['Biologie','Géologie']
-    amphi2zones=['Chimie','Sc_Naturelles','Informatique','Sc_Physiques','Mathématiques']
+    amphi2zones=['Chimie','Sc_Naturelles','Informatique','Physique','Mathématiques']
     amphi3zones=['Petit_Valrose']
     listeNomAmphi = amphi1zone+amphi2zones+amphi3zones
 

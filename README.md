@@ -35,42 +35,39 @@ git clone https://github.com/ddubruel/PlacementAmphi
 
 ##  Installation standard :
 
-Avec la version python **3.11.2**
+Avec la version python **3.11.2** **LINUX** **Windows**
 ```bash
 #1 créer un environnement virtuel
 python -m venv NomDeVotreEnvironnement
 
 #2 activer l'environnement virtuel:
-source NomDeVotreEnvironnement/bin/activate # Linux/Mac
+source NomDeVotreEnvironnement/bin/activate # Linux
 # ou pour windows :
 # NomDeVotreEnvironnement\Scripts\activate     # Windows
+
 
 #3 installer les dépendances requises  :
 pip install -r requirements.txt
 
-#4 Vérifier la version de Python installée
-which python3
-python3 -V
-
-#5 vérifier si tkinter est installé :
-python3 -c "import tkinter; print(tkinter)"
+#4 lancer le code dans l'environnement virtuel activé
+python mainClasse2.py
 ```
 
 tkinter n'est pas toujours installé sur macOS :
 
-[Télécharger Python pour macOS](https://www.python.org/downloads/macos/)
-
-[Téléccharger Python 3.11.2 pour macOS](https://www.python.org/downloads/release/python-3112/)
 
 ```bash
 # lancer le code dans l'environnement virtuel activé
 python mainClasse2.py
 ```
-Si l'installation standard ne fonctionne pas sur macOs, utiliser l'installation suivante avec Miniconda.
 
-### 🍏   sur macOS (si l’installation standard échoue)
 
-#### Téléchargement et installation de Miniconda :
+### 🍏   sur macOS
+
+
+[Téléccharger Python 3.11.2 pour macOS](https://www.python.org/ftp/python/3.11.2/python-3.11.2-macos11.pkg)
+
+### Téléchargement et installation de Miniconda :
 
 #### **👉 macOS Intel**
 ```bash
