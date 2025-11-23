@@ -13,15 +13,25 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
       - Sortie: [(nom_amphi, valeur, is_tiers_temps), ...]
     """
     # nom de l'amphi , capacité max, capacité min)
+#     amphis_spec = [
+#         ("Chimie", 84, 15),
+#         ("Mathématiques", 84,15),
+#         ("Physique", 84,15),
+#         ("Informatique", 84,15),
+#         ("Sc_Naturelles", 84,15),
+#         ("Biologie", 25,10),
+#         ("Géologie", 25,10),
+#         ("Petit_Valrose", 165,40)
+#     ]
     amphis_spec = [
-        ("Chimie", 84, 15),
-        ("Mathématiques", 84,15),
-        ("Physique", 84,15),
-        ("Informatique", 84,15),
-        ("Sc_Naturelles", 84,15),
-        ("Biologie", 25,10),
-        ("Géologie", 25,10),
-        ("Petit_Valrose", 165,40)
+        ("Chimie", 84, 0),
+        ("Mathématiques", 84,0),
+        ("Physique", 84,0),
+        ("Informatique", 84,0),
+        ("Sc_Naturelles", 84,0),
+        ("Biologie", 25,0),
+        ("Géologie", 25,0),
+        ("Petit_Valrose", 165,0)
     ]
 
     # --- fenêtre ---
@@ -186,7 +196,7 @@ def definitRemplissage(nb_etudiants: int, nb_tiers_temps: int, parent: tk.Misc |
         selections.append([nom, max_base, min_base, vA, vTT, vInt, spin, lbl_max, cb_amphi])
         # --- Désactiver TT si aucun étudiant tiers-temps ---
         if nb_tiers_temps == 0:
-            for nom, max_base, vA, vTT, vInt, spin, lbl_max, cb_amphi in selections:
+            for nom, max_base, min_base, vA, vTT, vInt, spin, lbl_max, cb_amphi in selections:
                 # On désactive la case TT
                 vTT.set(0)
             for child in f_mid.grid_slaves():

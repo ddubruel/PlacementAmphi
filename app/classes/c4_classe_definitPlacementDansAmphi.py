@@ -32,6 +32,7 @@ class definitPlacementDansAmphi :
         nbEtudiantsDansZone : int = self.repartition[indiceZone]
         nbRangUnSurDeux     : int = self.amphiPlein.zones[indiceZone].nbRangUnSurDeux
         # calcul du nombre de colonnes remplies entièrement avec nbRangUnSurDeux étudiants
+        
         nbColonnes = nbEtudiantsDansZone // nbRangUnSurDeux
         self.amphiPlein.zones[indiceZone].nbMaxEtudiantParRang =  nbColonnes # mise à jour
                           
@@ -47,7 +48,9 @@ class definitPlacementDansAmphi :
             nbColonnes  = nbColonnes + 1
             # calcul du nombre de places vides :
             nPlacesVides = nbColonnes*nbRangUnSurDeux - nbEtudiantsDansZone
-            refColPartielle : int = nbColonnes//2 # la ref de la col partiellement remplie.
+            
+            refColPartielle : int = nbColonnes//2 +1 # la ref de la col partiellement remplie.
+                
             self.amphiPlein.zones[indiceZone].nbMaxEtudiantParRang =  nbColonnes # mise à jour
             
             # premieres colonnes pleines :
@@ -62,18 +65,24 @@ class definitPlacementDansAmphi :
                                  lig1 = 1,
                                  lig2 = nbRangUnSurDeux-nPlacesVides,
                                  refPlace = refPlace )
-            # remplissage des dernières colonnes :
-            self.remplitColonnes( col1 = refColPartielle + 1  ,
-                                 col2 = nbColonnes ,
-                                 lig1 = 1,
-                                 lig2 = nbRangUnSurDeux ,
-                                 refPlace = refPlace )                                                
+            # remplissage des dernières colonnes pleines (à partir de nbColonnes=3 !)
+            if nbColonnes>2 : 
+                self.remplitColonnes( col1 = refColPartielle + 1  ,
+                                     col2 = nbColonnes ,
+                                     lig1 = 1,
+                                     lig2 = nbRangUnSurDeux ,
+                                     refPlace = refPlace )                                                
         # on remplit l'attribut pour la zone    
         self.amphiPlein.zones[indiceZone].placement = refPlace
         # fin de remplitZoneNormale
 
     def remplitZoneTronqueePV(self,refPlace,indiceZone):
         nbEtudiantsDansZone : int = self.repartition[indiceZone]
+        
+        if nbEtudiantsDansZone == 0:
+            self.amphiPlein.zones[indiceZone].placement = []
+            return
+        
         nbRangUnSurDeux     : int = self.amphiPlein.zones[indiceZone].nbRangUnSurDeux
         nbColonnes, refColPartielle, nPlacesVides, nPlacesRang1 =  self.calculColPourPvZonesSurLesCotes( nbEtudiantsDansZone )
         if nPlacesVides==8 :
@@ -189,7 +198,7 @@ class definitPlacementDansAmphi :
                 refColPartielle=2
                 nPlacesVide = 17 - n
                 nPlacesRang1 = 1
-            elif  0 < n <= 9 :
+            elif  0 <= n <= 9 :
                 nbColonnes = 1
                 refColPartielle=1
                 nPlacesVide = 9 - n
