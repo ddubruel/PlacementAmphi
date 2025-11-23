@@ -88,7 +88,12 @@ conda --version
 
 #### Créer l’environnement Conda sur macOS :
 
-environment.yml est un des fichiers du dépôt.
+
+**environment.yml** est un des fichiers du dépôt exporté depuis le PC Linux.
+Ce fichier a été utilisé sur macOS, chaque erreur a été corrigée en supprimant la ligne de cet environnement contenant la librairie signalée dans le message d'erreur.
+
+**environment-macos.yml** est un des fichiers du dépôt contenant l'environement minimal exporté depuis le PC Linux.
+Ce fichier n'a pas encore été testé sur macos.
 
 ```bash
 cd /chemin/vers/ton/projet
