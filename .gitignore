@@ -37,6 +37,7 @@ Thumbs.db
 test*.py
 
 # exclusion des répertoires suivants :
+DataExemple/Amphi*
 Doc_Support/
 data/
 app/classes/Proposition/
