@@ -20,6 +20,9 @@ from classes.c5_tracePlanAmphiEtGenerefichier import tracePlanAmphiEtGenerefichi
 from classes.c7_classe_codeEnteteApoge import codeEnteteApogee
 from classes.c8_classe_mailConfig import mailConfig
 from classes.c9_classe_dataEpreuve import dataEpreuve
+from classes.c10_classe_compileClasseMail import compileClasseMail
+#from classes.c11_classe_compilClasseMailAvecReprise import compilClasseMailAvecReprise
+
 
 from utils.utilitaires import *
 from utils.utilitaire_UI_amphiMoodle import definitRemplissage
@@ -29,9 +32,15 @@ from utils.utilitaire_generer_et_compiler_fichier_tex import genererPdf
 from utils.utilitaire_UI_saisirDonneesEpreuve import UI_saisirDonneesEpreuve
 from utils.utilitaire_UI_mail import UI_mail
 from utils.UI_preparation_message import UI_preparation_message
-from utils.utilitaire_EnvoiMail import  envoyerMail
-from utils.utilitaire_sauvegarde import sauvegarde_etudiants_non_envoyes
-from utils.UI_confirmationEnvoi import UI_confirmationEnvoi
+
+from utils.utilitaire_sauvegarde import charger_compileClasseMail
+from utils.utilitaire_json import charger_donnees_message,choisirFichierPoursuite
+from utils.utilitaire_sauvegarde import sauvegarder_compileClasseMail
+
+
+
+from utils.utilitaire_reprise_envoi_mail import envoiMailauxEtudiants
+
 
 # ---------- Modèle ----------
 @dataclass
@@ -54,6 +63,7 @@ class Boustrophedon:
         self.nbAmphiApogee : int = 0
         self.listeNomAmphi : list[amphi]=[]
         self.listeDesRepartitions : list =[]
+        self.listAmphi : list[amphi] = [] 
         
         self.listeFenetreGraphiqueVisuAmphi = []
         
@@ -177,7 +187,7 @@ class Boustrophedon:
         self.btn_mail = tk.Button(
             self.root,
             text="Envoyer les fichiers individuels aux étudiants par mail",
-            command=self.envoyerMails,
+            command=self.prepareEnvoiMailsAvecClasses,
             state=tk.DISABLED
         )
         self.btn_mail.pack(pady=10)
@@ -186,7 +196,7 @@ class Boustrophedon:
         self.btn_poursuite = tk.Button(
             self.root,
             text="Poursuivre l'envoi des courriels.",
-            command=self.poursuiteEnvoiMail,
+            command=self.prepareRepriseEnvoiMailsAvecFichier,
             state=tk.DISABLED
         )
         self.btn_poursuite.pack(pady=10)
@@ -304,7 +314,7 @@ class Boustrophedon:
             nb_TT: int = 0 
         # on place la totalité des étudiant en liste moodle+ le nb de tiers Temps. Il faut cocher la case Amphi pour les TT
         nbTotalEtudiant : int =  len(self.dataBrutes.moodle.data)+nb_TT
-        allocationAmphi : list[Tuple[str,int]] = definitRemplissage(nb_etudiants= nbTotalEtudiant,nb_tiers_temps = nb_TT, parent=self.root)    
+        allocationAmphi : list[tuple[str,int]] = definitRemplissage(nb_etudiants= nbTotalEtudiant,nb_tiers_temps = nb_TT, parent=self.root)    
         print(f"Vous avez choisi la répartition suivante dans les amphithéatres :\n {allocationAmphi}")
         # création de la liste des amphi :
         self.listeNomAmphi = [nom for (nom,nb,boolTT) in allocationAmphi ]
@@ -326,7 +336,7 @@ class Boustrophedon:
         #                                       on remplit ainsi l'amphi avec Nalloué-Ntiers + Ntiers = Nalloué 
         decalage : int =0 # pour récupérer la tranche suivante dans la liste dataBrutes.moodle.data
         for amphitheatre in self.listAmphi :
-            listeValeursUniques  : list[Tuple[int,bool]] = [(nomAmphi,valeur, boolTT)  for (nomAmphi, valeur ,boolTT) in allocationAmphi if nomAmphi==amphitheatre.nom ]
+            listeValeursUniques  : list[tuple[int,bool]] = [(nomAmphi,valeur, boolTT)  for (nomAmphi, valeur ,boolTT) in allocationAmphi if nomAmphi==amphitheatre.nom ]
             nomAmphi : str = listeValeursUniques[0][0]
             nbEtudiantAPlacer : int = listeValeursUniques[0][1]
             TT : bool =  listeValeursUniques[0][2]
@@ -379,6 +389,12 @@ class Boustrophedon:
         self.etat.mode = self.var_mode.get() or "nil"
         # instanciation de la classe qui contient les données brutes (Moodle et Apogee si Examen)
         self.dataBrutes = chargementCsv(self.etat.mode, self.root)
+        
+        self.repertoire : str = (
+                        self.dataBrutes.apogee.repertoire
+                        if self.etat.mode == "Examen"
+                        else self.dataBrutes.moodle.repertoire
+                            )
         
         if self.dataBrutes.apogee : # exploitation des data apogee si Examen :
             self.exploiteApogee()
@@ -435,7 +451,8 @@ class Boustrophedon:
         # Générer PDF   LIB_SAL = self.nomAmphi                  
         if  self.etat.mode in ['Partiel' ,'PartielAde'] :
             entetePdf : list[str] = codeEnteteApogee(  self.etat.mode   , self.dataBrutes , self.listAmphi , "Nom provisoire", self.root )                                 
-            annee_universitaire, date, horaires, duree, epreuve= UI_saisirDonneesEpreuve(self.root )
+            
+            annee_universitaire, date, horaires, duree, epreuve= UI_saisirDonneesEpreuve(self.root, self.repertoire )
             entetePdf.set_valeurs( annee_universitaire, date, horaires,duree, epreuve,  LIB_SAL="Nom provisoire")
             # on remplit les data à réutiliser pour envoyer le mail plus tard.
             self.dataEpreuvePourMail : dataEpreuve = dataEpreuve(date ,horaires ,duree ,epreuve)
@@ -454,89 +471,109 @@ class Boustrophedon:
              
         messagebox.showinfo("PDF", "Génération des PDF terminée.")
         self.update_buttons_state("pdf_generes")
-        nom_OK,nom_NOK = sauvegarde_etudiants_non_envoyes(self.listAmphi, chemin_dossier=self.arborescence.racine)
-        messagebox.showinfo("La suite",f"Le fichier {nom_NOK} contient la liste"
-                            " des étudiants qui n'ont pas encore reçu le mail."
-                            "Vous pouvez poursuivre plus tard.")
+        
     
-    def envoyerMails(self):
-        # creer une UI pour ces champs.
-        #global SMTP_SERVER,SMTP_PORT,EMAIL_SENDER, EMAIL_PASSWORD,Nom_utilisateur
-        #SMTP_SERVER = "webmail.univ-cotedazur.fr" 
-        #SMTP_PORT = 587  
-        #EMAIL_SENDER = "denis.dubruel@univ-cotedazur.fr"  # Remplacez par votre email
-        #EMAIL_PASSWORD = input("Mot de passe  mail ?")  
-        #Nom_utilisateur="ddubruel"
-        
-        # mailConfig à récupérer en sortie d'UI
-        SMTP_SERVER, SMTP_PORT,EMAIL_SENDER, EMAIL_PASSWORD,Nom_utilisateur   = UI_mail(self.root)
-        
-        setUpMail : mailConfig = mailConfig (SMTP_SERVER,SMTP_PORT,EMAIL_SENDER,EMAIL_PASSWORD,Nom_utilisateur)
-        
+    def prepareEnvoiMailsAvecClasses(self):
+        """ Action du bouton 4 : envoi des mails aux étudiants."""
+        # on instancie la classe de compilation des données pour l'envoi des mails
+        # cette classe contient toutes les données nécessaires à l'envoi des mails.
+        dataMail : compileClasseMail = compileClasseMail(self.listAmphi)
+        # sauvegarder la classe dans le csv "Z_dataMail.csv" qui sera chargé en cas de reprise.
+        sauvegarder_compileClasseMail( dataMail, self.repertoire)   
+        # definition du sujet et du corps commun du message
+        # le fichier   Z_data_message.json avec le sujet et le corps du message sera créé à cette étape.
         sujet: str
         corpsDuMessageCommun: str
-        sujet, corpsDuMessageCommun  = UI_preparation_message(self.root , self.dataEpreuvePourMail )
+        sujet, corpsDuMessageCommun  = UI_preparation_message(self.root , self.dataEpreuvePourMail,self.repertoire )
         
-                
-        # Envoi des mails
-        nb : int = 0
-        nbok : int = 0
+        # pour le mot de passe et autres paramètres de connexion SMTP.
+        setUpMail   = UI_mail(self.root)                        
+        # lancer la fonction d'envoi des mails avec reprise possible
+        envoiMailauxEtudiants(self.root,self.repertoire,dataMail,setUpMail,sujet,corpsDuMessageCommun)
         
-        # interface graphique pour savoir si envoi réel ou test à blanc...
-        envoiReel : bool  = UI_confirmationEnvoi(self.root)
+    def prepareRepriseEnvoiMailsAvecFichier(self):   
+        """ Action du bouton  reprise envoi mail : envoi des mails aux étudiants.
+        il faut d'avoir chargé le fichier de reprise avant."""
+        self.repertoire = choisirFichierPoursuite (  )
+        # charge le json avec le sujet et le corps du message sauvegardé au premier envoi.
+        donnees = charger_donnees_message(self.repertoire)
+        sujet= donnees["sujet"]
+        corpsDuMessageCommun= donnees["corps"]
+        dataMail = charger_compileClasseMail(self.repertoire)
+        # pour le mot de passe et autres paramètres de connexion SMTP.
+        setUpMail   = UI_mail(self.root)
         
-        # lancer controleur
-        self.ouvrir_fenetre_interruption()
+        # lancer la fonction d'envoi des mails avec reprise possible
+        envoiMailauxEtudiants(self.root,self.repertoire,dataMail,setUpMail,sujet,corpsDuMessageCommun)
         
-        for amphi in self.listAmphi :
-            if not self.controleur_ok:
-                break
-            for etu in amphi.get_etudiants():
-                # Maintient l'UI réactive pour capter le clic sur "interuption"
-                try:
-                    self.root.update_idletasks()
-                    self.root.update()
-                except tk.TclError:
-                    pass  # si la fenêtre principale est fermée
+    
+    # def envoyerMails(self):
+    # dddddd
+    #     # mailConfig à récupérer en sortie d'UI
+    #     # récupération des paramètres de configuration du mail pour la connexion SMTP
+    #     # SMTP_SERVER,SMTP_PORT,EMAIL_SENDER,EMAIL_PASSWORD,Nom_utilisateur,t_tempo
+    #     setUpMail   = UI_mail(self.root)
+        
+    #     # definition du sujet et du corps commun du message        
+    #     sujet: str
+    #     corpsDuMessageCommun: str
+    #     sujet, corpsDuMessageCommun  = UI_preparation_message(self.root , self.dataEpreuvePourMail, self.repertoire )
+        
+                      
+    #     # Envoi des mails
+    #     nb : int = 0
+    #     nbok : int = 0
+        
+    #     # interface graphique pour savoir si envoi réel ou test à blanc...
+    #     envoiReel : bool  = UI_confirmationEnvoi(self.root)
+        
+    #     # lancer controleur
+    #     self.ouvrir_fenetre_interruption()        
+    #     for amphi in self.listAmphi :
+    #         if not self.controleur_ok:
+    #             break
+    #         for etu in amphi.get_etudiants():
+    #             # Maintient l'UI réactive pour capter le clic sur "interuption"
+    #             try:
+    #                 self.root.update_idletasks()
+    #                 self.root.update()
+    #             except tk.TclError:
+    #                 pass  # si la fenêtre principale est fermée
 
-                if not self.controleur_ok:
-                    break  # stop immédiat si l'utilisateur a demandé l'interuption                
-                ### pourrait être mis dans une fonction...
-                debut : str = f"Bonjour {etu.prenom} \n\n"
-                fin: str = (
-                            f"\n\n Vous avez la place {etu.reference_place}, amphithéâtre {amphi.nom}.\n"
-                            f"Qui se trouve en Zone : {etu.prefixe_zone} — Rang n° {etu.numeroRang} — Place n° {etu.numeroPlace}.\n"
-                            f"\n"
-                            f"---Ce courriel a été envoyé automatiquement. Merci de ne pas y répondre.---"
-                        )
-                corpsDuMessage: str  = debut + corpsDuMessageCommun  +fin # le contenu du mail est complet
-                ####  ...plus tard...
+    #             if not self.controleur_ok:
+    #                 break  # stop immédiat si l'utilisateur a demandé l'interuption                
+    #             ### pourrait être mis dans une fonction...
+    #             debut : str = f"Bonjour {etu.prenom} \n\n"
+    #             fin: str = (
+    #                         f"\n\n Vous avez la place {etu.reference_place}, amphithéâtre {amphi.nom}.\n"
+    #                         f"Qui se trouve en Zone : {etu.prefixe_zone} — Rang n° {etu.numeroRang} — Place n° {etu.numeroPlace}.\n"
+    #                         f"\n"
+    #                         f"---Ce courriel a été envoyé automatiquement. Merci de ne pas y répondre.---"
+    #                     )
+    #             corpsDuMessage: str  = debut + corpsDuMessageCommun  +fin # le contenu du mail est complet
+    #             ####  ...plus tard...
 
-                # Pause aléatoire entre les envois
-                time.sleep(1) #  à activer pour la suite.
-                nb=nb+1
-                envoiReussi : bool  = envoyerMail (sujet = sujet,
-                                         corpsDuMessage = corpsDuMessage,
-                                         email = etu.courriel,                       
-                                         fichierPng = etu.fichierPng ,
-                                         setUpMail = setUpMail,
-                                         go = envoiReel  # mis à False pour un test à blanc.
-                                         )
+    #             # Pause aléatoire entre les envois
+    #             time.sleep(t_tempo) #  t_tempo est fourni par UI_mail(...).
+    #             nb=nb+1
+    #             envoiReussi : bool  = envoyerMail (sujet = sujet,
+    #                                      corpsDuMessage = corpsDuMessage,
+    #                                      email = etu.courriel,                       
+    #                                      fichierPng = etu.fichierPng ,
+    #                                      setUpMail = setUpMail,
+    #                                      go = envoiReel  # mis à False pour un test à blanc.
+    #                                      )                
+    #             if envoiReussi :
+    #                 nbok = nbok + 1
+    #                 print("ok =",nbok ,'sur',nb)
+    #             etu.set_verifEnvoi(envoiReussi)
+    #         # sortie propre si demande d'arrêt
+    #         if not self.controleur_ok:
+    #             break
                 
-                if envoiReussi :
-                    nbok = nbok + 1
-                    print("ok =",nbok ,'sur',nb)
-                etu.set_verifEnvoi(envoiReussi)
-            # sortie propre si demande d'arrêt
-            if not self.controleur_ok:
-                break
-                
-        messagebox.showinfo("Bilan des envois",f"{nb} mail envoyés.Dont {nbok} correctement.")
-        nom_OK,nom_NOK = sauvegarde_etudiants_non_envoyes(self.listAmphi, chemin_dossier=self.arborescence.racine)
-        messagebox.showinfo("La suite",f"Le fichier {nom_NOK} contient la liste des étudiants qui n'ont pas encore reçu le mail.")
-
-    def poursuiteEnvoiMail(self):
-        messagebox.showinfo("Pour info","La reprise d'envoi d'envoi des mails n'est pas encore disponible. Patience...")
+    #     messagebox.showinfo("Bilan des envois",f"{nb} mail envoyés.Dont {nbok} correctement.")
+    #     nom_OK,nom_NOK = sauvegarde_etudiants_non_envoyes(self.listAmphi, chemin_dossier=self.arborescence.racine)
+    #     messagebox.showinfo("La suite",f"Le fichier {nom_NOK} contient la liste des étudiants qui n'ont pas encore reçu le mail.")            
     
     ### affichage 
     def __repr__(self):
@@ -595,5 +632,4 @@ if __name__ == '__main__':
           " et les variables de la classe en self.qqch")
     print(">>> Pour relancer l’UI, taper : root.mainloop()")
     
-    print(vars(app))
 app

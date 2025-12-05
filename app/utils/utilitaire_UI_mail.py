@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter import messagebox
+from app.classes.c8_classe_mailConfig import mailConfig
 
 
 def UI_mail (root )-> [str,str,str,str,str] :
@@ -10,7 +12,7 @@ def UI_mail (root )-> [str,str,str,str,str] :
     
     SMTP_SERVER : str  = "webmail.univ-cotedazur.fr" 
     SMTP_PORT    : int = 587 
-    EMAIL_SENDER :str  = " @univ-cotedazur.fr"
+    EMAIL_SENDER :str  = "@univ-cotedazur.fr"
     EMAIL_PASSWORD :str =""
     Nom_utilisateur :str = ""
     t_tempo : str = "10"
@@ -57,8 +59,57 @@ def UI_mail (root )-> [str,str,str,str,str] :
     result = {"values": None}
 
     def on_validate(event=None):
-        result["values"] = tuple(v.get().strip() for v in vars_)
+        values = tuple(v.get().strip() for v in vars_)
+
+        SMTP_SERVER, SMTP_PORT, EMAIL_SENDER, EMAIL_PASSWORD, Nom_utilisateur, t_tempo = values
+
+        # --- Vérif email correct ---
+        if " " in EMAIL_SENDER:
+            messagebox.showwarning("Erreur", "courriel incomplet (espaces interdits)")
+            return
+
+        if "@" not in EMAIL_SENDER:
+            messagebox.showwarning("Erreur", "courriel incomplet (manque @)")
+            return
+
+        local, domain = EMAIL_SENDER.split("@", 1)
+
+        if local == "":
+            messagebox.showwarning("Erreur", "courriel incomplet (avant @)")
+            return
+
+        if domain == "" or "." not in domain:
+            messagebox.showwarning("Erreur", "courriel incomplet (domaine manquant)")
+            return
+        # --- Vérif mot de passe non vide ---
+        if EMAIL_PASSWORD == "":
+            messagebox.showwarning("Erreur", "mot de passe à saisir")
+            return
+
+        # --- Vérif nom d'utilisateur non vide ---
+        if Nom_utilisateur == "":
+            messagebox.showwarning("Erreur", "nom d'utilisateur à saisir")
+            return
+        # --- Vérif t_tempo entier ---
+        if not t_tempo.isdigit():
+            messagebox.showwarning("Erreur", "Le temps doit être un nombre entier !")
+            return
+
+        # Conversion de t_tempo en int
+        t_tempo_int = int(t_tempo)
+
+        # On reconstruit les valeurs avec t_tempo entier
+        result["values"] = (
+            SMTP_SERVER,
+            SMTP_PORT,
+            EMAIL_SENDER,
+            EMAIL_PASSWORD,
+            Nom_utilisateur,
+            t_tempo_int,
+        )
+
         win.destroy()
+
 
     def on_cancel(event=None):
         result["values"] = (None,) * 8
@@ -107,8 +158,9 @@ def UI_mail (root )-> [str,str,str,str,str] :
       t_tempo) = result["values"]
     
     
-
-    return SMTP_SERVER, SMTP_PORT, EMAIL_SENDER,EMAIL_PASSWORD,Nom_utilisateur,t_tempo
+    setUpMail : mailConfig = mailConfig (SMTP_SERVER,SMTP_PORT,EMAIL_SENDER,EMAIL_PASSWORD,Nom_utilisateur,t_tempo)
+    
+    return setUpMail 
 
 
 # --------------------------------------------------------------------

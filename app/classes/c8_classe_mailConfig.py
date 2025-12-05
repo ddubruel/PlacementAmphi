@@ -7,8 +7,7 @@ from dataclasses import  dataclass
 class mailConfig  :  
     SMTP_SERVER : str  = "webmail.univ-cotedazur.fr" 
     SMTP_PORT    : int = 587 
-    EMAIL_SENDER :str  = "denis.dubruel@univ-cotedazur.fr"
+    EMAIL_SENDER :str  = ""
     EMAIL_PASSWORD :str =""
-    Nom_utilisateur :str = "ddubruel"
-       
-    
+    Nom_utilisateur :str = ""
+    t_tempo : int = 5

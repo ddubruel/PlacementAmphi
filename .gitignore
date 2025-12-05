@@ -38,6 +38,7 @@ test*.py
 
 # exclusion des répertoires suivants :
 DataExemple/Amphi*
+DataExemple/Z*
 Doc_Support/
 data/
 app/classes/Proposition/

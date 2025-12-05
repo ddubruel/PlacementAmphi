@@ -92,7 +92,7 @@ def main():
 
     ok = envoyerMail(   sujet = "news",
                         corpsDuMessage="Quoi de neuf ?",
-                        email="denis.dubruel@gmail.com",
+                        email="ECRIRE UNE ADRESSE MAIL DE TEST",
                         fichierPng="/home/denis/00_Universite/BousGit/GenerateurMoodleApogee/Amphi_Physique/pngOut/Physique_plan_general.png",
                         setUpMail=cfg,
                         go=True,   # True : envoie vraiment le mail False : tir à blanc!

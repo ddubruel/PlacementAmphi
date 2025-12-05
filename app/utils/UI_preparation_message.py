@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.scrolledtext as scrolledtext
 from app.classes.c9_classe_dataEpreuve import dataEpreuve
+from app.utils.utilitaire_json import sauvegarder_donnees_message
 
 def majContenuMessage(dataEpreuvePourMail : dataEpreuve) -> str :
      
@@ -31,7 +32,7 @@ def majContenuMessage(dataEpreuvePourMail : dataEpreuve) -> str :
     return corps_du_message
 
 
-def UI_preparation_message (root , dataEpreuvePourMail : dataEpreuve )-> str :
+def UI_preparation_message (root , dataEpreuvePourMail : dataEpreuve ,repertoire : str )-> str :
     """
     Ouvre une fenêtre modale Tkinter pour saisir les informations pour configurer le mail.    
     """
@@ -95,6 +96,8 @@ def UI_preparation_message (root , dataEpreuvePourMail : dataEpreuve )-> str :
         result["values"] = (titre_val, corps_val)
         win.destroy()
 
+
+    
     def on_cancel(event=None):
         result["values"] = None 
         win.destroy()
@@ -131,8 +134,10 @@ def UI_preparation_message (root , dataEpreuvePourMail : dataEpreuve )-> str :
     if result["values"] is None:
         return  None 
 
-    titre, corps = result["values"]
-    return titre, corps
+    sujet, corps = result["values"]
+    
+    sauvegarder_donnees_message(repertoire, sujet, corps)
+    return sujet, corps
 
 def main():
     root = tk.Tk()

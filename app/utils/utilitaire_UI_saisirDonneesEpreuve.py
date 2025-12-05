@@ -1,6 +1,9 @@
 import tkinter as tk
+import os,sys
+import json
+from app.utils.utilitaire_json import sauvegarderJson
 
-def UI_saisirDonneesEpreuve(root )-> list[str]:
+def UI_saisirDonneesEpreuve(root , repertoire : str )-> list[str]:
     """
     Ouvre une fenêtre modale Tkinter pour saisir les informations de l'épreuve.
     Retourne un tuple :
@@ -97,6 +100,8 @@ def UI_saisirDonneesEpreuve(root )-> list[str]:
      horaires,
      duree,
      epreuve) = result["values"]
+    
+    sauvegarderJson(repertoire ,annee_universitaire, date, horaires, duree, epreuve)
 
     return annee_universitaire, date, horaires, duree, epreuve
 
