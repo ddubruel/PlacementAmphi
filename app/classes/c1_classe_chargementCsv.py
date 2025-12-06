@@ -7,7 +7,7 @@ from tkinter import messagebox, filedialog
 from dataclasses import  dataclass
 from typing import Optional
 from io import TextIOWrapper
-from random import shuffle
+import random
 from app.utils.utilitaire_sauvegarde import  sauveCsv
 
 # ────────────────────────────────────────────────────────────────────────────────
@@ -32,6 +32,7 @@ class FichierCsv  :
         self.entete = None
         self.data = None
         self.valide = False
+        self.annule = False  # flag si jamais il y a déja un placement en cours et que l'utilisateur annule.
         self.nbEtudiant : int = 0
 
         # Étapes automatiques :
@@ -39,7 +40,9 @@ class FichierCsv  :
         titre=f"Choix du fichier {self.formatFic}."
 
         self.choisir_fichier(parent, titre, rep )
-
+        if self.annule :
+            return
+        
         if self.chemin:
             self.valide = False
             while not self.valide and self.chemin :
@@ -131,22 +134,60 @@ class FichierCsv  :
         self.data=dataFiltree
         self.nbEtudiant = len(self.data or [])
 
-    def choisir_fichier(self,tkParent ,  titre  ,rep)-> None :
+    def choisir_fichier(self, tkParent, titre, rep) -> None:
         messagebox.showwarning(
             title=f"Sélection du fichier {self.formatFic} - {self.msgChoixFichier} ",
             message=f"Choisir un fichier {self.formatFic} {self.msgChoixFichier} au format Csv."
         )
+        self.chemin: str = filedialog.askopenfilename(
+            title=titre + f" - {self.msgChoixFichier}",
+            initialdir='.',
+            filetypes=[("Fichiers csv", "*.csv")],
+        )
 
-        self.chemin : str  = filedialog.askopenfilename(
-                    title=titre + f"-{self.msgChoixFichier}",
-                    initialdir='.',
-                    filetypes=[("Fichiers csv", "*.csv")],
-                            )
-        if self.chemin =="" :
-            messagebox.showwarning( title="Attention !!!!",
-                message=f"Vous n'avez pas choisi de fichier !!")
-        else :
+        if self.chemin == "":
+            # aucun fichier choisi
+            messagebox.showwarning(
+                title="Attention !!!!",
+                message="Vous n'avez pas choisi de fichier !!"
+            )
+            self.annule = True
+            return
+        else:
+            # on connaît le répertoire du fichier choisi
             self.repertoire = os.path.dirname(self.chemin)
+
+            # ─────────────────────────────────────────────
+            # 1) Vérifier l'existence de Z_dataMail.csv
+            # ─────────────────────────────────────────────
+            chemin_data_mail = os.path.join(self.repertoire, "Z_dataMail.csv")
+
+            if os.path.exists(chemin_data_mail):
+                # Une session d'envoi/placement existe déjà
+                # Fenêtre de confirmation : continuer ou annuler
+                reponse = messagebox.askquestion(
+                    title="Placement déjà commencé",
+                    message=(
+                        "Un placement est déjà commencé dans ce répertoire.\n\n"
+                        "Voulez-vous effacer l'ancien et effectuer le nouveau placement(cliquer OUI )\n"
+                        "ou revenir à la page précédente (cliquer NON) ?"
+                    ),
+                    icon="warning"
+                )
+
+                if reponse == "no":
+                    # Bouton 'Annuler' → on annule le choix et on 'sort de la classe'
+                    # en remettant chemin à vide
+                    self.chemin = ""
+                    self.repertoire = None
+                    self.annule = True 
+                    return
+                else :       # on efface le fichier Z_dataMail.csv et on continue
+                        os.remove(chemin_data_mail)
+                # Si reponse == "yes" → bouton 'Continuer'
+                # On ne fait rien de plus : la méthode retourne,
+                # et l'initialisation de la classe continue normalement.
+
 
     def charger_csv(self) -> None :
         """Lecture du fichier csv et extraction entête et données."""
@@ -207,22 +248,34 @@ class chargementCsv:
 
     def __init__(self,mode : str ,tkparent : tk.Tk ):
         self.mode = mode   # "Examen" ou "Partiel" ou "PartielAde"
+        # Initialisation systématique des attributs pour éviter plantage de mainClasse2.py
+        self.apogee = None
+        self.moodle = None
+        self.moodleTt = None
+        self.ade = None
 
         if self.mode == "Examen" : # chargement des 2 sources d'information (Apogée et Moodle pour les mails).
             self.apogee = FichierCsv(formatFic="Apogée",msgChoixFichier="avec tous les étudiants")  # les tiers temps sont déja placé dans Apogée
+            if self.apogee.annule :
+                return # si annulation du choix du fichier apogée
+            random.shuffle(self.apogee.data)  # mélange aléatoire de la liste des étudiants 
             print("Le fichier apogée contient :", self.apogee.get_nbEtudiant(),'étudiants')
             #input('2) presser entrée')
             self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier="avec tous les étudiants")
             print("Le fichier apogée contient :", self.apogee.get_nbEtudiant())
             print("Le fichier moodle contient :", self.moodle.get_nbEtudiant())
-            print("Le fichier moodle contient :", len(self.apogee.data))
-            #input('3) presser entrée')
+            
         elif self.mode == "Partiel" :
             self.apogee = None
             self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier="avec tous les étudiants")
+            if self.moodle.annule :
+                return # si annulation du choix du fichier moodle
+            random.shuffle(self.moodle.data)  # mélange aléatoire de la liste des étudiants   
+            
             tiersTemps : str = messagebox.askquestion("Tiers temps ?","Avez-vous un fichier tiers temps ?",icon ='question' )
             if tiersTemps=='yes':
                 self.moodleTt = FichierCsv(formatFic="Moodle",msgChoixFichier="contenant seulement les tiers temps")
+                random.shuffle(self.moodleTt.data)  # mélange aléatoire de la liste des étudiants 
                 self.retirerLesTiersTempsDeMoodle()
             else :
                 self.moodleTt = None
@@ -230,10 +283,16 @@ class chargementCsv:
         elif self.mode == "PartielAde" :
             self.apogee = None
             self.ade = FichierCsv(formatFic="Ade", msgChoixFichier="avec uniquement les étudiants inscrits à jour dans ADE ")
-            self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier=" avec tous les étudiants, pour avoir les mails.")
+            if self.ade.annule :
+                return # si annulation du choix du fichier ade  
 
-            print(f"linge 229 ade contient :  {len(self.ade.data)}  étudiants.")
-            print(f"ligne 229 moodle contient :  {len(self.moodle.data)}  étudiants.")
+            self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier=" avec tous les étudiants, pour avoir les mails.")
+            if self.moodle.annule :
+                return # si annulation du choix du fichier moodle
+            random.shuffle(self.moodle.data)  # mélange aléatoire de la liste des étudiants   
+            
+            print(f"ligne 303 ade contient :  {len(self.ade.data)}  étudiants.")
+            print(f"ligne 304 moodle contient :  {len(self.moodle.data)}  étudiants.")
 
             numeroAde: set[str] = {etu[0] for etu in self.ade.data} # ensemble des numéros étudiant de ADE.
             # on sauvegarde dans un fichier les étudiants qui ne sont pas dans ADE.
@@ -243,8 +302,8 @@ class chargementCsv:
 
             print( self.moodle.repertoire+'/Z_etudiants_dans_moodle_mais_pas_dans_ADE.csv')
             sauveCsv(nomFic= self.moodle.repertoire+'/Z_etudiants_dans_moodle_mais_pas_dans_ADE.csv',
-                     entete = self.moodle.entete  ,
-                     lignes = listeAeffacer)
+                    entete = self.moodle.entete  ,
+                    lignes = listeAeffacer)
 
 
             # on ne garde que les étudiants de la liste issue de ADE
