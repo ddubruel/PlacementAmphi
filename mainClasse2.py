@@ -289,9 +289,9 @@ class Boustrophedon:
             print(f"L'amphithéatre {amphitheatre.nom} contient  {len(extraitApogee)} étudiants d'après les données apogée.\n"  )
             for dataEtu in extraitApogee :
                 amphitheatre.ajouteEtudiant(etudiant(nom = dataEtu[17] ,
-                                                     prenom = dataEtu[18],
-                                                     numeroEtudiant = dataEtu[19],
-                                                     courriel=""
+                                                    prenom = dataEtu[18],
+                                                    numeroEtudiant = dataEtu[19],
+                                                    courriel=""
                                                     ) 
                                             )
             
@@ -300,10 +300,10 @@ class Boustrophedon:
             # les étudiants issus de apogee n'ont pas de courriel (à récupérer dans les data Moodle).
             for etu in amphitheatre.listeTousLesEtudiantsDansAmphi :
                 courriel : str  = recupereCourrielMoodle( numeroEtuApogee = etu.numeroEtudiant
-                                                          , dataBrutes =   self.dataBrutes )                    
+                                                        , dataBrutes =   self.dataBrutes )                    
                 etu.set_courriel(courriel)
             print(f"Affichage du premier étudiant de l'amphi : {amphitheatre.nom}. \n"
-                      f"{[etud for etud in amphitheatre.listeTousLesEtudiantsDansAmphi[:1] ] } \n" )
+                    f"{[etud for etud in amphitheatre.listeTousLesEtudiantsDansAmphi[:1] ] } \n" )
         # fin exploiteApogee(self)
         
     def exploiteMoodle(self):
@@ -321,8 +321,8 @@ class Boustrophedon:
         # création de l'arborescence des fichiers à partir de l'emplacement du fichier moodle            
         self.arborescence = arborescence( self.dataBrutes.moodle.chemin, self.listeNomAmphi )
         print(f"L'arborescence des fichiers est créée.\n Les fichiers de sortie se "
-              f"trouvent dans le répertoire :\n {self.dataBrutes.moodle.chemin}.\n"
-              f"Chaque répertoire porte le nom de l'amphithéatre utilisé.\n")
+                f"trouvent dans le répertoire :\n {self.dataBrutes.moodle.chemin}.\n"
+                f"Chaque répertoire porte le nom de l'amphithéatre utilisé.\n")
         # instanciation des amphi
         self.listAmphi =[] 
         for nom in  self.listeNomAmphi :                
@@ -340,27 +340,25 @@ class Boustrophedon:
             nomAmphi : str = listeValeursUniques[0][0]
             nbEtudiantAPlacer : int = listeValeursUniques[0][1]
             TT : bool =  listeValeursUniques[0][2]
-            print("Valeur bool" , TT)
             if not TT : # si pas de tiers temps on place directement Nalloué soit nbEtudiantAPlacer depuis moodle.data
-                print('branche not TT du test ok')
                 dataEtudiantsAPlacer : list[list[str]] = self.dataBrutes.moodle.data[decalage:(decalage+nbEtudiantAPlacer)]
                 decalage = decalage+nbEtudiantAPlacer # pour placer le pointeur sur le prochain étudiant dans la liste Moodle.
                 for dataEtu in dataEtudiantsAPlacer :
                     amphitheatre.ajouteEtudiant(etudiant(nom = dataEtu[1] ,
-                                                         prenom = dataEtu[0],
-                                                         numeroEtudiant = dataEtu[2],
-                                                         courriel=dataEtu[3]
+                                                        prenom = dataEtu[0],
+                                                        numeroEtudiant = dataEtu[2],
+                                                        courriel=dataEtu[3]
                                                         ) 
                                                 )
             else : # si tiers temps :
                 dataEtudiantsAPlacer : list[list[str]] = self.dataBrutes.moodleTt.data # on prend toute la liste Tiers Temps.
                 nb_tiersTemps : int = len(dataEtudiantsAPlacer)
-                 
+                
                 for dataEtu in dataEtudiantsAPlacer :
                     amphitheatre.ajouteEtudiant(etudiant(nom = dataEtu[1] ,
-                                                         prenom = dataEtu[0],
-                                                         numeroEtudiant = dataEtu[2],
-                                                         courriel=dataEtu[3]
+                                                        prenom = dataEtu[0],
+                                                        numeroEtudiant = dataEtu[2],
+                                                        courriel=dataEtu[3]
                                                         ) 
                                                 )
                 print(f"La liste de tiers temps est placée dans l'amphi {amphitheatre.nom}")
@@ -371,9 +369,9 @@ class Boustrophedon:
                 decalage = decalage+nb_complement # pour placer le pointeur sur le prochain étudiant dans la liste moodle.data
                 for dataEtu in etudiantsAPlacer :
                     amphitheatre.ajouteEtudiant(etudiant(nom = dataEtu[1] ,
-                                                         prenom = dataEtu[0],
-                                                         numeroEtudiant = dataEtu[2],
-                                                         courriel=dataEtu[3]
+                                                        prenom = dataEtu[0],
+                                                        numeroEtudiant = dataEtu[2],
+                                                        courriel=dataEtu[3]
                                                         ) 
                                                 )            
                 print(f"{nbEtudiantAPlacer} étudiants dont {nb_tiersTemps} étudiants ont été placés dans l'amphi {nomAmphi}.") 
@@ -389,7 +387,14 @@ class Boustrophedon:
         self.etat.mode = self.var_mode.get() or "nil"
         # instanciation de la classe qui contient les données brutes (Moodle et Apogee si Examen)
         self.dataBrutes = chargementCsv(self.etat.mode, self.root)
-        
+        # Si l'utilisateur a annulé dans choisir_fichier(), on arrête tout.
+        if self.dataBrutes.apogee and self.dataBrutes.apogee.annule:
+            return
+        if self.dataBrutes.moodle and self.dataBrutes.moodle.annule:
+            return
+        if self.dataBrutes.ade and self.dataBrutes.ade.annule:
+            return
+
         self.repertoire : str = (
                         self.dataBrutes.apogee.repertoire
                         if self.etat.mode == "Examen"
@@ -420,16 +425,14 @@ class Boustrophedon:
             
             self.listeFenetreGraphiqueVisuAmphi.append(trace.window)
         # A ce stade les zones des amphi ont chacune leur liste d'étudiants non placés.
-        
+        self.update_buttons_state("donnees_chargees")         
 
-        self.update_buttons_state("donnees_chargees")
-         
 
     def actionsBouton2(self):
         if len(self.listeFenetreGraphiqueVisuAmphi) !=0 :
             for fenetre in self.listeFenetreGraphiqueVisuAmphi:
                 fenetre.destroy()
-           
+
         for amphi in self.listAmphi :  
             genererLesPngPlacesIndividuelles(amphi,self.arborescence,self.root,self.listeFenetreGraphiqueVisuAmphi)
             
@@ -466,9 +469,7 @@ class Boustrophedon:
                 entetePdf.set_LIB_SAL(Amphi.nom)
             # on remplit les data à réutiliser pour envoyer le mail plus tard.
             self.dataEpreuvePourMail : dataEpreuve = dataEpreuve(entetePdf.date ,entetePdf.horaires ,entetePdf.duree ,entetePdf.epreuve)
-            
-            genererPdf(Amphi , chemin_tex , chemin_pdf , entetePdf, self.root)    
-             
+            genererPdf(Amphi , chemin_tex , chemin_pdf , entetePdf, self.root)                
         messagebox.showinfo("PDF", "Génération des PDF terminée.")
         self.update_buttons_state("pdf_generes")
         
@@ -507,74 +508,7 @@ class Boustrophedon:
         envoiMailauxEtudiants(self.root,self.repertoire,dataMail,setUpMail,sujet,corpsDuMessageCommun)
         
     
-    # def envoyerMails(self):
-    # dddddd
-    #     # mailConfig à récupérer en sortie d'UI
-    #     # récupération des paramètres de configuration du mail pour la connexion SMTP
-    #     # SMTP_SERVER,SMTP_PORT,EMAIL_SENDER,EMAIL_PASSWORD,Nom_utilisateur,t_tempo
-    #     setUpMail   = UI_mail(self.root)
-        
-    #     # definition du sujet et du corps commun du message        
-    #     sujet: str
-    #     corpsDuMessageCommun: str
-    #     sujet, corpsDuMessageCommun  = UI_preparation_message(self.root , self.dataEpreuvePourMail, self.repertoire )
-        
-                      
-    #     # Envoi des mails
-    #     nb : int = 0
-    #     nbok : int = 0
-        
-    #     # interface graphique pour savoir si envoi réel ou test à blanc...
-    #     envoiReel : bool  = UI_confirmationEnvoi(self.root)
-        
-    #     # lancer controleur
-    #     self.ouvrir_fenetre_interruption()        
-    #     for amphi in self.listAmphi :
-    #         if not self.controleur_ok:
-    #             break
-    #         for etu in amphi.get_etudiants():
-    #             # Maintient l'UI réactive pour capter le clic sur "interuption"
-    #             try:
-    #                 self.root.update_idletasks()
-    #                 self.root.update()
-    #             except tk.TclError:
-    #                 pass  # si la fenêtre principale est fermée
 
-    #             if not self.controleur_ok:
-    #                 break  # stop immédiat si l'utilisateur a demandé l'interuption                
-    #             ### pourrait être mis dans une fonction...
-    #             debut : str = f"Bonjour {etu.prenom} \n\n"
-    #             fin: str = (
-    #                         f"\n\n Vous avez la place {etu.reference_place}, amphithéâtre {amphi.nom}.\n"
-    #                         f"Qui se trouve en Zone : {etu.prefixe_zone} — Rang n° {etu.numeroRang} — Place n° {etu.numeroPlace}.\n"
-    #                         f"\n"
-    #                         f"---Ce courriel a été envoyé automatiquement. Merci de ne pas y répondre.---"
-    #                     )
-    #             corpsDuMessage: str  = debut + corpsDuMessageCommun  +fin # le contenu du mail est complet
-    #             ####  ...plus tard...
-
-    #             # Pause aléatoire entre les envois
-    #             time.sleep(t_tempo) #  t_tempo est fourni par UI_mail(...).
-    #             nb=nb+1
-    #             envoiReussi : bool  = envoyerMail (sujet = sujet,
-    #                                      corpsDuMessage = corpsDuMessage,
-    #                                      email = etu.courriel,                       
-    #                                      fichierPng = etu.fichierPng ,
-    #                                      setUpMail = setUpMail,
-    #                                      go = envoiReel  # mis à False pour un test à blanc.
-    #                                      )                
-    #             if envoiReussi :
-    #                 nbok = nbok + 1
-    #                 print("ok =",nbok ,'sur',nb)
-    #             etu.set_verifEnvoi(envoiReussi)
-    #         # sortie propre si demande d'arrêt
-    #         if not self.controleur_ok:
-    #             break
-                
-    #     messagebox.showinfo("Bilan des envois",f"{nb} mail envoyés.Dont {nbok} correctement.")
-    #     nom_OK,nom_NOK = sauvegarde_etudiants_non_envoyes(self.listAmphi, chemin_dossier=self.arborescence.racine)
-    #     messagebox.showinfo("La suite",f"Le fichier {nom_NOK} contient la liste des étudiants qui n'ont pas encore reçu le mail.")            
-    
     ### affichage 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.__dict__})"

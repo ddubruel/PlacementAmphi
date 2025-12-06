@@ -4,15 +4,15 @@ from app.utils.utilitaire_save_canvas import save_canvas
 
 class GraphiqueUneZone:    
     def __init__(self,
-                 canvas,
-                 Amphi,
-                 nmrZone, # 0,1,2
-                 xhg, yhg,
-                 longueur,
-                 espace,
-                 couleurZone,
-                 arborescence
-                 ):
+                canvas,
+                Amphi,
+                nmrZone, # 0,1,2
+                xhg, yhg,
+                longueur,
+                espace,
+                couleurZone,
+                arborescence
+                ):
 
         self.canvas = canvas        
         self.canvas.pack(side=tk.LEFT, padx=10, pady=10)
@@ -27,7 +27,6 @@ class GraphiqueUneZone:
         self.nmrZone=nmrZone
         self.xhg = xhg   # abscisse coin haut à gauche
         self.yhg = yhg
- 
         self.longueur =longueur
         self.espace = espace      # espace entre 2 bancs
 
@@ -78,19 +77,19 @@ class GraphiqueUneZone:
             for k in range(1, self.Nb_rang+1 ,1) :             
                 y0=self.yhg +(k-1)* self.espace   # k=1 vaut yhg puis yhg+decalage etc...
                 y1=y0
-                self.canvas.create_line(x0, y0, x1, y1, width=2)
+                self.canvas.create_line(x0, y0, x1, y1, width=5)
         if self.Nb_zones ==3 :
             for k in range(1, 16 ,1) :             
                 y0=self.yhg +(k-1)* self.espace   # k=1 vaut yhg puis yhg+decalage etc...
                 y1=y0
-                self.canvas.create_line(x0, y0, x1, y1, width=2)
+                self.canvas.create_line(x0, y0, x1, y1, width=5)
             # on termine pour les 2 rangs du bas en fonction des zones.
             if     self.nmrZone==0:  # la zone de gauche du PV depuis la chaire.
                 x1=x0+int(self.longueur*0.65)   # on dessine les bancs plus courts.
                 for k in range(16, self.Nb_rang+1 ,1) :                    
                     y0=self.yhg +(k-1)* self.espace   
                     y1=y0
-                    self.canvas.create_line(x0, y0, x1, y1, width=2)
+                    self.canvas.create_line(x0, y0, x1, y1, width=5)
                 ymin = self.yhg + 14  *  self.espace + 1
                 ymax = self.yhg + 16  *  self.espace + 2  # + 2 pour effacer le trait du grand rectangle
                 xmin = x0 + self.longueur//2 
@@ -102,7 +101,7 @@ class GraphiqueUneZone:
                 for k in range(14, self.Nb_rang+1 ,1) :                 
                     y0=self.yhg +(k-1)* self.espace  
                     y1=y0
-                    self.canvas.create_line(x0, y0, x1, y1, width=2)
+                    self.canvas.create_line(x0, y0, x1, y1, width=5)
                     ymin = self.yhg + 14  *  self.espace + 1
                     ymax = self.yhg + 16  *  self.espace + 2  # + 2 pour effacer le trait du grand rectangle
                     xmin = self.xhg -2  # - 2 pour effacer le trait du grand rectangle
@@ -112,7 +111,7 @@ class GraphiqueUneZone:
                 for k in range(14, self.Nb_rang+1 ,1) :                    
                     y0=self.yhg +(k-1)* self.espace  
                     y1=y0
-                    self.canvas.create_line(x0, y0, x1, y1, width=2)
+                    self.canvas.create_line(x0, y0, x1, y1, width=5)
 
             
     def colorieZone(self):
@@ -149,7 +148,25 @@ class GraphiqueUneZone:
         for k, (row,col) in enumerate(self.placement) :            
             xtex,ytex, reference_place = self.referencePlace(row,col)
             self.listeDesPlaces.append(reference_place)
-            self.canvas.create_text(xtex, ytex-15,text=reference_place)
+            if     row%2 !=0 and row <= 9 : # cas standard 
+                self.canvas.create_text(xtex, ytex-15,text=reference_place,font=("Arial", 11),fill="black")
+            elif  row%2 !=0 and row > 9 : 
+                if col%2 !=0 :
+                    self.canvas.create_text(xtex, ytex-15,text=reference_place,font=("Arial", 11),fill="black")
+                else :
+                    self.canvas.create_text(xtex, ytex-15,text=reference_place,font=("Arial", 11),fill="red")   
+                
+            elif row%2 == 0 and row < 9 :  # cas chargé (places en rangs pairs)
+                self.canvas.create_text(xtex, ytex-15,text=reference_place,font=("Arial", 9),fill="blue")
+            elif row%2 == 0 and row >= 9 :
+                if col%2 !=0 :
+                    self.canvas.create_text(xtex, ytex-15,text=reference_place,font=("Arial", 9),fill="green")
+                else :
+                    self.canvas.create_text(xtex, ytex-15,text=reference_place,font=("Arial", 9),fill="blue")   
+    
+                
+                
+            #self.canvas.create_text(xtex, ytex-15,text=reference_place)
             self.canvas.update_idletasks() # pour laisser le temps à la fenêtre d'etre tracée.
             
                         

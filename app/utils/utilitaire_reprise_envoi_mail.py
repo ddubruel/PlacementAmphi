@@ -181,7 +181,7 @@ def envoiMailauxEtudiants(parent,
                         f"---Ce courriel a été envoyé automatiquement. Merci de ne pas y répondre.---"
                     )
             corpsDuMessage: str  = debut + corpsDuMessageCommun  +fin # le contenu du mail est complet            
-             
+    
             envoiReussi : bool  = envoyerMail (sujet = sujet,
                                         corpsDuMessage = corpsDuMessage,
                                         email = 'toto@usa.com',                      
@@ -194,7 +194,7 @@ def envoiMailauxEtudiants(parent,
             if envoiReussi :
                 dataMail.reinitialiser_statut_k(k) # passe le statutMail de l'étudiant k à True
                 nbEnvoyes =nbEnvoyes +1 
-                print("Il y a ",nbEnvoyes ,'mail déja envoyé sur un total de : ',nbEtudiant," étudiants.")
+                print("Il y a ",nbEnvoyes ,'mails déja envoyés sur un total de : ',nbEtudiant," étudiants.")
                 
         # sortie propre si demande d'arrêt
         if not controleur_ok:
@@ -206,7 +206,7 @@ def envoiMailauxEtudiants(parent,
     except NameError:
         pass
             
-    messagebox.showinfo("Bilan des envois",f"{nbEnvoyes} mail envoyés pour {nbEtudiant} étudiants.")
+    messagebox.showinfo("Bilan des envois",f"{nbEnvoyes} mails envoyés pour {nbEtudiant} étudiants.")
     sauvegarder_compileClasseMail( dataMail, repertoire)   
     if nbEnvoyes < nbEtudiant :
         messagebox.showinfo("Bilan des envois","Essayez de relancer l'envoi des mails, maintenant ou plus tard.")
