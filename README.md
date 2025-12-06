@@ -90,10 +90,10 @@ conda --version
 
 
 **environment.yml** est un des fichiers du dépôt exporté depuis le PC Linux.
-Ce fichier a été utilisé sur macOS, chaque erreur a été corrigée en supprimant la ligne de cet environnement contenant la librairie signalée dans le message d'erreur.
+Ce fichier a été utilisé sur macOS, chaque erreur a été corrigée en supprimant la ligne de cet environnement contenant la librairie signalée dans le message d'erreur. En supprimant une à une les erreurs vous otbtiendrez un environnement utilisable.
 
 **environment-macos.yml** est un des fichiers du dépôt contenant l'environement minimal exporté depuis le PC Linux.
-Ce fichier n'a pas encore été testé sur macos.
+Ce fichier a  été testé sur macos. Ce fichier a été obtenu à partir du fichier **environment.yml**.
 
 ```bash
 cd /chemin/vers/ton/projet
