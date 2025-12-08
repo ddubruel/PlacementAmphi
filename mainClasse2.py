@@ -32,7 +32,7 @@ from utils.utilitaire_generer_et_compiler_fichier_tex import genererPdf
 from utils.utilitaire_UI_saisirDonneesEpreuve import UI_saisirDonneesEpreuve
 from utils.utilitaire_UI_mail import UI_mail
 from utils.UI_preparation_message import UI_preparation_message
-
+from utils.UI_confirmationEnvoi import UI_confirmationEnvoi
 from utils.utilitaire_sauvegarde import charger_compileClasseMail
 from utils.utilitaire_json import charger_donnees_message,choisirFichierPoursuite
 from utils.utilitaire_sauvegarde import sauvegarder_compileClasseMail
@@ -104,7 +104,7 @@ class Boustrophedon:
     def build_header2(self):
         tk.Label(
             self.root,
-            text  ="Poursuivez un projet existant",
+            text  ="ou : Poursuivez un projet existant",
             font =("Arial", 11, "bold")
         ).pack(pady=10)
         tk.Label(
@@ -166,16 +166,6 @@ class Boustrophedon:
         )
         self.btn_load.pack(pady=10)
 
-        self.btn_png = tk.Button(
-            self.root,
-            text=("Générer les fichiers *.png des places individuelles.\n"
-                  "Cette opération peut être longue.\n"
-                  "ÉTAPE NON OBLIGATOIRE"),
-            command=self.actionsBouton2,
-            state=tk.DISABLED
-        )
-        self.btn_png.pack(pady=10)
-
         self.btn_pdf = tk.Button(
             self.root,
             text="Générer les fichiers PDF des listes d'émargement",
@@ -183,6 +173,17 @@ class Boustrophedon:
             state=tk.DISABLED
         )
         self.btn_pdf.pack(pady=10)
+
+        self.btn_png = tk.Button(
+            self.root,
+            text=("Générer les fichiers *.png \n (pièces joîntes des mails) \n des places individuelles.\n"
+                    "Cette opération peut être longue(1 min pour 120 étudiants ).\n"),
+            command=self.actionsBouton2,
+            state=tk.DISABLED
+        )
+        self.btn_png.pack(pady=10)
+
+        
 
         self.btn_mail = tk.Button(
             self.root,
@@ -202,8 +203,7 @@ class Boustrophedon:
         self.btn_poursuite.pack(pady=10)
         
         tk.Button(self.root, text="Quitter  ", command=self.root.destroy).pack(pady=10)
-        tk.Button(self.root, text="Quitter (quit et pas destroy pour le dev)", command=self.root.quit).pack(pady=10)
-
+        
     # ----- Contrôleur : logique -----
     def on_mode_selected(self):
         # Met à jour l'état interne
@@ -254,13 +254,15 @@ class Boustrophedon:
             self.btn_poursuite.config(state=tk.NORMAL)                      
         elif etape == "donnees_chargees":
             self.action2finie : bool = False  # pour pouvoir zapper la gnération des png.
-            self.btn_png.config(state=tk.NORMAL)
+            
             self.btn_pdf.config(state=tk.NORMAL)
         elif etape == "png_genere":
             self.btn_pdf.config(state=tk.NORMAL)
             self.action2finie : bool = True # pour ne pas re instancier les rangs. Cela vient d'être fait.
-        elif etape == "pdf_generes": 
             self.btn_mail.config(state=tk.NORMAL)
+        elif etape == "pdf_generes": 
+            self.btn_png.config(state=tk.NORMAL)
+            
     
     def exploiteApogee(self):
         """ configure les données d'Apogée dans les classe Amphi (y dépose la liste des étudiants)"""
@@ -270,9 +272,9 @@ class Boustrophedon:
 
         # création de l'arborescence des fichiers à partir de l'emplacement du fichier moodle            
         self.arborescence = arborescence( self.dataBrutes.apogee.chemin, self.listeNomAmphi )
-        print(f"L'arborescence des fichiers est créée.\n Les fichiers de sortie se "
-              f"trouvent dans le répertoire :\n {self.dataBrutes.apogee.chemin}.\n"
-              f"Chaque répertoire porte le nom de l'amphithéatre utilisé.\n")
+        print(  f"L'arborescence des fichiers est créée.\n Les fichiers de sortie se "
+                f"trouvent dans le répertoire :\n {self.dataBrutes.apogee.chemin}.\n"
+                f"Chaque répertoire porte le nom de l'amphithéatre utilisé.\n")
         
         # utilisation : chemin_png = self.arborescence.get_chemin(nom_amphi, "pngOut")
     
@@ -419,10 +421,8 @@ class Boustrophedon:
             for indiceZone , zone in enumerate(amphiEtu.zones) :
                 indiceEtuFin : int = indiceEtuDebut + repartition[indiceZone]
                 zone.set_listeDesEtudiantDansLaZone(listeARepartir[indiceEtuDebut:indiceEtuFin])
-                indiceEtuDebut = indiceEtuFin
-                
-            trace=tracePlanAmphiEtGenerefichier(amphiEtu,self.arborescence,self.root)
-            
+                indiceEtuDebut = indiceEtuFin                
+            trace=tracePlanAmphiEtGenerefichier(amphiEtu,self.arborescence,self.root)                  
             self.listeFenetreGraphiqueVisuAmphi.append(trace.window)
         # A ce stade les zones des amphi ont chacune leur liste d'étudiants non placés.
         self.update_buttons_state("donnees_chargees")         
@@ -479,8 +479,11 @@ class Boustrophedon:
         # on instancie la classe de compilation des données pour l'envoi des mails
         # cette classe contient toutes les données nécessaires à l'envoi des mails.
         dataMail : compileClasseMail = compileClasseMail(self.listAmphi)
-        # sauvegarder la classe dans le csv "Z_dataMail.csv" qui sera chargé en cas de reprise.
-        sauvegarder_compileClasseMail( dataMail, self.repertoire)   
+        # première sauvegarde de la classe dans le csv "Z_dataMail.csv" et "Z_dataMailEnvoiReel.csv"
+        # qui seront chargés en cas de reprise.
+        sauvegarder_compileClasseMail( dataMail,"Z_dataMail.csv", self.repertoire)   
+        sauvegarder_compileClasseMail( dataMail,"Z_dataMailEnvoiReel.csv", self.repertoire)
+        
         # definition du sujet et du corps commun du message
         # le fichier   Z_data_message.json avec le sujet et le corps du message sera créé à cette étape.
         sujet: str
@@ -488,9 +491,11 @@ class Boustrophedon:
         sujet, corpsDuMessageCommun  = UI_preparation_message(self.root , self.dataEpreuvePourMail,self.repertoire )
         
         # pour le mot de passe et autres paramètres de connexion SMTP.
-        setUpMail   = UI_mail(self.root)                        
+        setUpMail   = UI_mail(self.root) 
+        # interface graphique pour savoir si envoi réel ou test à blanc...
+        envoiReel : bool  = UI_confirmationEnvoi(self.root)                       
         # lancer la fonction d'envoi des mails avec reprise possible
-        envoiMailauxEtudiants(self.root,self.repertoire,dataMail,setUpMail,sujet,corpsDuMessageCommun)
+        envoiMailauxEtudiants(self.root,self.repertoire,dataMail,setUpMail,sujet,corpsDuMessageCommun,envoiReel)
         
     def prepareRepriseEnvoiMailsAvecFichier(self):   
         """ Action du bouton  reprise envoi mail : envoi des mails aux étudiants.
@@ -500,12 +505,17 @@ class Boustrophedon:
         donnees = charger_donnees_message(self.repertoire)
         sujet= donnees["sujet"]
         corpsDuMessageCommun= donnees["corps"]
-        dataMail = charger_compileClasseMail(self.repertoire)
+        # interface graphique pour savoir si envoi réel ou test à blanc...
+        envoiReel : bool  = UI_confirmationEnvoi(self.root)
+        if envoiReel :
+            dataMail = charger_compileClasseMail(self.repertoire, "Z_dataMailEnvoiReel.csv")
+        else :
+            dataMail = charger_compileClasseMail(self.repertoire, "Z_dataMail.csv")
         # pour le mot de passe et autres paramètres de connexion SMTP.
         setUpMail   = UI_mail(self.root)
         
         # lancer la fonction d'envoi des mails avec reprise possible
-        envoiMailauxEtudiants(self.root,self.repertoire,dataMail,setUpMail,sujet,corpsDuMessageCommun)
+        envoiMailauxEtudiants(self.root,self.repertoire,dataMail,setUpMail,sujet,corpsDuMessageCommun,envoiReel)
         
     
 
@@ -562,8 +572,8 @@ if __name__ == '__main__':
     root.protocol("WM_DELETE_WINDOW", root.quit)
     app = Boustrophedon(root)    
     root.mainloop()
-    print(">>> Retour console. Variables disponibles : root, app \n"
-          " et les variables de la classe en self.qqch")
+    print(  ">>> Retour console. Variables disponibles : root, app \n"
+            " et les variables de la classe en self.qqch")
     print(">>> Pour relancer l’UI, taper : root.mainloop()")
     
 app

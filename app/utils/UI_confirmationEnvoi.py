@@ -6,17 +6,17 @@ from tkinter import messagebox
 def UI_confirmationEnvoi(parent: tk.Tk | tk.Toplevel | None = None):
     """
     Fenêtre modale "envoi message".
-      1) "cocher une case"
-      2) Check "Envoi réel" / "Test à blanc" (exclusifs)
-      3) Boutons :
-         - "confirmation" (actif si Envoi réel)
-         - "Faire le test" (actif si Test à blanc)
+    1) "cocher une case"
+    2) Check "Envoi réel" / "Test à blanc" (exclusifs)
+    3) Boutons :
+        - "confirmation" (actif si Envoi réel)
+        - "Faire le test" (actif si Test à blanc)
 
     Logique de retour :
-      - Envoi réel > Confirmation > Oui  -> return True
-      - Envoi réel > Confirmation > Non  -> reste ouvert ET revient à l'état initial (cases décochées, boutons off)
-      - Test à blanc > Faire le test     -> return False
-      - Fermeture sans action            -> None
+    - Envoi réel > Confirmation > Oui  -> return True
+    - Envoi réel > Confirmation > Non  -> reste ouvert ET revient à l'état initial (cases décochées, boutons off)
+    - Test à blanc > Faire le test     -> return False
+    - Fermeture sans action            -> None
     """
     # Fenêtre modale
     win = tk.Toplevel(parent) if parent else tk.Tk()

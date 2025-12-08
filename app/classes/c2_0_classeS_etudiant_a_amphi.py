@@ -94,10 +94,10 @@ class zoneDansAmphi :
     liste_nom_fic_png : list [str]  # la liste des fichiers de places individuelles (plan de l'amphi avec la place entourée!)
 
     def __init__(self,nbMaxEtuDansZone : int ,
-                 nbRang : int ,
-                 nbMaxEtudiantParRang : int , 
-                 nbRangUnSurDeux : int , 
-                 labelZone : str  ):             
+                nbRang : int ,
+                nbMaxEtudiantParRang : int , 
+                nbRangUnSurDeux : int , 
+                labelZone : str  ):             
         self.nbMaxEtuDansZone : int = nbMaxEtuDansZone
         self.nbRang : int = nbRang    # 14 pour Chimie par exemple, utilisé pour les graphiques.
         self.nbMaxEtudiantParRang : int = nbMaxEtudiantParRang # est utilisé par GraphiqueUneZone après.
@@ -106,9 +106,8 @@ class zoneDansAmphi :
         
         self.placement : list[Tuple[int,int]] = [] # les références des places occupées à remplir plus tard.
                                             # une liste de Tuple par zone!
-                                            # un Tuple est le couple des indice (rang,colonne)
+                                            # un Tuple est le couple des indice (rang,colonne
                                             # avec le (1,1) en bas à gauche pour la zone.
-                                                               
         self.listeRangDansZoneAmphi : list [ rangDansZoneAmphi] =[]
         self.listeDesEtudiantDansLaZone = []
         self.liste_nom_fic_png = []

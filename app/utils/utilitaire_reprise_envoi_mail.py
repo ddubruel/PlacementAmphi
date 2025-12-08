@@ -11,43 +11,11 @@ from utils.utilitaire_EnvoiMail import  envoyerMail
 from app.utils.utilitaire_json import recupJson
 from app.utils.utilitaire_sauvegarde import sauvegarder_compileClasseMail
 
-
-from utils.UI_confirmationEnvoi import UI_confirmationEnvoi
 from classes.c8_classe_mailConfig import mailConfig
 from classes.c9_classe_dataEpreuve import dataEpreuve
+from classes.c10_classe_compileClasseMail import compileClasseMail
 
-
-
-
-def sauvegarde_statut_envoi(dataOut,ficOutEnvoye ,ficOutNonEnvoye ): 
-    """Sauvegarde des étudiants en fonction du statut d'envoi."""
-    try :
-        with open(ficOutEnvoye, mode='w', encoding='utf-8', newline='') as fichier_ok, \
-             open(ficOutNonEnvoye, mode='w', encoding='utf-8', newline='') as fichier_nok:
-            writer_ok = csv.writer(fichier_ok, delimiter=';')
-            writer_nok = csv.writer(fichier_nok, delimiter=';')
-            # Écrire l'en-tête
-            writer_ok.writerow(['Nom', 'Prénom', 'Numéro Étudiant', 'Courriel', 'Amphithéâtre', 'Référence Place', 'Fichier PNG'])
-            writer_nok.writerow(['Nom', 'Prénom', 'Numéro Étudiant', 'Courriel', 'Amphithéâtre', 'Référence Place', 'Fichier PNG'])
-            # Écrire les données en fonction du statut
-            for row in dataOut:
-                statut = row[-1]  # Supposons que le statut est dans la dernière colonne
-                if statut == 'OK':
-                    writer_ok.writerow(row[:-1])  # Exclure le statut lors de l'écriture
-                else:
-                    writer_nok.writerow(row[:-1])  # Exclure le statut lors de l'écriture
-    except Exception as e:
-        raise ValueError(f"Plantage dans sauvegarde_statut_envoi, voici la cause :  ({type(e).__name__}) : {e} \n\n"
-                         f"Veuillez vérifier vos fichiers csv de sortie.\n"
-                         f" Attention à vos modifications et vos sauvegardes.") from e
-
-
-
-#####################
-####################
-################
-
-def ouvrir_fenetre_interruption(parent, dataMail, repertoire):
+def ouvrir_fenetre_interruption(parent, dataMail : compileClasseMail , repertoire : str , envoiReel : bool ) :
     global controleur_ok, _win_interruption 
     """Ouvre une petite fenêtre avec 'Interuption des envoi' et un bouton 'interuption'."""
     controleur_ok = True  # réinitialise le contrôleur à OK
@@ -70,14 +38,14 @@ def ouvrir_fenetre_interruption(parent, dataMail, repertoire):
         frm,
         text="interuption",
         width=14,
-        command=lambda: _declencher_interuption(dataMail, repertoire)
+        command=lambda: _declencher_interuption(dataMail, repertoire, envoiReel)
     ).pack()
 
     # Si on ferme la fenêtre avec la croix, on laisse l'envoi continuer
     _win_interruption.protocol("WM_DELETE_WINDOW", _fermer_sans_interrompre)
 
 
-def _declencher_interuption(dataMail, repertoire):
+def _declencher_interuption(dataMail : compileClasseMail , repertoire : str , envoiReel:bool ):
     global controleur_ok, _win_interruption
     """Appelé quand on clique sur le bouton 'interuption'."""
     controleur_ok = False
@@ -91,7 +59,10 @@ def _declencher_interuption(dataMail, repertoire):
         pass
     # On sauvegarde l'état de la classe (dataMail)
     try:
-        sauvegarder_compileClasseMail(dataMail, repertoire)
+        if envoiReel :
+            sauvegarder_compileClasseMail( dataMail,'Z_dataMailEnvoiReel.csv' ,repertoire)   
+        else :
+            sauvegarder_compileClasseMail( dataMail,'Z_dataMail.csv' ,repertoire)
     except Exception as e:
         messagebox.showerror(
             "Erreur de sauvegarde",
@@ -113,7 +84,7 @@ def _fermer_sans_interrompre():
 ####################
 ################
 
-def recupDonneesEtudiant(dataIn : list[list[str]], indice : int) : 
+def recupDonneesEtudiant(dataIn : compileClasseMail, indice : int) : 
     """Récupération des données des étudiants à partir de la liste de listes."""
     ligne : list  = dataIn[indice]
     
@@ -131,20 +102,20 @@ def recupDonneesEtudiant(dataIn : list[list[str]], indice : int) :
 
 
 def envoiMailauxEtudiants(parent,
-                          repertoire:str,
-                          dataMail:list[list[str]],
-                          setUpMail:mailConfig,
-                          sujet:str,
-                          corpsDuMessageCommun:str) :
+                            repertoire:str,
+                            dataMail : compileClasseMail,
+                            setUpMail:mailConfig,
+                            sujet:str,
+                            corpsDuMessageCommun:str,
+                            envoiReel:bool) :
     global controleur_ok
 
     annee_universitaire,  date, horaires, duree, epreuve = recupJson(repertoire) 
     dataEpreuvePourMail : dataEpreuve = dataEpreuve( date=date,horaires=horaires,duree=None,epreuve=epreuve ) 
                     
-    # interface graphique pour savoir si envoi réel ou test à blanc...
-    envoiReel : bool  = UI_confirmationEnvoi(parent)    
+        
     # lancer controleur
-    ouvrir_fenetre_interruption(parent, dataMail, repertoire)  
+    ouvrir_fenetre_interruption(parent, dataMail, repertoire, envoiReel)  
     
     # on définit les compteur pour les statistiques d'envoi
     nbEtudiant : int  = dataMail.nombre_etudiant()
@@ -171,7 +142,7 @@ def envoiMailauxEtudiants(parent,
         numeroPlace = dataMail.numeroPlace[k]
         fichierPng = dataMail.fichierPng[k]
         statutMail = dataMail.statutMail[k]
-             
+            
         if not statutMail : # on envoie le mail seulement si pas encore envoyé
             debut : str = f"Bonjour {prenom} \n\n"
             fin: str = (
@@ -184,8 +155,8 @@ def envoiMailauxEtudiants(parent,
     
             envoiReussi : bool  = envoyerMail (sujet = sujet,
                                         corpsDuMessage = corpsDuMessage,
-                                        email = 'toto@usa.com',                      
-                                        fichierPng = 'etu.fichierPng' ,
+                                        email = courriel,                      
+                                        fichierPng = fichierPng ,
                                         setUpMail = setUpMail,
                                         go = envoiReel  # mis à False pour un test à blanc.
                                         )
@@ -207,7 +178,11 @@ def envoiMailauxEtudiants(parent,
         pass
             
     messagebox.showinfo("Bilan des envois",f"{nbEnvoyes} mails envoyés pour {nbEtudiant} étudiants.")
-    sauvegarder_compileClasseMail( dataMail, repertoire)   
+    if envoiReel :
+        sauvegarder_compileClasseMail( dataMail,'Z_dataMailEnvoiReel.csv' ,repertoire)   
+    else :
+        sauvegarder_compileClasseMail( dataMail,'Z_dataMail.csv' ,repertoire)
+        
     if nbEnvoyes < nbEtudiant :
         messagebox.showinfo("Bilan des envois","Essayez de relancer l'envoi des mails, maintenant ou plus tard.")
     else:

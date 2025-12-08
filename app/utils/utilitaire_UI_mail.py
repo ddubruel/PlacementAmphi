@@ -3,7 +3,7 @@ from tkinter import messagebox
 from app.classes.c8_classe_mailConfig import mailConfig
 
 
-def UI_mail (root )-> [str,str,str,str,str] :
+def UI_mail (root )-> mailConfig :
     """
     Ouvre une fenêtre modale Tkinter pour saisir les informations pour configurer le mail.
     """
@@ -151,11 +151,11 @@ def UI_mail (root )-> [str,str,str,str,str] :
         return (None,) * 5
 
     (SMTP_SERVER,
-     SMTP_PORT,
-     EMAIL_SENDER,
-     EMAIL_PASSWORD,
-     Nom_utilisateur,
-      t_tempo) = result["values"]
+    SMTP_PORT,
+    EMAIL_SENDER,
+    EMAIL_PASSWORD,
+    Nom_utilisateur,
+    t_tempo) = result["values"]
     
     
     setUpMail : mailConfig = mailConfig (SMTP_SERVER,SMTP_PORT,EMAIL_SENDER,EMAIL_PASSWORD,Nom_utilisateur,t_tempo)
@@ -169,9 +169,7 @@ def UI_mail (root )-> [str,str,str,str,str] :
 if __name__ == "__main__":
 
     root = tk.Tk()
-   # root.withdraw()  # masque la fenêtre principale
-
-
+    # root.withdraw()  # masque la fenêtre principale
     print(" Ouverture de la fenêtre de saisie des données d'épreuve…")
     valeurs = UI_mail(root)
     print("\nRésultat de la saisie :")

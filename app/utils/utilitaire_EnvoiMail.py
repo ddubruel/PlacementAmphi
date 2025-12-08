@@ -29,7 +29,7 @@ def send_email_via_smtp(
                         body_text: str,
                         cfg: mailConfig,
                         attachment_path: str | None = None,
-                         ) -> bool:
+                        ) -> bool:
     """Envoie un email via SMTP à partir de la config fournie."""
     try:
         msg = MIMEMultipart()

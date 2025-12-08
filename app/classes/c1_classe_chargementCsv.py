@@ -161,6 +161,7 @@ class FichierCsv  :
             # 1) Vérifier l'existence de Z_dataMail.csv
             # ─────────────────────────────────────────────
             chemin_data_mail = os.path.join(self.repertoire, "Z_dataMail.csv")
+            chemin_data_mailreel = os.path.join(self.repertoire, "Z_dataMailEnvoiReel.csv")
 
             if os.path.exists(chemin_data_mail):
                 # Une session d'envoi/placement existe déjà
@@ -184,6 +185,7 @@ class FichierCsv  :
                     return
                 else :       # on efface le fichier Z_dataMail.csv et on continue
                         os.remove(chemin_data_mail)
+                        os.remove(chemin_data_mailreel)
                 # Si reponse == "yes" → bouton 'Continuer'
                 # On ne fait rien de plus : la méthode retourne,
                 # et l'initialisation de la classe continue normalement.
@@ -314,10 +316,8 @@ class chargementCsv:
 
             if tiersTemps=='yes':
                 self.moodleTt = FichierCsv(formatFic="Moodle",msgChoixFichier="contenant seulement les tiers temps")
-                print(f"linge 241 moodleTt contient :  {len(self.moodleTt.data)}  étudiants.")
                 numeroTiersTemps : set[str] =  {etu[2] for etu in self.moodleTt.data} # pour après le test
                 self.gardeLesNumeros( numeroAde , self.moodleTt ) # retrait des fantômes de la liste Tiers Temps
-                print(f"linge 244 moodleTt contient :  {len(self.moodleTt.data)}  étudiants.")
             else :
                 self.moodleTt=None
                 numeroTiersTemps : set[str] = set()

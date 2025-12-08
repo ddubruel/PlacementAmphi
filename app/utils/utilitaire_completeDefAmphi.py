@@ -74,15 +74,10 @@ def main():
     amphi3zones=['Petit_Valrose']
     listeNomAmphi = amphi1zone+amphi2zones+amphi3zones
 
-
-    print(listeNomAmphi)
-
     # instanciation des amphi
     listAmphi : list [ amphi] =[]
     for nom in  listeNomAmphi :                
-         listAmphi.append( amphi(nom) )   # création des n amphis du fichier apogée...amphi à peupler.
-    print( f"Création des instances amphi. Vérification des noms des amphis créés :\n"
-                f"{[ amphi.nom for amphi in listAmphi ]}" )
+        listAmphi.append( amphi(nom) )   # création des n amphis du fichier apogée...amphi à peupler.
         
     L1 = cree_1_zone()
     L2 = cree_2_zones()

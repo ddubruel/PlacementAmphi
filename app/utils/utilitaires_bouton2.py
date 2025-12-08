@@ -20,7 +20,10 @@ def genererLesPngPlacesIndividuelles(Amphi,arborescence,root,listeFenetreGraphiq
 
 def remplitRangCompleteEtudiant(Amphi):
     # remplissage des classes Etudiant pour tous les étudiants.
-        
+    # --- CORRECTION : vider les anciens rangs ---
+    for zone in Amphi.zones:
+        zone.listeRangDansZoneAmphi = []
+    
     for nmrZone,zone  in enumerate(Amphi.zones)  :
         prefixe_zone : str = zone.labelZone
         nbRang =   zone.nbRang
@@ -34,8 +37,11 @@ def remplitRangCompleteEtudiant(Amphi):
             # remplissage des attributs non encore définit pour les étudiants 
             etudiantPourLeRang = zone.listeDesEtudiantDansLaZone[k]
             etudiantPourLeRang.set_numeroPlace(col)
-            etudiantPourLeRang.set_numeroRang(row)            
-            reference_place : str  = prefixe_zone+"-"+str(row) +"-"+str(col)
+            etudiantPourLeRang.set_numeroRang(row)
+            if prefixe_zone == "" :
+                reference_place : str  = str(row) +"-"+str(col)
+            else :          
+                reference_place : str  = prefixe_zone+"-"+str(row) +"-"+str(col)
             etudiantPourLeRang.set_place( reference_place ) #####!!!!!!
             etudiantPourLeRang.set_zone( prefixe_zone )                 #####!!!!!!
             if len(zone.liste_nom_fic_png)!=0 : # cas où les fichiers png existent :

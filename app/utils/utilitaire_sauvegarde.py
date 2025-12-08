@@ -89,7 +89,7 @@ def definit_nom_fic_reprise_envoi( chemin_dossier=""):
         messagebox.showinfo("fichier", "La reprise d'envoi des mails n'est pas possible. Un fichier Z_*.csv a été effacé !")
     
     
-def sauvegarder_compileClasseMail(obj: compileClasseMail, repertoire: str):
+def sauvegarder_compileClasseMail(obj: compileClasseMail,nomFichier : str,  repertoire: str):
     """
     Sauvegarde les attributs de l'objet compileClasseMail dans un fichier CSV.
     La première ligne contient les noms des attributs.
@@ -110,7 +110,7 @@ def sauvegarder_compileClasseMail(obj: compileClasseMail, repertoire: str):
         "statutMail",
     ]
     # Construction du chemin du fichier
-    chemin_csv = os.path.join(repertoire, "Z_dataMail.csv")
+    chemin_csv = os.path.join(repertoire, nomFichier)
 
     # Ouverture du fichier CSV en écriture
     with open(chemin_csv, "w", encoding="utf-8", newline="") as f:
@@ -133,12 +133,12 @@ def sauvegarder_compileClasseMail(obj: compileClasseMail, repertoire: str):
 
 
 
-def charger_compileClasseMail(repertoire: str):
+def charger_compileClasseMail(repertoire: str, fichier: str) -> compileClasseMail:
     """
     Recharge un fichier Z_dataMail.csv et restitue un objet compileClasseMail
     dont les listes d'attributs sont remplies.
     """
-    chemin_csv = os.path.join(repertoire, "Z_dataMail.csv")
+    chemin_csv = os.path.join(repertoire, fichier )
 
     # Vérification fichier
     if not os.path.exists(chemin_csv):
@@ -172,10 +172,6 @@ def charger_compileClasseMail(repertoire: str):
 
    
 def main():
-    chemin="/home/denis/00_Universite/BousGit/Test"
-    ficIn,ficOutEnvoye,ficOutNonEnvoye = definit_nom_fic_reprise_envoi( chemin)
-    print(f'fichier : lu {ficIn}, '
-          f'fichier des prochains envois :"{ficOutNonEnvoye}",'
-          f' fichier des envoyés : "{ficOutEnvoye}"')  
+    
     pass
 
