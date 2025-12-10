@@ -34,7 +34,7 @@ from utils.utilitaire_UI_mail import UI_mail
 from utils.UI_preparation_message import UI_preparation_message
 from utils.UI_confirmationEnvoi import UI_confirmationEnvoi
 from utils.utilitaire_sauvegarde import charger_compileClasseMail
-from utils.utilitaire_json import charger_donnees_message,choisirFichierPoursuite
+from utils.utilitaire_json import charger_donnees_message, choisirFichierPoursuite, sauvegarderJson
 from utils.utilitaire_sauvegarde import sauvegarder_compileClasseMail
 
 
@@ -471,7 +471,11 @@ class Boustrophedon:
             entetePdf.set_valeurs( annee_universitaire, date, horaires,duree, epreuve,  LIB_SAL="Nom provisoire")
             # on remplit les data à réutiliser pour envoyer le mail plus tard.
             self.dataEpreuvePourMail : dataEpreuve = dataEpreuve(date ,horaires ,duree ,epreuve)
-                
+        if self.etat.mode == 'Examen' : # écriture du json avec les données de l'épreuve pour un Examen 
+                                        # UI_saisirDonneesEpreuve n'est pas utilisé car les données sont dans Apogée.
+            annee_universitaire, date, horaires, duree, epreuve= recupDataEpreuveApogee( self.dataBrutes )
+            sauvegarderJson(self.repertoire, annee_universitaire , date , horaires  , duree ,epreuve )
+                    
         for Amphi in self.listAmphi :
             chemin_tex : str  = self.arborescence.get_chemin(Amphi.nom, "texOut")
             chemin_pdf : str = self.arborescence.get_chemin(Amphi.nom, "listes_Emargement_pdf")

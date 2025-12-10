@@ -8,20 +8,20 @@ from app.classes.c7_classe_codeEnteteApoge import codeEnteteApogee
 from app.utils.utilitaire_UI_saisirDonneesEpreuve import UI_saisirDonneesEpreuve
 
 def generer_fichier_latex(nom_fichier,
-                          annee_universitaire,
-                          date,
-                          horaires,
-                          duree,
-                          salle,
-                          lieu,
-                          batiment,
-                          epreuve,
-                          matiere,
-                          nom_image,
-                          fic_tex_in,
-                          fic_tex_in2,
-                          scale,
-                          angle):
+                        annee_universitaire,
+                        date,
+                        horaires,
+                        duree,
+                        salle,
+                        lieu,
+                        batiment,
+                        epreuve,
+                        matiere,
+                        nom_image,
+                        fic_tex_in,
+                        fic_tex_in2,
+                        scale,
+                        angle):
 
 
     contenu = f"""% !TeX TS-program = lualatex
@@ -31,8 +31,8 @@ def generer_fichier_latex(nom_fichier,
     \\makeatletter \\renewcommand\\normalsize{{
             \\@setfontsize\\normalsize{{12pt}}{{16pt}}% police à 12 interligne à 16
     }}
-     \\makeatother
-     
+    \\makeatother
+    
     \\usepackage[left=1.5cm,right=1.5cm,top=2cm,bottom=2cm]{{geometry}}
 
     \\usepackage[utf8]{{inputenc}} % Encodage UTF-8
@@ -107,13 +107,13 @@ def definitionNouvelleListePlaceNomPrenomNumero(Amphi):
         
             
 def generer_tableau_liste_ordre_alphabetique(listeOrdreAlphabetiX: list[list[str]],
-                                             fichierTexAlpha: str = "table_alpha.tex") :
+                                            fichierTexAlpha: str = "table_alpha.tex") :
     """
     Génère un fichier LaTeX 'fichierTexAlpha' contenant un tableau à 4 colonnes :
-      - Place (1.5cm)
-      - Nom   (4.5cm)
-      - Prénom (4.5cm)
-      - Numéro (3cm)    
+        - Place (1.5cm)
+        - Nom   (4.5cm)
+        - Prénom (4.5cm)
+        - Numéro (3cm)    
     """
     def debutNouvellePage(contenu):
         contenu.append("\\begin{tabular}{@{}|p{1.5cm}|p{6.5cm}|p{6.5cm}|p{3cm}|@{}}\n")

@@ -70,4 +70,25 @@ def filtreApogee(dataBrutes : chargementCsv , nomAmphi : 'str' ) -> list[list[st
 
     return extrait
 
+def recupDataEpreuveApogee(dataBrutes : chargementCsv) -> tuple[str,str,str,str,str] :
+    """ récupère les données de l'épreuve dans le fichier apogée
+        on suppose que toutes les lignes d'étudiants ont les mêmes données d'épreuve
+        on lit donc la première ligne seulement."""
+    enteteApogee : list[str] = dataBrutes.apogee.entete
+    indexAnneeUniversitaire : int = enteteApogee.index("C_COD_ANU")
+    indexDate : int = enteteApogee.index("DAT_DEB_PES")
+    indexHoraires : int = enteteApogee.index("HEURE_DEBUT")
+    indexDuree : int = enteteApogee.index("DUREE_EXA")
+    indexEpreuve : int = enteteApogee.index("COD_EPR")
+    
+    premiereLigneEtudiant : list[str] = dataBrutes.apogee.data[0]
+    
+    annee_universitaire : str = premiereLigneEtudiant[indexAnneeUniversitaire]
+    date : str = premiereLigneEtudiant[indexDate]
+    horaires : str = premiereLigneEtudiant[indexHoraires]
+    duree : str = premiereLigneEtudiant[indexDuree]
+    epreuve : str = premiereLigneEtudiant[indexEpreuve]
+    
+    return annee_universitaire, date, horaires, duree, epreuve
+
 

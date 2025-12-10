@@ -190,9 +190,18 @@ class FichierCsv  :
                 # On ne fait rien de plus : la méthode retourne,
                 # et l'initialisation de la classe continue normalement.
 
+    
 
     def charger_csv(self) -> None :
         """Lecture du fichier csv et extraction entête et données."""
+        def _nettoie_nom_colonne(col: str) -> str:
+            # normalisation unicode (enlève certaines bizarreries)  qui font planter les tests de recherche plus loin.
+            col = unicodedata.normalize("NFKC", col)
+            # supprime BOM éventuel + espaces et tabulations
+            col = col.replace("\ufeff", "").strip()
+            return col
+        
+        
         try :
             # ouverture
             fichier : TextIOWrapper = open(self.chemin, "r", encoding="utf-8")
@@ -208,6 +217,7 @@ class FichierCsv  :
                 lignes.append(ligne)  # Ajouter chaque ligne à la liste
             fichier.close()    #fermeture.
             self.entete : list[str] = lignes[0]
+            self.entete : list[str] = [_nettoie_nom_colonne(c) for c in lignes[0]]            
             self.data: list[list[str]] = lignes[1:]
         except Exception as e:
             raise ValueError(f"Plantage dans charger_csv, voici la cause :  ({type(e).__name__}) : {e} \n\n"
