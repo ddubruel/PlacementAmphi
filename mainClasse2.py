@@ -289,10 +289,22 @@ class Boustrophedon:
                             
             extraitApogee : list[list[str]] = filtreApogee(dataBrutes = self.dataBrutes , nomAmphi = amphitheatre.nom )
             print(f"L'amphithéatre {amphitheatre.nom} contient  {len(extraitApogee)} étudiants d'après les données apogée.\n"  )
-            for dataEtu in extraitApogee :
-                amphitheatre.ajouteEtudiant(etudiant(nom = dataEtu[17] ,
-                                                    prenom = dataEtu[18],
-                                                    numeroEtudiant = dataEtu[19],
+            
+            enteteApogee : list[str] = self.dataBrutes.apogee.entete
+            try :
+                indexNomEtu : int = enteteApogee.index("LIB_NOM_PAT_IND")
+                indexPrenomEtu : int = enteteApogee.index("LIB_PR1_IND")
+                indexNumEtu : int = enteteApogee.index("COD_ETU") 
+            except :
+                raise ValueError("Le fichier Apogée ne contient pas les bons en-têtes. Revoir le fichier Apogée.")
+            
+            for dataEtu in extraitApogee :                                
+                nomEtu  : str = dataEtu[indexNomEtu]
+                prenomEtu : str = dataEtu[indexPrenomEtu]
+                numeroEtu : str = dataEtu[indexNumEtu]                                     
+                amphitheatre.ajouteEtudiant(etudiant(nom = nomEtu ,
+                                                    prenom = prenomEtu,
+                                                    numeroEtudiant = numeroEtu,
                                                     courriel=""
                                                     ) 
                                             )

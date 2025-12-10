@@ -211,8 +211,8 @@ class FichierCsv  :
             self.data: list[list[str]] = lignes[1:]
         except Exception as e:
             raise ValueError(f"Plantage dans charger_csv, voici la cause :  ({type(e).__name__}) : {e} \n\n"
-                             f"Veuillez vérifier vos fichiers csv d'origine.\n"
-                             f" Attention à vos modifications et vos sauvegardes.") from e
+                            f"Veuillez vérifier vos fichiers csv d'origine.\n"
+                            f" Attention à vos modifications et vos sauvegardes.") from e
 
     def valider_contenu(self)-> None :
         entete = self.entete or [] # pour éviter le cas None

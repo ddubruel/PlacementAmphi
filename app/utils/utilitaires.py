@@ -35,21 +35,22 @@ def numeroEtudiant_2_etudiant(numeroEtudiant :str  , tousLesEtudiants : list[etu
 
 def recupereCourrielMoodle( numeroEtuApogee : str , dataBrutes : chargementCsv) -> str:
     """ cette fonction va récupérer l'adresse de courriel dans les données Moodle
-      , le numéro d'étudiant est dans moodle et apogée."""        
+        , le numéro d'étudiant est dans moodle et apogée."""        
     for index, dataEtudiantMoodle in enumerate(dataBrutes.moodle.data):        
         if numeroEtuApogee==dataEtudiantMoodle[2]:
             return dataBrutes.moodle.data[index][3] 
     return ""
 
- 
-                                                                       
 def compteEtListeAmphiApogee( dataBrutes : chargementCsv):
 
     nbAmphi : int = 0
     listeNomAmphi : list[str]=[]
+    enteteApogee : list[str] = dataBrutes.apogee.entete
+    indexAmphi : int = enteteApogee.index("COD_SAL")
+    
     if dataBrutes.apogee :
         for k, dataEtu in enumerate(dataBrutes.apogee.data) :  # parcours sur la liste d'étudiant apogée.        
-            codeApogeeAmphi : str = dataEtu[10]  # le nom de l'amphi dans le fichier apogée
+            codeApogeeAmphi : str = dataEtu[indexAmphi]  # le nom de l'amphi dans le fichier apogée
             nomAmphi : str = decodeCodeAmphi(codeApogeeAmphi)
             if nomAmphi not in listeNomAmphi :
                 listeNomAmphi.append(nomAmphi)
@@ -58,12 +59,14 @@ def compteEtListeAmphiApogee( dataBrutes : chargementCsv):
 
 def filtreApogee(dataBrutes : chargementCsv , nomAmphi : 'str' ) -> list[list[str]] :
     """extrait des data apogée , tous les étudiants affectés dans un même amphi"""
-    extrait : list[list[str]] = []    
+    extrait : list[list[str]] = [] 
+    enteteApogee : list[str] = dataBrutes.apogee.entete   
+    indexAmphi : int = enteteApogee.index("COD_SAL")
     for dataEtud in dataBrutes.apogee.data :
-        if dataEtud[10] == reCodeAmphi(nomAmphi)  :
+        if dataEtud[indexAmphi] == reCodeAmphi(nomAmphi)  :
             extrait.append(dataEtud)
             
-    extrait2 = [ dataEtud for dataEtud in dataBrutes.apogee.data if dataEtud[10]== reCodeAmphi(nomAmphi) ]
+    #extrait2 = [ dataEtud for dataEtud in dataBrutes.apogee.data if dataEtud[10]== reCodeAmphi(nomAmphi) ]
 
     return extrait
 
