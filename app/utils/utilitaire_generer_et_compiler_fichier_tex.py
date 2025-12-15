@@ -242,7 +242,7 @@ def generer_tableau_emargement_amphi(Amphi, ficLatex="table.tex"):
         f.write(contenu)
 
 def compiler_latex(fichier_tex,dossier_sortie):
-     
+    
     os.makedirs(dossier_sortie, exist_ok=True)  # Crée le dossier s'il n'existe pas
 
     commande = [
@@ -255,12 +255,27 @@ def compiler_latex(fichier_tex,dossier_sortie):
     # double compilation pour avoir les numéros  de place corrects
     subprocess.run(commande, check=True)
     subprocess.run(commande, check=True)
+    
+    
+    extensions = (".gz", ".log", ".aux")
+
+    for fichier in os.listdir(dossier_sortie):
+        chemin_fichier = os.path.join(dossier_sortie, fichier)
+        if os.path.isfile(chemin_fichier) and fichier.endswith(extensions):
+            try:
+                os.remove(chemin_fichier)
+                print(f"Suppression de {fichier}")
+            except OSError as e:
+                print(f"Impossible de supprimer {fichier} : {e}")
+    
+    print(f"\n Pour information, le fichier pdf a été compilé avec les commandes : \n  {' '.join(commande)} ")
+    
 
 def genererPdf(Amphi : amphi ,  # besoin pour définir des param graphiques 
-              cheminRepTex : str ,
-              cheminRepPdf : str ,
-              entetePdf : list[str] ,
-              root ) :
+            cheminRepTex : str ,
+            cheminRepPdf : str ,
+            entetePdf : list[str] ,
+            root ) :
     
     fichierTableTex        = cheminRepTex+"/table.tex"
     fichierOrdreAlphabetiX = cheminRepTex+"/table_alpha.tex"
@@ -282,12 +297,6 @@ def genererPdf(Amphi : amphi ,  # besoin pour définir des param graphiques
         echelle : float =  0.7
         angleRot : int = 0
 
-         
-             
-           
-            
-  
-           
     generer_fichier_latex(  nom_fichier =  fichierPrincipalTex ,
                             annee_universitaire = entetePdf.annee_universitaire ,
                             date =    entetePdf.date ,        
@@ -302,20 +311,10 @@ def genererPdf(Amphi : amphi ,  # besoin pour définir des param graphiques
                             fic_tex_in=            fichierTableTex ,
                             fic_tex_in2=           fichierOrdreAlphabetiX,
                             scale=  echelle ,
-                            angle= angleRot)
-#     else : # mode =="Partiel"
-        # saisie des paramètres inexistants
-        
-#         generer_fichier_latex(  fichierPrincipalTex , annee_universitaire , date ,horaires ,duree ,salle,lieu,
-#                               batiment,epreuve, matiere= '',
-#                               nom_image=             Amphi.nomFicPlanAmphiPng,
-#                               fic_tex_in=            fichierTableTex ,
-#                               fic_tex_in2=           fichierOrdreAlphabetiX,
-#                               scale=  echelle ,
-#                               angle= angleRot)                   
+                            angle= angleRot)                  
     
     compiler_latex(fichierPrincipalTex,cheminRepPdf) 
-
+    
 
 
 

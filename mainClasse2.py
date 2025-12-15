@@ -183,7 +183,13 @@ class Boustrophedon:
         )
         self.btn_png.pack(pady=10)
 
-        
+        self.btn_sauvegarde = tk.Button(
+            self.root,
+            text="Sauvegarder la répartition ",
+            command=self.actionsBoutonSauvegarde,
+            state=tk.DISABLED
+        )
+        self.btn_sauvegarde.pack(pady=10)
 
         self.btn_mail = tk.Button(
             self.root,
@@ -259,6 +265,9 @@ class Boustrophedon:
         elif etape == "png_genere":
             self.btn_pdf.config(state=tk.NORMAL)
             self.action2finie : bool = True # pour ne pas re instancier les rangs. Cela vient d'être fait.
+            self.btn_sauvegarde.config(state=tk.NORMAL)
+            self.btn_mail.config(state=tk.DISABLED)
+        elif  etape== "sauvegarde_faite":
             self.btn_mail.config(state=tk.NORMAL)
         elif etape == "pdf_generes": 
             self.btn_png.config(state=tk.NORMAL)
@@ -489,7 +498,20 @@ class Boustrophedon:
         messagebox.showinfo("PDF", "Génération des PDF terminée.")
         self.update_buttons_state("pdf_generes")
         
-    
+    def actionsBoutonSauvegarde(self):
+        # on instancie la classe de compilation des données pour l'envoi des mails
+        # cette classe contient toutes les données nécessaires à l'envoi des mails.
+        dataMail : compileClasseMail = compileClasseMail(self.listAmphi)
+        # première sauvegarde de la classe dans le csv "Z_dataMail.csv" et "Z_dataMailEnvoiReel.csv"
+        # qui seront chargés en cas de reprise.
+        sauvegarder_compileClasseMail( dataMail,"Z_dataMail.csv", self.repertoire)   
+        sauvegarder_compileClasseMail( dataMail,"Z_dataMailEnvoiReel.csv", self.repertoire)
+        messagebox.showinfo("Répartition des étudiants",
+                            f"La répartition est sauvegardée,\n"
+                            f"vous pouvez quitter et reprendre plus tard.\n"
+                            f"Sinon pouvez poursuive en cliquant sur \"Envoyer les fichiers\".")
+        self.update_buttons_state("sauvegarde_faite")
+        
     def prepareEnvoiMailsAvecClasses(self):
         """ Action du bouton 4 : envoi des mails aux étudiants."""
         # on instancie la classe de compilation des données pour l'envoi des mails

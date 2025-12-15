@@ -23,12 +23,12 @@ class FichierCsv  :
     data: Optional[list[list[str]]]
     valide : Optional[bool]
 
-    def __init__(self, formatFic: str, msgChoixFichier : str , parent: Optional[tk.Tk] = None):
+    def __init__(self, formatFic: str, msgChoixFichier : str , repertoire : str =".") :
         """Crée un objet FichierCsv et exécute automatiquement les étapes principales."""
         self.formatFic = formatFic    # contient "Moodle" ou "Apogée"  ou Ade
         self.msgChoixFichier =msgChoixFichier    # pour ajouter "tiers temps" si besoin.
         self.chemin = None
-        self.repertoire = None
+        self.repertoire = repertoire  # répertoire de travail par défaut sera mis à jour au fur et à mesure des choix de fichiers.
         self.entete = None
         self.data = None
         self.valide = False
@@ -36,10 +36,10 @@ class FichierCsv  :
         self.nbEtudiant : int = 0
 
         # Étapes automatiques :
-        rep="."
+        
         titre=f"Choix du fichier {self.formatFic}."
 
-        self.choisir_fichier(parent, titre, rep )
+        self.choisir_fichier(titre )
         if self.annule :
             return
         
@@ -56,14 +56,12 @@ class FichierCsv  :
                         f"Veuillez en choisir un autre."
                     )
                     # redemande d'un fichier (peut devenir "")
-                    self.choisir_fichier(parent, titre, rep)
+                    self.choisir_fichier(titre)
             # si on sort de la boucle parce que self.chemin == ""
             if not self.chemin:
                 messagebox.showwarning("Annulation", "Aucun fichier sélectionné.")
                 return
 
-
-            print(self.chemin)
             print(f"Après self.charger_csv(), il y a {len(self.data)}étudiants.")
             if self.formatFic=="Moodle" :
                 self.trierAlphaNom()
@@ -76,15 +74,11 @@ class FichierCsv  :
             else :
                 pass # le fichier apogée est propre ! pas de doublons (...pour l'instant !!)
 
-        # mélange aléatoire de la liste dans l'amphi
-
-
     def trierAlphaNom(self):
         """Trie les lignes en place sur la 2ᵉ colonne (insensible à la casse)."""
         def cle_tri(element):
             return element[1].lower()
         self.data.sort(key=cle_tri)
-
 
     def retirerDoublonsEtEncadrants(self):
         """Retire les doublons dans self.data en se basant sur le numéro d'étudiant (colonne 2)."""
@@ -134,14 +128,14 @@ class FichierCsv  :
         self.data=dataFiltree
         self.nbEtudiant = len(self.data or [])
 
-    def choisir_fichier(self, tkParent, titre, rep) -> None:
+    def choisir_fichier(self, titre) -> None:
         messagebox.showwarning(
             title=f"Sélection du fichier {self.formatFic} - {self.msgChoixFichier} ",
             message=f"Choisir un fichier {self.formatFic} {self.msgChoixFichier} au format Csv."
         )
         self.chemin: str = filedialog.askopenfilename(
             title=titre + f" - {self.msgChoixFichier}",
-            initialdir='.',
+            initialdir=self.repertoire,
             filetypes=[("Fichiers csv", "*.csv")],
         )
 
@@ -154,9 +148,8 @@ class FichierCsv  :
             self.annule = True
             return
         else:
-            # on connaît le répertoire du fichier choisi
+            # on connaît le répertoire du fichier choisi, on le met à jour pour les prochaines ouvertures.
             self.repertoire = os.path.dirname(self.chemin)
-
             # ─────────────────────────────────────────────
             # 1) Vérifier l'existence de Z_dataMail.csv
             # ─────────────────────────────────────────────
@@ -175,22 +168,19 @@ class FichierCsv  :
                     ),
                     icon="warning"
                 )
-
                 if reponse == "no":
-                    # Bouton 'Annuler' → on annule le choix et on 'sort de la classe'
+                    # Bouton 'Annuler' on annule le choix et on 'sort de la classe'
                     # en remettant chemin à vide
                     self.chemin = ""
-                    self.repertoire = None
+                    self.repertoire = '.'
                     self.annule = True 
                     return
                 else :       # on efface le fichier Z_dataMail.csv et on continue
                         os.remove(chemin_data_mail)
                         os.remove(chemin_data_mailreel)
-                # Si reponse == "yes" → bouton 'Continuer'
+                # Si reponse == "yes"  bouton 'Continuer'
                 # On ne fait rien de plus : la méthode retourne,
                 # et l'initialisation de la classe continue normalement.
-
-    
 
     def charger_csv(self) -> None :
         """Lecture du fichier csv et extraction entête et données."""
@@ -199,9 +189,7 @@ class FichierCsv  :
             col = unicodedata.normalize("NFKC", col)
             # supprime BOM éventuel + espaces et tabulations
             col = col.replace("\ufeff", "").strip()
-            return col
-        
-        
+            return col                
         try :
             # ouverture
             fichier : TextIOWrapper = open(self.chemin, "r", encoding="utf-8")
@@ -265,28 +253,35 @@ class chargementCsv:
         self.moodle = None
         self.moodleTt = None
         self.ade = None
+        self.repertoire = "."  # répertoire de travail par défaut sera mis à jour au fur et à mesure des choix de fichiers.
 
         if self.mode == "Examen" : # chargement des 2 sources d'information (Apogée et Moodle pour les mails).
-            self.apogee = FichierCsv(formatFic="Apogée",msgChoixFichier="avec tous les étudiants")  # les tiers temps sont déja placé dans Apogée
+            self.apogee = FichierCsv(formatFic="Apogée",msgChoixFichier="avec tous les étudiants",repertoire=self.repertoire)  # les tiers temps sont déja placé dans Apogée
             if self.apogee.annule :
                 return # si annulation du choix du fichier apogée
             random.shuffle(self.apogee.data)  # mélange aléatoire de la liste des étudiants 
             print("Le fichier apogée contient :", self.apogee.get_nbEtudiant(),'étudiants')
             #input('2) presser entrée')
-            self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier="avec tous les étudiants")
+            self.moodle = FichierCsv(formatFic="Moodle",
+                                    msgChoixFichier="avec tous les étudiants",
+                                    repertoire=self.apogee.repertoire) 
             print("Le fichier apogée contient :", self.apogee.get_nbEtudiant())
             print("Le fichier moodle contient :", self.moodle.get_nbEtudiant())
             
         elif self.mode == "Partiel" :
             self.apogee = None
-            self.moodle = FichierCsv(formatFic="Moodle", msgChoixFichier="avec tous les étudiants")
+            self.moodle = FichierCsv(formatFic="Moodle",
+                                    msgChoixFichier="avec tous les étudiants",
+                                    repertoire=self.repertoire)
             if self.moodle.annule :
                 return # si annulation du choix du fichier moodle
             random.shuffle(self.moodle.data)  # mélange aléatoire de la liste des étudiants   
             
             tiersTemps : str = messagebox.askquestion("Tiers temps ?","Avez-vous un fichier tiers temps ?",icon ='question' )
             if tiersTemps=='yes':
-                self.moodleTt = FichierCsv(formatFic="Moodle",msgChoixFichier="contenant seulement les tiers temps")
+                self.moodleTt = FichierCsv(formatFic="Moodle",
+                                        msgChoixFichier="contenant seulement les tiers temps",
+                                        repertoire=self.moodle.repertoire)
                 random.shuffle(self.moodleTt.data)  # mélange aléatoire de la liste des étudiants 
                 self.retirerLesTiersTempsDeMoodle()
             else :
@@ -294,7 +289,9 @@ class chargementCsv:
 
         elif self.mode == "PartielAde" :
             self.apogee = None
-            self.ade = FichierCsv(formatFic="Ade", msgChoixFichier="avec uniquement les étudiants inscrits à jour dans ADE ")
+            self.ade = FichierCsv(formatFic="Ade",
+                                msgChoixFichier="avec uniquement les étudiants inscrits à jour dans ADE ",
+                                repertoire=self.repertoire)
             if self.ade.annule :
                 return # si annulation du choix du fichier ade  
 
@@ -400,14 +397,14 @@ class chargementCsv:
         print('avant-apres =' , avant,'-',apres,'=', avant-apres)
 
         print(f"  {nb_suppr} étudiants tiers temps/doublon ont été retiré(s) de la liste principale.\n"
-              f" sur {len(self.moodle.data)} étudiants au départ.\n"
-              f"La liste des tiers temps est composée de {len(numeros_tt)} étudiants.\n")
+            f" sur {len(self.moodle.data)} étudiants au départ.\n"
+            f"La liste des tiers temps est composée de {len(numeros_tt)} étudiants.\n")
 
         self.moodle.miseAJourData(moodle_data_filtrée)
         print(f"La liste principale contient {self.moodle.get_nbEtudiant()} étudiants.")
         print(f"Il y a en plus {self.moodleTt.get_nbEtudiant()} Tiers Temps.\n")
         print(f"Soit un total de {self.moodle.get_nbEtudiant()}+{self.moodleTt.get_nbEtudiant()}"
-              f" ={self.moodle.get_nbEtudiant() + self.moodleTt.get_nbEtudiant() } ")
+            f" ={self.moodle.get_nbEtudiant() + self.moodleTt.get_nbEtudiant() } ")
 
     def getNbmoodle(self):
         return self.moodle.get_nbEtudiant()

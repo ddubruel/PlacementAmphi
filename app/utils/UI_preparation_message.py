@@ -102,7 +102,7 @@ def UI_preparation_message (root , dataEpreuvePourMail : dataEpreuve ,repertoire
         result["values"] = None 
         win.destroy()
 
-     # ---- Zone de boutons en bas (fixe) ----
+    # ---- Zone de boutons en bas (fixe) ----
     frame_buttons = tk.Frame(win, pady=10)
     frame_buttons.pack(fill="x", side="bottom")
 
@@ -112,7 +112,7 @@ def UI_preparation_message (root , dataEpreuvePourMail : dataEpreuve ,repertoire
     btn_validate.pack(side="right")
 
     # Bindings pratiques
-    win.bind("<Return>", on_validate)
+    win.bind("<Control-Return>", on_validate)
     win.bind("<Escape>", on_cancel)
 
     # Centrage par rapport à la fenêtre principale (identique à ta version)
