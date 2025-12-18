@@ -486,15 +486,15 @@ class Boustrophedon:
             sauvegarderJson(self.repertoire, annee_universitaire , date , horaires  , duree ,epreuve )
                     
         for Amphi in self.listAmphi :
-            chemin_tex : str  = self.arborescence.get_chemin(Amphi.nom, "texOut")
-            chemin_pdf : str = self.arborescence.get_chemin(Amphi.nom, "listes_Emargement_pdf")
+            CheminRepTex : str  = self.arborescence.get_chemin(Amphi.nom, "texOut")
+            CheminRepPdf : str = self.arborescence.get_chemin(Amphi.nom, "listes_Emargement_pdf")
             if self.etat.mode=='Examen' :# le LIB_SAL de l'amphi change à chaque amphi !!
                 entetePdf : list[str] = codeEnteteApogee(  self.etat.mode   , self.dataBrutes , self.listAmphi , Amphi.nom, self.root )                                                
             else :
                 entetePdf.set_LIB_SAL(Amphi.nom)
             # on remplit les data à réutiliser pour envoyer le mail plus tard.
             self.dataEpreuvePourMail : dataEpreuve = dataEpreuve(entetePdf.date ,entetePdf.horaires ,entetePdf.duree ,entetePdf.epreuve)
-            genererPdf(Amphi , chemin_tex , chemin_pdf , entetePdf, self.root)                
+            genererPdf(Amphi , CheminRepTex , CheminRepPdf , entetePdf, self.root)                
         messagebox.showinfo("PDF", "Génération des PDF terminée.")
         self.update_buttons_state("pdf_generes")
         
