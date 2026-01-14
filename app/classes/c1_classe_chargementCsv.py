@@ -2,6 +2,7 @@ import csv
 import tkinter as tk
 import unicodedata
 import sys, os
+from openpyxl import load_workbook
 
 from tkinter import messagebox, filedialog
 from dataclasses import  dataclass
@@ -33,20 +34,21 @@ class FichierCsv  :
         self.data = None
         self.valide = False
         self.annule = False  # flag si jamais il y a déja un placement en cours et que l'utilisateur annule.
-        self.nbEtudiant : int = 0
-
-        # Étapes automatiques :
-        
-        titre=f"Choix du fichier {self.formatFic}."
-
-        self.choisir_fichier(titre )
+        self.nbEtudiant : int = 0      
+        titre=f"Choix du fichier {self.formatFic}."            
+        self.choisir_fichier(titre)   
+                        
         if self.annule :
             return
         
         if self.chemin:
             self.valide = False
             while not self.valide and self.chemin :
-                self.charger_csv()   #  on charge le fichier
+                if self.formatFic !="Apogée":
+                    self.charger_csv()   #  on charge le fichier
+                else :
+                    self.charger_xls()
+                    
                 self.valider_contenu() # on regarde sa validité
                 print(f"La validité du fichier {self.chemin} est  : {self.valide}")
                 if not self.valide:
@@ -128,17 +130,22 @@ class FichierCsv  :
         self.data=dataFiltree
         self.nbEtudiant = len(self.data or [])
 
-    def choisir_fichier(self, titre) -> None:
+    
+    def choisir_fichier(self, titre) -> None:        
+        if self.formatFic !="Apogée":
+            message=f"Choisir un fichier {self.formatFic} {self.msgChoixFichier} au format Csv."
+        else :
+            message=f"Choisir un fichier {self.formatFic} {self.msgChoixFichier} au format Xls."
+            
         messagebox.showwarning(
             title=f"Sélection du fichier {self.formatFic} - {self.msgChoixFichier} ",
-            message=f"Choisir un fichier {self.formatFic} {self.msgChoixFichier} au format Csv."
+            message=message
         )
         self.chemin: str = filedialog.askopenfilename(
             title=titre + f" - {self.msgChoixFichier}",
             initialdir=self.repertoire,
-            filetypes=[("Fichiers csv", "*.csv")],
+            filetypes=[("Fichiers csv", "*.csv")] if self.formatFic !="Apogée" else [("Fichiers Excel", "*.xlsx"), ("Fichiers Excel", "*.xls")]
         )
-
         if self.chemin == "":
             # aucun fichier choisi
             messagebox.showwarning(
@@ -189,7 +196,8 @@ class FichierCsv  :
             col = unicodedata.normalize("NFKC", col)
             # supprime BOM éventuel + espaces et tabulations
             col = col.replace("\ufeff", "").strip()
-            return col                
+            return col
+        
         try :
             # ouverture
             fichier : TextIOWrapper = open(self.chemin, "r", encoding="utf-8")
@@ -211,22 +219,33 @@ class FichierCsv  :
             raise ValueError(f"Plantage dans charger_csv, voici la cause :  ({type(e).__name__}) : {e} \n\n"
                             f"Veuillez vérifier vos fichiers csv d'origine.\n"
                             f" Attention à vos modifications et vos sauvegardes.") from e
+    def charger_xls(self) -> None :
+        """Lecture du fichier xls et extraction entête et données."""
+        wb = load_workbook(self.chemin, data_only=True)
+        ws = wb.active  # première feuille
+        rows = list(ws.iter_rows(values_only=True))
 
+        if not rows:
+            return [], []
+        # Première ligne = entête
+        self.entete : List[str] = [str(cell) if cell is not None else "" for cell in rows[0]]
+        # Lignes suivantes = data
+        self.data : List[List[str]] = [
+            [str(cell) if cell is not None else "" for cell in row]
+            for row in rows[1:]
+        ]
+        
     def valider_contenu(self)-> None :
         entete = self.entete or [] # pour éviter le cas None
         print(self.formatFic, entete[1])
         if self.formatFic=="Apogée" :
-            self.valide = (entete[1] == "DHH_DEB_PES" )
-            print(self.formatFic, entete[1], self.valide)
+            self.valide = ( "DHH_DEB_PES"in entete ) 
         elif self.formatFic== "Moodle" :
-            self.valide = ( entete[1]=='Nom de famille')
+            self.valide = ( 'Nom de famille' in entete)
         elif self.formatFic== "Ade" :
-            self.valide = ( entete[1]=='Nom')
+            self.valide = ( 'Nom' in entete )
         else :
             self.valide=False
-
-
-
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Fin Modèle de classe FichierCsv
@@ -270,6 +289,7 @@ class chargementCsv:
             
         elif self.mode == "Partiel" :
             self.apogee = None
+            
             self.moodle = FichierCsv(formatFic="Moodle",
                                     msgChoixFichier="avec tous les étudiants",
                                     repertoire=self.repertoire)
